@@ -2,12 +2,11 @@
  * Global Constants
  */
 const AppVersion = '0.1.1'
-const DappName = 'Polkadot Technical Fellowship Dashboard'
-const PolkadotUrl = 'https://polkadot-fellows.github.io/dashboard'
+const DappName = 'Polkadot DelegIt Dashboard'
+const PolkadotUrl = 'https://delegit-xyz.github.io/dashboard'
 
-const GithubOwner = 'polkadot-fellows'
-const GithubRfc = 'RFCs'
-const GithubApiUrl = `https://api.github.com/repos/${GithubOwner}/${GithubRfc}`
+const GithubOwner = 'delegit-xyz'
+// const GithubApiUrl = `https://api.github.com/repos/${GithubOwner}/${GithubRfc}`
 
 const SideMenuMaximisedWidth = 185
 const SideMenuMinimisedWidth = 75
@@ -157,8 +156,8 @@ export {
   DappName,
   PolkadotUrl,
   GithubOwner,
-  GithubRfc,
-  GithubApiUrl,
+  // GithubRfc,
+  // GithubApiUrl,
   SideMenuMaximisedWidth,
   SideMenuMinimisedWidth,
   SideMenuStickyThreshold,
