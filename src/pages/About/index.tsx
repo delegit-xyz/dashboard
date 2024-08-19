@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button'
-import { RequestsGrid } from './RequestsGrid'
 
 type Props = {
   lcStatus: boolean
@@ -23,9 +22,7 @@ export const About = ({ lcStatus }: Props) => {
         </Button>
       </div>
 
-      <div style={{ paddingTop: '2rem' }}>
-        <RequestsGrid />
-      </div>
+      <div style={{ paddingTop: '2rem' }}></div>
     </main>
   )
 }
