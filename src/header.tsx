@@ -7,9 +7,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { routes } from '@/lib/utils'
+import { AccountProvider, ExtensionProvider } from '@polkadot-ui/react'
+
+import { useAccountContext } from '@/contexts/AccountContext'
 
 import { Settings2, PanelLeft } from 'lucide-react'
 
@@ -24,6 +35,9 @@ import {
 } from '@/components/ui/menubar'
 
 export const Header = () => {
+  const a = useAccountContext()
+
+  a?.account && console.log('Accosunt:', a.account)
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:sticky sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
       <Sheet>
@@ -75,29 +89,53 @@ export const Header = () => {
           </Menubar>
         </div>
         <div className="">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className="overflow-hidden rounded-full"
-              >
-                <Polkicon
-                  copy
-                  size={36}
-                  address={'5CoZdwD8KpAaax4oD5bKgHy23wkVKpwuaf9Gb2HTeZQaDijr'}
-                />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Support</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {!a?.account?.address ? (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button onClick={() => {}}>Connect</Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Connect Wallet</DialogTitle>
+                  <DialogDescription>
+                    {a ? (
+                      <ExtensionProvider setSelected={a?.setAccount}>
+                        <AccountProvider
+                          selected={a?.account}
+                          setSelected={a?.setAccount}
+                        />
+                      </ExtensionProvider>
+                    ) : (
+                      <></>
+                    )}
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="overflow-hidden rounded-full"
+                >
+                  <Polkicon
+                    size={36}
+                    address={'5CoZdwD8KpAaax4oD5bKgHy23wkVKpwuaf9Gb2HTeZQaDijr'}
+                  />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Settings</DropdownMenuItem>
+                <DropdownMenuItem>Support</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Logout</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       </div>
     </header>
