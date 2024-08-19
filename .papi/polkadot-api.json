@@ -9,6 +9,10 @@
     "collectives": {
       "wsUrl": "wss://polkadot-collectives-rpc.polkadot.io",
       "metadata": ".papi/metadata/collectives.scale"
+    },
+    "ksm": {
+      "chain": "ksmcc3",
+      "metadata": ".papi/metadata/ksm.scale"
     }
   }
 }

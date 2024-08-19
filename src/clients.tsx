@@ -1,31 +1,17 @@
+// `dot` is the name we gave to `npx papi add`
+import { dot, ksm } from '@polkadot-api/descriptors'
 import { createClient } from 'polkadot-api'
-import { getSmProvider } from 'polkadot-api/sm-provider'
-import SmWorker from 'polkadot-api/smoldot/worker?worker'
-import { startFromWorker } from 'polkadot-api/smoldot/from-worker'
-import { dot, collectives } from '@polkadot-api/descriptors'
+import { getWsProvider } from 'polkadot-api/ws-provider/web'
 
-const smoldot = startFromWorker(
-  new SmWorker() /*, {maxLogLevel: 9,
-      logCallback: (level: number, target: string, message: string) => {
-        messages.push(`${getTickDate()} (${level})${target}\n${message}\n\n`)
-      },
-    }*/,
+// Connect to the polkadot relay chain.
+export const dotClient = createClient(
+  getWsProvider('wss://dot-rpc.stakeworld.io'),
+)
+export const ksmClient = createClient(
+  getWsProvider('wss://rpc.ibp.network/kusama'),
 )
 
-const dotRelayChain = import('polkadot-api/chains/polkadot').then(
-  ({ chainSpec }) => smoldot.addChain({ chainSpec }),
-)
-
-const smoldotParaChain = Promise.all([
-  dotRelayChain,
-  import('polkadot-api/chains/polkadot_collectives'),
-]).then(([relayChain, { chainSpec }]) =>
-  smoldot.addChain({ chainSpec, potentialRelayChains: [relayChain] }),
-)
-
-export const polkadotClient = createClient(getSmProvider(dotRelayChain))
-export const collectiveClient = createClient(getSmProvider(smoldotParaChain))
-
-// API stuff
-export const api = collectiveClient?.getTypedApi(collectives)
-export const papi = polkadotClient?.getTypedApi(dot)
+// To interact with the chain, you need to get the `TypedApi`, which includes
+// all the types for every call in that chain:
+export const dotApi = dotClient.getTypedApi(dot)
+export const kusamaApi = ksmClient.getTypedApi(ksm)
