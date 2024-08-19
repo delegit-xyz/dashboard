@@ -1,11 +1,10 @@
 import { dot } from '@polkadot-api/descriptors'
 import type { Config } from '@reactive-dot/core'
 import { InjectedWalletAggregator } from '@reactive-dot/core/wallets.js'
-import { getWsProvider } from 'polkadot-api/ws-provider/web'
 import { registerDotConnect } from 'dot-connect'
-import { SupportedWalletOrAggregator } from 'node_modules/dot-connect/build/types'
+import { getWsProvider } from 'polkadot-api/ws-provider/web'
 
-export const config: Config = {
+export const config = {
   chains: {
     polkadot: {
       descriptor: dot,
@@ -13,9 +12,9 @@ export const config: Config = {
     },
   },
   wallets: [new InjectedWalletAggregator()],
-}
+} satisfies Config
 
 // Register dot-connect custom elements & configure supported wallets
 registerDotConnect({
-  wallets: config.wallets as SupportedWalletOrAggregator[],
+  wallets: config.wallets,
 })
