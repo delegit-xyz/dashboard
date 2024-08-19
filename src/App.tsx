@@ -6,6 +6,7 @@ import { useLocalStorage } from 'usehooks-ts'
 import { Toaster } from '@/components/ui/sonner'
 import './index.css'
 import { Content } from './Content'
+import 'dot-connect/font.css'
 
 const App = () => {
   const [settings] = useLocalStorage('fellowship-settings', {
