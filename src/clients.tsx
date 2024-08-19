@@ -5,7 +5,7 @@ import { getWsProvider } from 'polkadot-api/ws-provider/web'
 
 // Connect to the polkadot relay chain.
 export const dotClient = createClient(
-  getWsProvider('wss://dot-rpc.stakeworld.io'),
+  getWsProvider('wss://rpc.ibp.network/polkadot'),
 )
 export const ksmClient = createClient(
   getWsProvider('wss://rpc.ibp.network/kusama'),
