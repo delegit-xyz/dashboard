@@ -12,7 +12,6 @@ import { Button } from '@/components/ui/button'
 import { routes } from '@/lib/utils'
 
 import { Settings2, PanelLeft } from 'lucide-react'
-// import { useAccounts } from '@reactive-dot/react'
 
 import {
   Menubar,
@@ -25,14 +24,6 @@ import {
 } from '@/components/ui/menubar'
 
 export const Header = () => {
-  // const accounts = useAccounts()
-  //  Error: No chain ID provided
-
-  // const accounts = useAccounts({ chainId: 'polkadot' })
-
-  // console.log('accounts', accounts)
-  // getting infinite loop, although it's a working rpc
-  // Unable to connect to wss://dot-rpc.stakeworld.io ws-provider.ts:18:18
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:sticky sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
       <Sheet>

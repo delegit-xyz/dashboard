@@ -8,7 +8,8 @@ import './index.css'
 import { Content } from './Content'
 import 'dot-connect/font.css'
 import { config } from './walletConfigs'
-import { ReDotProvider } from '@reactive-dot/react'
+import { ReDotProvider, ReDotChainProvider } from '@reactive-dot/react'
+import { Suspense } from 'react'
 
 const App = () => {
   const [settings] = useLocalStorage('fellowship-settings', {
@@ -19,15 +20,19 @@ const App = () => {
     <>
       <ThemeProvider defaultTheme={settings?.themeMode as Theme}>
         <ReDotProvider config={config}>
-          <TooltipProvider>
-            <div className="flex min-h-screen w-full flex-col bg-muted/40">
-              <Navigation />
-              <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
-                <Header />
-                <Content />
-              </div>
-            </div>
-          </TooltipProvider>
+          <ReDotChainProvider chainId="polkadot">
+            <Suspense>
+              <TooltipProvider>
+                <div className="flex min-h-screen w-full flex-col bg-muted/40">
+                  <Navigation />
+                  <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
+                    <Header />
+                    <Content />
+                  </div>
+                </div>
+              </TooltipProvider>
+            </Suspense>
+          </ReDotChainProvider>
         </ReDotProvider>
       </ThemeProvider>
       <Toaster />
