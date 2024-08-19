@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Dispatch, SetStateAction, createContext } from 'react'
 import { useContext } from 'react'
 
