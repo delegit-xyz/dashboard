@@ -7,14 +7,11 @@ import { Toaster } from '@/components/ui/sonner'
 import './index.css'
 import { Content } from './Content'
 import { AccountContext } from './contexts/AccountContext.ts'
-import { Dispatch, SetStateAction, useState } from 'react'
+import { useState } from 'react'
 import { SelectedAccountType } from '@polkadot-ui/react'
 
 const App = () => {
-  const [account, setAccount] = useState({
-    account: {} as SelectedAccountType,
-    setAccount: {} as Dispatch<SetStateAction<SelectedAccountType>>,
-  })
+  const [account, setAccount] = useState({} as SelectedAccountType)
 
   const [settings] = useLocalStorage('fellowship-settings', {
     themeMode: 'light',
