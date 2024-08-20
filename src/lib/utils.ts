@@ -19,3 +19,4 @@ export type RouterType = {
 export const routes: RouterType[] = [
   { link: 'home', name: 'Home', icon: House },
 ]
+
