@@ -12,19 +12,21 @@ import { routes } from '@/lib/utils'
 import { useWalletDisconnector } from '@reactive-dot/react'
 import { Settings2, PanelLeft } from 'lucide-react'
 
-import {
-  Menubar,
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarSeparator,
-  MenubarShortcut,
-  MenubarTrigger,
-} from '@/components/ui/menubar'
+// import {
+//   Menubar,
+//   MenubarContent,
+//   MenubarItem,
+//   MenubarMenu,
+//   MenubarSeparator,
+//   MenubarShortcut,
+//   MenubarTrigger,
+// } from '@/components/ui/menubar'
 import { useAccounts } from './contexts/AccountsContext'
 import { useEffect } from 'react'
+import { useNetwork } from './contexts/NetworkContext'
 
 export const Header = () => {
+  const { network, setNetwork } = useNetwork()
   const { accounts, selectAccount, selectedAccount } = useAccounts()
   const [, disconnectAll] = useWalletDisconnector()
 
@@ -67,7 +69,7 @@ export const Header = () => {
       </Sheet>
       <div className="flex justify-between w-full">
         <div>
-          {/* TODO: split submenu based on routes */}
+          {/* TODO: split submenu based on routes 
           <Menubar>
             <MenubarMenu>
               <MenubarTrigger>File</MenubarTrigger>
@@ -82,9 +84,32 @@ export const Header = () => {
                 <MenubarItem>Print</MenubarItem>
               </MenubarContent>
             </MenubarMenu>
-          </Menubar>
+          </Menubar>*/}
         </div>
-        <div className="">
+        <div className="flex">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="default" className="cursor-pointer mx-2">
+                {network.charAt(0).toUpperCase() + network.slice(1)}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                key={'polkadot'}
+                onClick={() => setNetwork('polkadot')}
+              >
+                Polkadot
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                key={'polkadot'}
+                onClick={() => setNetwork('kusama')}
+              >
+                Kusama
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           {!accounts.length && (
             <dc-connection-button>Connect</dc-connection-button>
           )}

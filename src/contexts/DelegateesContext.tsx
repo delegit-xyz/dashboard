@@ -1,7 +1,13 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState } from 'react'
-import delegateesList from '@/polkadot.json'
+import polkadotList from '@/polkadot.json'
+import kusamaList from '@/kusama.json'
+import { useNetwork } from './NetworkContext'
 // import { dotApi } from '@/clients'
+export const DelegeeListPolkadot =
+  'https://raw.githubusercontent.com/novasamatech/opengov-delegate-registry/master/registry/polkadot.json'
+export const DelegeeListKusama =
+  'https://raw.githubusercontent.com/novasamatech/opengov-delegate-registry/master/registry/kusama.json'
 
 type DelegateesContextProps = {
   children: React.ReactNode | React.ReactNode[]
@@ -25,11 +31,16 @@ const DelegateesContext = createContext<IDelegateesContext | undefined>(
 )
 
 const DelegateeContextProvider = ({ children }: DelegateesContextProps) => {
+  const { network } = useNetwork()
   const [delegetees, setDelegatees] = useState<DelegateeProps[]>([])
 
   useEffect(() => {
-    setDelegatees(delegateesList as DelegateeProps[])
-  }, [])
+    setDelegatees(
+      (network === 'polkadot'
+        ? polkadotList
+        : kusamaList) as unknown as DelegateeProps[],
+    )
+  }, [network])
 
   // Votes thingy - pause for now
   // useEffect(() => {
