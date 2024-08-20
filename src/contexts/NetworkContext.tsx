@@ -18,6 +18,8 @@ type NetworkContextProps = {
 export type NetworkProps = 'polkadot' | 'kusama' | 'polkadot-lc' | 'kusama-lc'
 
 export interface INetworkContext {
+  lightClientLoaded: boolean
+  isLight: boolean
   network: NetworkProps
   setNetwork: React.Dispatch<React.SetStateAction<NetworkProps>>
   client: PolkadotClient | undefined
@@ -27,6 +29,8 @@ export interface INetworkContext {
 const NetworkContext = createContext<INetworkContext | undefined>(undefined)
 
 const NetworkContextProvider = ({ children }: NetworkContextProps) => {
+  const [lightClientLoaded, setLightClientLoaded] = useState<boolean>(false)
+  const [isLight, setIsLight] = useState<boolean>(false)
   const [client, setClient] = useState<PolkadotClient>()
   const [api, setApi] = useState<TypedApi<typeof dot | typeof ksm>>()
   const [network, setNetwork] = useState<NetworkProps>('polkadot')
@@ -36,10 +40,12 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
     let typedApi: TypedApi<typeof dot | typeof ksm>
     switch (network) {
       case 'kusama':
+        setIsLight(false)
         cl = createClient(getWsProvider('wss://rpc.ibp.network/kusama'))
         typedApi = cl.getTypedApi(ksm)
         break
       case 'polkadot-lc': {
+        setIsLight(true)
         const smoldot = startFromWorker(new SmWorker())
         const dotRelayChain = import('polkadot-api/chains/polkadot').then(
           ({ chainSpec }) => smoldot.addChain({ chainSpec }),
@@ -49,6 +55,7 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
         break
       }
       case 'kusama-lc': {
+        setIsLight(true)
         const smoldot = startFromWorker(new SmWorker())
         const ksmRelayChain = import('polkadot-api/chains/ksmcc3').then(
           ({ chainSpec }) => smoldot.addChain({ chainSpec }),
@@ -58,6 +65,7 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
         break
       }
       default:
+        setIsLight(false)
         cl = createClient(getWsProvider('wss://rpc.ibp.network/polkadot'))
         typedApi = cl.getTypedApi(dot)
     }
@@ -65,8 +73,19 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
     setApi(typedApi)
   }, [network])
 
+  useEffect(() => {
+    isLight &&
+      client?.finalizedBlock$.subscribe((finalizedBlock) => {
+        if (finalizedBlock.number && !lightClientLoaded) {
+          setLightClientLoaded(true)
+        }
+      })
+  }, [client?.finalizedBlock$, isLight, lightClientLoaded])
+
   return (
-    <NetworkContext.Provider value={{ network, setNetwork, client, api }}>
+    <NetworkContext.Provider
+      value={{ lightClientLoaded, isLight, network, setNetwork, client, api }}
+    >
       {children}
     </NetworkContext.Provider>
   )
