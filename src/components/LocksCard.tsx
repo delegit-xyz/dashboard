@@ -3,7 +3,6 @@ import { useNetwork } from '@/contexts/NetworkContext'
 import { getExpectedBlockTime } from '@/lib/currentVotesAndDelegations'
 import { Card } from '@polkadot-ui/react'
 import { useEffect, useState } from 'react'
-import moment from 'moment'
 
 function convertMiliseconds(miliseconds: number) {
   let days = 0
@@ -52,7 +51,7 @@ export const LocksCard = () => {
       .catch(console.error)
   }, [api])
 
-  if (!currentLocks) return null
+  if (!currentLocks || !Object.entries(currentLocks).length) return null
 
   return (
     <>
