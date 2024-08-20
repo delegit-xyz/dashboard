@@ -1,5 +1,19 @@
+import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { useDelegatees } from '@/contexts/DelegateesContext'
+import { Check, Copy, Ellipsis } from 'lucide-react'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+
+import { ellipsisFn } from '@polkadot-ui/utils'
+
+import copy from 'copy-to-clipboard'
+import { useEffect, useState } from 'react'
 
 const openInNewTab = (url: string | URL | undefined) => {
   window.open(url, '_blank', 'noopener,noreferrer')
@@ -7,6 +21,14 @@ const openInNewTab = (url: string | URL | undefined) => {
 
 export const Home = () => {
   const { delegetees } = useDelegatees()
+
+  const [copied, setCopied] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (copied) {
+      setTimeout(() => setCopied(false), 1000)
+    }
+  }, [copied])
 
   console.log(delegetees)
   return (
@@ -25,8 +47,42 @@ export const Home = () => {
                 <div className="font-bold">{d.name}</div>
                 <div className="">{d.shortDescription}</div>
               </div>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button
+                    className="text-xs"
+                    onClick={() => console.log('read more')}
+                  >
+                    <Ellipsis className="text-xs" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <div className="font-bold">{d.name}</div>
+                  </DialogHeader>
+                  <DialogDescription className="flex">
+                    <div>{ellipsisFn(d.address)}</div>
+                    <div className="pl-4 cursor-pointer">
+                      {copied ? (
+                        <Check className="text-[green]" />
+                      ) : (
+                        <Copy
+                          className="cursor-pointer"
+                          onClick={() => {
+                            setCopied(true)
+                            copy(d.address)
+                          }}
+                        />
+                      )}
+                    </div>
+                  </DialogDescription>
+                  <div className="grid py-4">
+                    <div className="items-center">{d.longDescription}</div>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
-            <div className="w-full">Other info</div>
+            <div className="w-full"></div>
           </Card>
         ))}
       </div>

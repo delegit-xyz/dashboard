@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState } from 'react'
 import delegateesList from '@/polkadot.json'
+// import { dotApi } from '@/clients'
 
 type DelegateesContextProps = {
   children: React.ReactNode | React.ReactNode[]
@@ -29,6 +31,19 @@ const DelegateeContextProvider = ({ children }: DelegateesContextProps) => {
   useEffect(() => {
     setDelegatees(delegateesList as DelegateeProps[])
   }, [])
+
+  // Votes thingy - pause for now
+  // useEffect(() => {
+  //   const a = async (delegetees: any[]) => {
+  //     const result: Promise<any>[] = delegetees.map((d) => {
+  //       return dotApi.query.ConvictionVoting.VotingFor.getEntries(d.address)
+  //     })
+  //     await Promise.all(result).then((res) => {
+  //       console.log(res)
+  //     })
+  //   }
+  //   a(delegetees)
+  // }, [delegetees])
 
   return (
     <DelegateesContext.Provider value={{ delegetees }}>
