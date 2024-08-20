@@ -10,7 +10,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { routes } from '@/lib/utils'
 import { useWalletDisconnector } from '@reactive-dot/react'
-import { Settings2, PanelLeft } from 'lucide-react'
+import { PanelLeft } from 'lucide-react'
 
 // import {
 //   Menubar,
