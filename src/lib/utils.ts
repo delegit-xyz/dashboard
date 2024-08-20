@@ -1,5 +1,5 @@
 import { type ClassValue, clsx } from 'clsx'
-import { LucideProps, Globe } from 'lucide-react'
+import { LucideProps, House } from 'lucide-react'
 import { ForwardRefExoticComponent, RefAttributes } from 'react'
 
 import { twMerge } from 'tailwind-merge'
@@ -17,5 +17,5 @@ export type RouterType = {
 }
 
 export const routes: RouterType[] = [
-  { link: 'about', name: 'About', icon: Globe },
+  { link: 'home', name: 'Home', icon: House },
 ]
