@@ -8,7 +8,7 @@ import { routes } from '@/lib/utils'
 import { useLocation } from 'react-router-dom'
 import PolkadotIcon from '@/assets/img/polkadotIcon.svg?react'
 
-import { Github, Moon, Settings, Sun } from 'lucide-react'
+import { Github, Moon, Sun } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useTheme } from '@/components/theme-provider'
 
@@ -54,7 +54,8 @@ export const Navigation = () => {
         <Tooltip>
           <TooltipTrigger asChild>
             <a
-              href="#"
+              href="https://github.com/delegit-xyz/dashboard/"
+              target="_blank"
               className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
             >
               <Github className="h-5 w-5" />
@@ -77,7 +78,7 @@ export const Navigation = () => {
           </TooltipTrigger>
           <TooltipContent side="right">Toggle theme</TooltipContent>
         </Tooltip>
-        <Tooltip>
+        {/* <Tooltip>
           <TooltipTrigger asChild>
             <a
               href="#"
@@ -88,7 +89,7 @@ export const Navigation = () => {
             </a>
           </TooltipTrigger>
           <TooltipContent side="right">Settings</TooltipContent>
-        </Tooltip>
+        </Tooltip> */}
       </nav>
     </aside>
   )
