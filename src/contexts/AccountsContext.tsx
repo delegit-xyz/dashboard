@@ -18,7 +18,7 @@ type AccountContextProps = {
 export interface IAccountContext {
   selectedAccount?: InjectedAccount
   accounts: InjectedAccount[]
-  selectAccount: (account: InjectedAccount) => void
+  selectAccount: (account: InjectedAccount | undefined) => void
 }
 
 const AccountContext = createContext<IAccountContext | undefined>(undefined)
@@ -27,8 +27,9 @@ const AccountContextProvider = ({ children }: AccountContextProps) => {
   const accounts = useRedotAccounts()
   const [selectedAccount, setSelected] = useState<InjectedAccount | undefined>()
 
-  const selectAccount = useCallback((account: InjectedAccount) => {
-    localStorage.setItem(LOCALSTORAGE_SELECTED_ACCOUNT_KEY, account?.address)
+  const selectAccount = useCallback((account: InjectedAccount | undefined) => {
+    account?.address &&
+      localStorage.setItem(LOCALSTORAGE_SELECTED_ACCOUNT_KEY, account?.address)
     setSelected(account)
   }, [])
 

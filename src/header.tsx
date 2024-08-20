@@ -22,10 +22,18 @@ import {
   MenubarTrigger,
 } from '@/components/ui/menubar'
 import { useAccounts } from './contexts/AccountsContext'
+import { useEffect } from 'react'
 
 export const Header = () => {
   const { accounts, selectAccount, selectedAccount } = useAccounts()
   const [, disconnectAll] = useWalletDisconnector()
+
+  useEffect(() => {
+    if (!selectedAccount?.address && accounts.length > 0) {
+      selectAccount(accounts[0])
+    }
+  }, [accounts, selectAccount, selectedAccount?.address])
+
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:sticky sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
       <Sheet>
@@ -105,7 +113,6 @@ export const Header = () => {
                       onClick={() => selectAccount(account)}
                     >
                       <Polkicon
-                        copy
                         size={28}
                         address={account.address || ''}
                         className="mr-2"
@@ -118,7 +125,10 @@ export const Header = () => {
                 <DropdownMenuItem
                   className="cursor-pointer"
                   key={'logout'}
-                  onClick={() => disconnectAll()}
+                  onClick={() => {
+                    disconnectAll()
+                    selectAccount(undefined)
+                  }}
                 >
                   Logout
                 </DropdownMenuItem>
