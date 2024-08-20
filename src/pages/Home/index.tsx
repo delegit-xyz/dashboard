@@ -50,6 +50,7 @@ export const Home = () => {
               <Dialog>
                 <DialogTrigger asChild>
                   <Button
+                    variant={'outline'}
                     className="text-xs"
                     onClick={() => console.log('read more')}
                   >
