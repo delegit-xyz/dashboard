@@ -7,10 +7,13 @@ import {
 import { routes } from '@/lib/utils'
 import { useLocation } from 'react-router-dom'
 import PolkadotIcon from '@/assets/img/polkadotIcon.svg?react'
+import { TbLoaderQuarter } from 'react-icons/tb'
+import { FaCheckCircle } from 'react-icons/fa'
 
 import { Github, Moon, Sun } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useTheme } from '@/components/theme-provider'
+import { useNetwork } from './contexts/NetworkContext'
 
 const linkStyle = (pathname: string, link: string) => {
   return `link ${
@@ -21,6 +24,7 @@ const linkStyle = (pathname: string, link: string) => {
 }
 
 export const Navigation = () => {
+  const { lightClientLoaded, isLight } = useNetwork()
   const { pathname } = useLocation()
   const { theme, setTheme } = useTheme()
 
@@ -51,6 +55,28 @@ export const Navigation = () => {
         ))}
       </nav>
       <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
+        {isLight && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <a
+                href="#"
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+              >
+                {!lightClientLoaded ? (
+                  <TbLoaderQuarter className="h-5 w-5 animate-spin" />
+                ) : (
+                  <FaCheckCircle className="text-[#00b300]" />
+                )}
+                <span className="sr-only">
+                  Light Client {!lightClientLoaded ? `syncing` : `synced`}
+                </span>
+              </a>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              Light Client {!lightClientLoaded ? `syncing` : `synced`}
+            </TooltipContent>
+          </Tooltip>
+        )}
         <Tooltip>
           <TooltipTrigger asChild>
             <a
@@ -78,18 +104,6 @@ export const Navigation = () => {
           </TooltipTrigger>
           <TooltipContent side="right">Toggle theme</TooltipContent>
         </Tooltip>
-        {/* <Tooltip>
-          <TooltipTrigger asChild>
-            <a
-              href="#"
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-            >
-              <Settings className="h-5 w-5" />
-              <span className="sr-only">Settings</span>
-            </a>
-          </TooltipTrigger>
-          <TooltipContent side="right">Settings</TooltipContent>
-        </Tooltip> */}
       </nav>
     </aside>
   )

@@ -1,7 +1,9 @@
 import { Route, Routes } from 'react-router-dom'
 
 import { Home } from '@/pages/Home'
-
+import { toast } from 'sonner'
+import { useEffect } from 'react'
+import { useNetwork } from './contexts/NetworkContext'
 const pages = [
   {
     path: '',
@@ -14,6 +16,10 @@ const pages = [
 ]
 
 export const Content = () => {
+  const { lightClientLoaded, isLight } = useNetwork()
+  useEffect(() => {
+    isLight && lightClientLoaded && toast.success('Light client: Synced')
+  }, [isLight, lightClientLoaded])
   return (
     <>
       <Routes>

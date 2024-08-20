@@ -10,7 +10,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { routes } from '@/lib/utils'
 import { useWalletDisconnector } from '@reactive-dot/react'
-import { Settings2, PanelLeft } from 'lucide-react'
+import { PanelLeft } from 'lucide-react'
 
 // import {
 //   Menubar,
@@ -23,7 +23,14 @@ import { Settings2, PanelLeft } from 'lucide-react'
 // } from '@/components/ui/menubar'
 import { useAccounts } from './contexts/AccountsContext'
 import { useEffect } from 'react'
-import { useNetwork } from './contexts/NetworkContext'
+import { NetworkProps, useNetwork } from './contexts/NetworkContext'
+
+const networkList = [
+  'Polkadot|polkadot',
+  'Polkadot Light Client|polkadot-lc',
+  'Kusama|kusama',
+  'Kusama Light Client|kusama-lc',
+]
 
 export const Header = () => {
   const { network, setNetwork } = useNetwork()
@@ -57,13 +64,6 @@ export const Header = () => {
                 {r.name}
               </a>
             ))}
-            <a
-              href="#"
-              className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
-            >
-              <Settings2 className="h-5 w-5" />
-              Settings
-            </a>
           </nav>
         </SheetContent>
       </Sheet>
@@ -94,20 +94,15 @@ export const Header = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem
-                className="cursor-pointer"
-                key={'polkadot'}
-                onClick={() => setNetwork('polkadot')}
-              >
-                Polkadot
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="cursor-pointer"
-                key={'polkadot'}
-                onClick={() => setNetwork('kusama')}
-              >
-                Kusama
-              </DropdownMenuItem>
+              {networkList.map((n) => (
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  key={n}
+                  onClick={() => setNetwork(n.split('|')[1] as NetworkProps)}
+                >
+                  {n.split('|')[0]}
+                </DropdownMenuItem>
+              ))}
             </DropdownMenuContent>
           </DropdownMenu>
           {!accounts.length && (
