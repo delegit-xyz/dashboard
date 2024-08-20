@@ -8,6 +8,7 @@ import {
 } from '../lib/currentVotesAndDelegations'
 import { useAccounts } from './AccountsContext'
 import { getLocksInfo, Locks } from '@/lib/locks'
+import { useNetwork } from './NetworkContext'
 
 type LocksContextProps = {
   children: React.ReactNode | React.ReactNode[]
@@ -27,28 +28,29 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
   const [currentLocks, setCurrentLocks] = useState<Locks | undefined>()
 
   const { selectedAccount } = useAccounts()
+  const { api } = useNetwork()
 
   useEffect(() => {
-    if (!selectedAccount) {
+    if (!selectedAccount || !api) {
       setCurrentVotes(undefined)
       return
     }
 
-    getVotingTrackInfo(selectedAccount.address)
+    getVotingTrackInfo(selectedAccount.address, api)
       .then((votes) => setCurrentVotes(votes))
       .catch(console.error)
-  }, [selectedAccount])
+  }, [selectedAccount, api])
 
   useEffect(() => {
-    if (!selectedAccount) {
+    if (!selectedAccount || !api) {
       setCurrentVotes(undefined)
       return
     }
 
-    getLocksInfo(selectedAccount.address)
+    getLocksInfo(selectedAccount.address, api)
       .then((locks) => setCurrentLocks(locks))
       .catch(console.error)
-  }, [selectedAccount])
+  }, [selectedAccount, api])
 
   return (
     <LocksContext.Provider value={{ currentVotes, currentLocks }}>

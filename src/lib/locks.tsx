@@ -1,7 +1,7 @@
 import { SS58String } from 'polkadot-api'
-import { dotApi } from '../clients'
 import { DEFAULT_TIME, lockPeriod, ONE_DAY, THRESHOLD } from './constants'
 import { bnMin } from './bnMin'
+import { ApiType } from '@/contexts/NetworkContext'
 
 export interface Locks {
   [k: string]: {
@@ -15,30 +15,27 @@ export interface Locks {
 
 const convictionList = Object.keys(lockPeriod)
 
-export const getExpectedBlockTime = async (): Promise<bigint> => {
-  const expectedBlockTime = await dotApi.constants.Babe.ExpectedBlockTime()
+export const getExpectedBlockTime = async (api: ApiType): Promise<bigint> => {
+  const expectedBlockTime = await api.constants.Babe.ExpectedBlockTime()
   if (expectedBlockTime) {
     return bnMin(ONE_DAY, expectedBlockTime)
   }
 
   const thresholdCheck =
-    (await dotApi.constants.Timestamp.MinimumPeriod()) > THRESHOLD
+    (await api.constants.Timestamp.MinimumPeriod()) > THRESHOLD
 
   if (thresholdCheck) {
-    return bnMin(
-      ONE_DAY,
-      (await dotApi.constants.Timestamp.MinimumPeriod()) * 2n,
-    )
+    return bnMin(ONE_DAY, (await api.constants.Timestamp.MinimumPeriod()) * 2n)
   }
 
   return bnMin(ONE_DAY, DEFAULT_TIME)
 }
 
-export const getLockTimes = async () => {
+export const getLockTimes = async (api: ApiType) => {
   const voteLockingPeriod =
-    await dotApi.constants.ConvictionVoting.VoteLockingPeriod()
+    await api.constants.ConvictionVoting.VoteLockingPeriod()
 
-  const expectedBlockTime = await getExpectedBlockTime()
+  const expectedBlockTime = await getExpectedBlockTime(api)
 
   const requests = convictionList.map((conviction) => {
     const relativetime =
@@ -59,9 +56,9 @@ export const getLockTimes = async () => {
   )
 }
 
-export const getLocksInfo = async (address: SS58String) => {
+export const getLocksInfo = async (address: SS58String, api: ApiType) => {
   const convictionVoting =
-    await dotApi.query.ConvictionVoting.VotingFor.getEntries(address)
+    await api.query.ConvictionVoting.VotingFor.getEntries(address)
 
   const allDelegationLocks = Object.fromEntries(
     convictionVoting

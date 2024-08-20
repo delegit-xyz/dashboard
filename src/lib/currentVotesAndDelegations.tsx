@@ -1,8 +1,8 @@
 import { SS58String } from 'polkadot-api'
-import { dotApi } from '../clients'
 import { MultiAddress, VotingConviction } from '@polkadot-api/descriptors'
 import { DEFAULT_TIME, ONE_DAY, THRESHOLD } from './constants'
 import { bnMin } from './bnMin'
+import { ApiType } from '@/contexts/NetworkContext'
 
 // export const getOptimalAmount = async (
 //   account: SS58String,
@@ -21,9 +21,11 @@ export interface Delegating {
   conviction: VotingConviction
 }
 
-export const getTracks = async (): Promise<Record<number, string>> =>
+export const getTracks = async (
+  api: ApiType,
+): Promise<Record<number, string>> =>
   Object.fromEntries(
-    (await dotApi.constants.Referenda.Tracks()).map(([trackId, { name }]) => [
+    (await api.constants.Referenda.Tracks()).map(([trackId, { name }]) => [
       trackId,
       name
         .split('_')
@@ -34,9 +36,10 @@ export const getTracks = async (): Promise<Record<number, string>> =>
 
 export const getVotingTrackInfo = async (
   address: SS58String,
+  api: ApiType,
 ): Promise<Record<number, Casting | Delegating>> => {
   const convictionVoting =
-    await dotApi.query.ConvictionVoting.VotingFor.getEntries(address)
+    await api.query.ConvictionVoting.VotingFor.getEntries(address)
 
   return Object.fromEntries(
     convictionVoting
@@ -68,13 +71,14 @@ export const getDelegateTx = async (
   conviction: VotingConviction,
   amount: bigint,
   tracks: Array<number>,
+  api: ApiType,
 ) => {
-  const tracksInfo = await getVotingTrackInfo(from)
+  const tracksInfo = await getVotingTrackInfo(from, api)
 
   const txs: Array<
-    | ReturnType<typeof dotApi.tx.ConvictionVoting.remove_vote>
-    | ReturnType<typeof dotApi.tx.ConvictionVoting.undelegate>
-    | ReturnType<typeof dotApi.tx.ConvictionVoting.delegate>
+    | ReturnType<typeof api.tx.ConvictionVoting.remove_vote>
+    | ReturnType<typeof api.tx.ConvictionVoting.undelegate>
+    | ReturnType<typeof api.tx.ConvictionVoting.delegate>
   > = []
   tracks.forEach((trackId) => {
     const trackInfo = tracksInfo[trackId]
@@ -91,7 +95,7 @@ export const getDelegateTx = async (
       if (trackInfo.type === 'Casting') {
         trackInfo.referendums.forEach((index) => {
           txs.push(
-            dotApi.tx.ConvictionVoting.remove_vote({
+            api.tx.ConvictionVoting.remove_vote({
               class: trackId,
               index,
             }),
@@ -99,14 +103,14 @@ export const getDelegateTx = async (
         })
       } else
         txs.push(
-          dotApi.tx.ConvictionVoting.undelegate({
+          api.tx.ConvictionVoting.undelegate({
             class: trackId,
           }),
         )
     }
 
     txs.push(
-      dotApi.tx.ConvictionVoting.delegate({
+      api.tx.ConvictionVoting.delegate({
         class: trackId,
         conviction,
         to: MultiAddress.Id(target),
@@ -115,25 +119,23 @@ export const getDelegateTx = async (
     )
   })
 
-  return dotApi.tx.Utility.batch_all({
+  // @ts-expect-error we need to fix this, it appeared once we added the dynamic api (either kusama or polkadot)
+  return api.tx.Utility.batch_all({
     calls: txs.map((tx) => tx.decodedCall),
   })
 }
 
-export const getExpectedBlockTime = async (): Promise<bigint> => {
-  const expectedBlockTime = await dotApi.constants.Babe.ExpectedBlockTime()
+export const getExpectedBlockTime = async (api: ApiType): Promise<bigint> => {
+  const expectedBlockTime = await api.constants.Babe.ExpectedBlockTime()
   if (expectedBlockTime) {
     return bnMin(ONE_DAY, expectedBlockTime)
   }
 
   const thresholdCheck =
-    (await dotApi.constants.Timestamp.MinimumPeriod()) > THRESHOLD
+    (await api.constants.Timestamp.MinimumPeriod()) > THRESHOLD
 
   if (thresholdCheck) {
-    return bnMin(
-      ONE_DAY,
-      (await dotApi.constants.Timestamp.MinimumPeriod()) * 2n,
-    )
+    return bnMin(ONE_DAY, (await api.constants.Timestamp.MinimumPeriod()) * 2n)
   }
 
   return bnMin(ONE_DAY, DEFAULT_TIME)
