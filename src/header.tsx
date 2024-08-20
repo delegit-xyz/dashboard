@@ -23,7 +23,14 @@ import { Settings2, PanelLeft } from 'lucide-react'
 // } from '@/components/ui/menubar'
 import { useAccounts } from './contexts/AccountsContext'
 import { useEffect } from 'react'
-import { useNetwork } from './contexts/NetworkContext'
+import { NetworkProps, useNetwork } from './contexts/NetworkContext'
+
+const networkList = [
+  'Polkadot|polkadot',
+  'Polkadot Light Client|polkadot-lc',
+  'Kusama|kusama',
+  'Kusama Light Client|kusama-lc',
+]
 
 export const Header = () => {
   const { network, setNetwork } = useNetwork()
@@ -94,20 +101,15 @@ export const Header = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem
-                className="cursor-pointer"
-                key={'polkadot'}
-                onClick={() => setNetwork('polkadot')}
-              >
-                Polkadot
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="cursor-pointer"
-                key={'polkadot'}
-                onClick={() => setNetwork('kusama')}
-              >
-                Kusama
-              </DropdownMenuItem>
+              {networkList.map((n) => (
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  key={n}
+                  onClick={() => setNetwork(n.split('|')[1] as NetworkProps)}
+                >
+                  {n.split('|')[0]}
+                </DropdownMenuItem>
+              ))}
             </DropdownMenuContent>
           </DropdownMenu>
           {!accounts.length && (
