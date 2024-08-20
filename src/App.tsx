@@ -14,6 +14,7 @@ import { AccountContextProvider } from './contexts/AccountsContext'
 import { LocksContextProvider } from './contexts/LocksContext'
 import { DelegateeContextProvider } from '@/contexts/DelegateesContext'
 import { NetworkContextProvider } from './contexts/NetworkContext'
+import { LocksContextProvider } from './contexts/LocksContext'
 
 const App = () => {
   const [settings] = useLocalStorage('fellowship-settings', {
