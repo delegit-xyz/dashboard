@@ -10,11 +10,10 @@ export const LocksCard = () => {
     const sub = dotApi.query.System.Number.watchValue('best').subscribe(
       (value) => {
         setCurrentBlock(value)
-        console.log('currentBlock', value)
       },
     )
 
-    return sub.unsubscribe()
+    return () => sub.unsubscribe()
   }, [])
 
   if (!currentLocks) return null
