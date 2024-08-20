@@ -16,6 +16,7 @@ type NetworkContextProps = {
 // const kusamaEndpoints = ['wss://rpc.ibp.network/kusama']
 
 export type NetworkProps = 'polkadot' | 'kusama' | 'polkadot-lc' | 'kusama-lc'
+export type ApiType = TypedApi<typeof dot | typeof ksm>
 
 export interface INetworkContext {
   lightClientLoaded: boolean
@@ -32,12 +33,12 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
   const [lightClientLoaded, setLightClientLoaded] = useState<boolean>(false)
   const [isLight, setIsLight] = useState<boolean>(false)
   const [client, setClient] = useState<PolkadotClient>()
-  const [api, setApi] = useState<TypedApi<typeof dot | typeof ksm>>()
+  const [api, setApi] = useState<ApiType>()
   const [network, setNetwork] = useState<NetworkProps>('polkadot')
 
   useEffect(() => {
     let cl: PolkadotClient
-    let typedApi: TypedApi<typeof dot | typeof ksm>
+    let typedApi: ApiType
     switch (network) {
       case 'kusama':
         setIsLight(false)

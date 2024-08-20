@@ -2,7 +2,7 @@
  * Global Constants
  */
 const AppVersion = '0.1.1'
-const DappName = 'Polkadot DelegIt Dashboard'
+const DappName = 'Delegit'
 const PolkadotUrl = 'https://delegit-xyz.github.io/dashboard'
 
 const GithubOwner = 'delegit-xyz'
