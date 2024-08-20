@@ -12,6 +12,7 @@ type NetworkContextProps = {
 // const kusamaEndpoints = ['wss://rpc.ibp.network/kusama']
 
 export type NetworkProps = 'polkadot' | 'kusama'
+export type ApiType = TypedApi<typeof dot | typeof ksm>
 
 export interface INetworkContext {
   network: NetworkProps
@@ -24,12 +25,12 @@ const NetworkContext = createContext<INetworkContext | undefined>(undefined)
 
 const NetworkContextProvider = ({ children }: NetworkContextProps) => {
   const [client, setClient] = useState<PolkadotClient>()
-  const [api, setApi] = useState<TypedApi<typeof dot | typeof ksm>>()
+  const [api, setApi] = useState<ApiType>()
   const [network, setNetwork] = useState<NetworkProps>('polkadot')
 
   useEffect(() => {
     let cl: PolkadotClient
-    let typedApi: TypedApi<typeof dot | typeof ksm>
+    let typedApi: ApiType
     if (network === 'polkadot') {
       cl = createClient(getWsProvider('wss://rpc.ibp.network/polkadot'))
       typedApi = cl.getTypedApi(dot)
