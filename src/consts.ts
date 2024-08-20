@@ -6,7 +6,8 @@ const DappName = 'Delegit'
 const PolkadotUrl = 'https://delegit-xyz.github.io/dashboard'
 
 const GithubOwner = 'delegit-xyz'
-// const GithubApiUrl = `https://api.github.com/repos/${GithubOwner}/${GithubRfc}`
+export const DelegeeList =
+  'https://raw.githubusercontent.com/novasamatech/opengov-delegate-registry/master/registry/polkadot.json'
 
 const SideMenuMaximisedWidth = 185
 const SideMenuMinimisedWidth = 75
