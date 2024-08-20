@@ -15,9 +15,9 @@ import { ellipsisFn } from '@polkadot-ui/utils'
 import copy from 'copy-to-clipboard'
 import { useEffect, useState } from 'react'
 
-const openInNewTab = (url: string | URL | undefined) => {
-  window.open(url, '_blank', 'noopener,noreferrer')
-}
+// const openInNewTab = (url: string | URL | undefined) => {
+//   window.open(url, '_blank', 'noopener,noreferrer')
+// }
 
 export const Home = () => {
   const { delegetees } = useDelegatees()
