@@ -86,10 +86,9 @@ export const Header = () => {
                 <Button
                   variant="outline"
                   size="default"
-                  className="overflow-hidden"
+                  className="overflow-hidden cursor-pointer"
                 >
                   <Polkicon
-                    copy
                     size={36}
                     address={selectedAccount?.address || ''}
                     className="mr-2"
@@ -101,6 +100,7 @@ export const Header = () => {
                 {accounts.map((account, index) => (
                   <>
                     <DropdownMenuItem
+                      className="cursor-pointer"
                       key={account.address}
                       onClick={() => selectAccount(account)}
                     >
@@ -116,6 +116,7 @@ export const Header = () => {
                   </>
                 ))}
                 <DropdownMenuItem
+                  className="cursor-pointer"
                   key={'logout'}
                   onClick={() => disconnectAll()}
                 >

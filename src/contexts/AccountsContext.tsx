@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, {
   useState,
   createContext,
@@ -27,7 +28,7 @@ const AccountContextProvider = ({ children }: AccountContextProps) => {
   const [selectedAccount, setSelected] = useState<InjectedAccount | undefined>()
 
   const selectAccount = useCallback((account: InjectedAccount) => {
-    localStorage.setItem(LOCALSTORAGE_SELECTED_ACCOUNT_KEY, account.address)
+    localStorage.setItem(LOCALSTORAGE_SELECTED_ACCOUNT_KEY, account?.address)
     setSelected(account)
   }, [])
 
