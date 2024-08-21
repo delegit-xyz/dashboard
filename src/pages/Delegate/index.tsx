@@ -10,12 +10,10 @@ import { Button } from '@/components/ui/button'
 import { getDelegateTx } from '@/lib/currentVotesAndDelegations'
 import { useAccounts } from '@/contexts/AccountsContext'
 import { Slider } from '@/components/ui/slider'
+import { useNavigate, useParams } from 'react-router-dom'
 
-type Props = {
-  address: string
-}
-
-export const Delegate = ({ address }: Props) => {
+export const Delegate = () => {
+  const { address } = useParams()
   const { getDelegateeByAddress } = useDelegatees()
   const [delegatee, setDelegatee] = useState(getDelegateeByAddress(address))
   const [amount, setAmount] = useState<number>(0)
@@ -29,6 +27,7 @@ export const Delegate = ({ address }: Props) => {
   )
   const { api } = useNetwork()
   const { selectedAccount } = useAccounts()
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (!api) return
@@ -82,6 +81,9 @@ export const Delegate = ({ address }: Props) => {
 
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:mx-[5%] xl:mx-[20%] mx-0 sm:px-6 sm:py-0 md:gap-8">
+      <Button className="w-20" onClick={() => navigate(`/home`)}>
+        Back
+      </Button>
       <div className="pageTop">
         <Label>Amount</Label>
         <Input onChange={onChangeAmount} value={amount} />

@@ -9,17 +9,17 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { ellipsisFn } from '@polkadot-ui/utils'
-
+import { useNavigate } from 'react-router-dom'
 import copy from 'copy-to-clipboard'
 import { useEffect, useState } from 'react'
 import { Delegatee } from '@/contexts/DelegateesContext'
-import { Delegate } from '@/pages/Delegate'
 
 interface Props {
   delegatee: Delegatee
 }
 export const DelegateeCard = ({ delegatee: d }: Props) => {
   const [copied, setCopied] = useState<boolean>(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (copied) {
@@ -27,6 +27,9 @@ export const DelegateeCard = ({ delegatee: d }: Props) => {
     }
   }, [copied])
 
+  const onDelegate = () => {
+    navigate(`/delegate/${d.address}`)
+  }
   return (
     <Card className="border-2 flex flex-col p-2 mb-5">
       <div className="flex columns-3">
@@ -36,23 +39,9 @@ export const DelegateeCard = ({ delegatee: d }: Props) => {
         <div className="p-2 w-[85%]">
           <div className="font-bold">{d.name}</div>
           <div className="">{d.shortDescription}</div>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="default" className="mt-2">
-                Delegate
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="">
-              <DialogHeader>
-                <h1 className="font-unbounded text-primary flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
-                  Delegate to {d.name}
-                </h1>
-              </DialogHeader>
-              <DialogDescription className="flex">
-                <Delegate address={d.address} />
-              </DialogDescription>
-            </DialogContent>
-          </Dialog>
+          <Button variant="default" className="mt-2" onClick={onDelegate}>
+            Delegate
+          </Button>
         </div>
         <Dialog>
           <DialogTrigger asChild>

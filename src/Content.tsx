@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 
 import { Home } from '@/pages/Home'
+import { Delegate } from '@/pages/Delegate'
 import { toast } from 'sonner'
 import { useEffect } from 'react'
 import { useNetwork } from './contexts/NetworkContext'
@@ -12,6 +13,10 @@ const pages = [
   {
     path: '/home',
     element: <Home />,
+  },
+  {
+    path: '/delegate/:address',
+    element: <Delegate />,
   },
 ]
 
