@@ -24,6 +24,7 @@ export type Delegatee = {
 
 export interface IDelegateesContext {
   delegetees: Delegatee[]
+  getDelegateeByAddress: (address?: string) => Delegatee | undefined
 }
 
 const DelegateesContext = createContext<IDelegateesContext | undefined>(
@@ -42,6 +43,11 @@ const DelegateeContextProvider = ({ children }: DelegateesContextProps) => {
     )
   }, [network])
 
+  const getDelegateeByAddress = (address?: string) => {
+    if (!address) return undefined
+
+    return delegetees.find((d) => d.address === address)
+  }
   // Votes thingy - pause for now
   // useEffect(() => {
   //   const a = async (delegetees: any[]) => {
@@ -56,7 +62,7 @@ const DelegateeContextProvider = ({ children }: DelegateesContextProps) => {
   // }, [delegetees])
 
   return (
-    <DelegateesContext.Provider value={{ delegetees }}>
+    <DelegateesContext.Provider value={{ delegetees, getDelegateeByAddress }}>
       {children}
     </DelegateesContext.Provider>
   )

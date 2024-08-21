@@ -1,7 +1,5 @@
 import { SS58String } from 'polkadot-api'
 import { MultiAddress, VotingConviction } from '@polkadot-api/descriptors'
-import { DEFAULT_TIME, ONE_DAY, THRESHOLD } from './constants'
-import { bnMin } from './bnMin'
 import { ApiType } from '@/contexts/NetworkContext'
 
 // export const getOptimalAmount = async (
@@ -65,14 +63,21 @@ export const getVotingTrackInfo = async (
   )
 }
 
-export const getDelegateTx = async (
-  from: SS58String,
-  target: SS58String,
-  conviction: VotingConviction,
-  amount: bigint,
-  tracks: Array<number>,
-  api: ApiType,
-) => {
+export const getDelegateTx = async ({
+  from,
+  target,
+  conviction,
+  amount,
+  tracks,
+  api,
+}: {
+  from: SS58String
+  target: SS58String
+  conviction: VotingConviction
+  amount: bigint
+  tracks: Array<number>
+  api: ApiType
+}) => {
   const tracksInfo = await getVotingTrackInfo(from, api)
 
   const txs: Array<
@@ -123,20 +128,4 @@ export const getDelegateTx = async (
   return api.tx.Utility.batch_all({
     calls: txs.map((tx) => tx.decodedCall),
   })
-}
-
-export const getExpectedBlockTime = async (api: ApiType): Promise<bigint> => {
-  const expectedBlockTime = await api.constants.Babe.ExpectedBlockTime()
-  if (expectedBlockTime) {
-    return bnMin(ONE_DAY, expectedBlockTime)
-  }
-
-  const thresholdCheck =
-    (await api.constants.Timestamp.MinimumPeriod()) > THRESHOLD
-
-  if (thresholdCheck) {
-    return bnMin(ONE_DAY, (await api.constants.Timestamp.MinimumPeriod()) * 2n)
-  }
-
-  return bnMin(ONE_DAY, DEFAULT_TIME)
 }

@@ -1,6 +1,5 @@
 import { LocksCard } from '@/components/LocksCard'
 import { useDelegatees } from '@/contexts/DelegateesContext'
-
 import { DelegateeCard } from '@/components/DelegateeCard'
 
 export const Home = () => {

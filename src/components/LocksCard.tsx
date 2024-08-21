@@ -1,7 +1,7 @@
 import { useLocks } from '@/contexts/LocksContext'
 import { useNetwork } from '@/contexts/NetworkContext'
 import { convertMiliseconds } from '@/lib/convertMiliseconds'
-import { getExpectedBlockTime } from '@/lib/currentVotesAndDelegations'
+import { getExpectedBlockTime } from '@/lib/locks'
 import { Card } from '@polkadot-ui/react'
 import { useEffect, useState } from 'react'
 

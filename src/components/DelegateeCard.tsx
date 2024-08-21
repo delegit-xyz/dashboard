@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTrigger,
 } from '@/components/ui/dialog'
-
+import { useNavigate } from 'react-router-dom'
 import { ellipsisFn } from '@polkadot-ui/utils'
 
 import copy from 'copy-to-clipboard'
@@ -20,6 +20,7 @@ interface Props {
 }
 export const DelegateeCard = ({ delegatee: d }: Props) => {
   const [copied, setCopied] = useState<boolean>(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (copied) {
@@ -27,6 +28,9 @@ export const DelegateeCard = ({ delegatee: d }: Props) => {
     }
   }, [copied])
 
+  const onDelegate = () => {
+    navigate(`/delegate/${d.address}`)
+  }
   return (
     <Card className="border-2 flex flex-col p-2 mb-5">
       <div className="flex columns-3">
@@ -36,6 +40,9 @@ export const DelegateeCard = ({ delegatee: d }: Props) => {
         <div className="p-2 w-[85%]">
           <div className="font-bold">{d.name}</div>
           <div className="">{d.shortDescription}</div>
+          <Button variant="default" className="mt-2" onClick={onDelegate}>
+            Delegate
+          </Button>
         </div>
         <Dialog>
           <DialogTrigger asChild>
