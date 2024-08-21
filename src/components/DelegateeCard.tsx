@@ -8,9 +8,8 @@ import {
   DialogHeader,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { useNavigate } from 'react-router-dom'
 import { ellipsisFn } from '@polkadot-ui/utils'
-
+import { useNavigate } from 'react-router-dom'
 import copy from 'copy-to-clipboard'
 import { useEffect, useState } from 'react'
 import { Delegatee } from '@/contexts/DelegateesContext'
@@ -46,15 +45,11 @@ export const DelegateeCard = ({ delegatee: d }: Props) => {
         </div>
         <Dialog>
           <DialogTrigger asChild>
-            <Button
-              variant={'outline'}
-              className="text-xs"
-              onClick={() => console.log('read more')}
-            >
+            <Button variant={'outline'} className="text-xs">
               <Ellipsis className="text-xs" />
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="">
             <DialogHeader>
               <div className="font-bold">{d.name}</div>
             </DialogHeader>
