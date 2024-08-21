@@ -51,8 +51,8 @@ importers:
         specifier: ^0.8.0
         version: 0.8.0(polkadot-api@1.0.1(jiti@1.21.6)(postcss@8.4.41)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.0))
       '@reactive-dot/react':
-        specifier: ^0.8.0
-        version: 0.8.0(@types/react@18.3.3)(polkadot-api@1.0.1(jiti@1.21.6)(postcss@8.4.41)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.0))(react@18.3.1)
+        specifier: ^0.9.0
+        version: 0.9.0(@types/react@18.3.3)(polkadot-api@1.0.1(jiti@1.21.6)(postcss@8.4.41)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.0))(react@18.3.1)
       '@tanstack/react-table':
         specifier: ^8.20.1
         version: 8.20.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1229,8 +1229,20 @@ packages:
       '@walletconnect/universal-provider':
         optional: true
 
-  '@reactive-dot/react@0.8.0':
-    resolution: {integrity: sha512-OgRaNh1YJdyyOgjTsXDtIyzQ/rFbsLxw+YcfzbOHWEKH+h5aFUrVQqtYpe2KIUtx2v2YPtflNg0Xtg358QEifQ==}
+  '@reactive-dot/core@0.9.0':
+    resolution: {integrity: sha512-VipDtNHuLMMMxMVDEdNVa4fo4HRjpTiSahR2t3wHuzU1Z/Ubrw0LLcGfSxwHGTht9/0UZFVoR5ACQPPU6exRwA==}
+    peerDependencies:
+      '@walletconnect/modal': 2.x
+      '@walletconnect/universal-provider': 2.x
+      polkadot-api: ^1.0.0
+    peerDependenciesMeta:
+      '@walletconnect/modal':
+        optional: true
+      '@walletconnect/universal-provider':
+        optional: true
+
+  '@reactive-dot/react@0.9.0':
+    resolution: {integrity: sha512-ci2MPL4n1UY/PQmRACnFAczYCx+ZHx48vA8p7jWkWAzJpQUQ0zcAOzwdfdT34Tf5UXPDLJ8iOVZ1t9UMzONtww==}
     peerDependencies:
       react: 18.x
 
@@ -2191,8 +2203,8 @@ packages:
     resolution: {integrity: sha512-2yTgeWTWzMWkHu6Jp9NKgePDaYHbntiwvYuuJLbbN9vl7DC9DvXKOB2BC3ZZ92D3cvV/aflH0osDfwpHepQ53w==}
     hasBin: true
 
-  jotai-scope@0.7.1:
-    resolution: {integrity: sha512-oFz91+fHy6U5v2zwLlE4fQja38J56FoY6h4c8SJluNQGwggfSIr/gIG5rXTaDLE/9AuPfx5kWZS7HhAjlZRb1g==}
+  jotai-scope@0.7.2:
+    resolution: {integrity: sha512-Gwed97f3dDObrO43++2lRcgOqw4O2sdr4JCjP/7eHK1oPACDJ7xKHGScpJX9XaflU+KBHXF+VhwECnzcaQiShg==}
     peerDependencies:
       jotai: '>=2.9.2'
       react: '>=17.0.0'
@@ -4184,11 +4196,16 @@ snapshots:
       '@reactive-dot/utils': 0.8.0
       polkadot-api: 1.0.1(jiti@1.21.6)(postcss@8.4.41)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.0)
 
-  '@reactive-dot/react@0.8.0(@types/react@18.3.3)(polkadot-api@1.0.1(jiti@1.21.6)(postcss@8.4.41)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.0))(react@18.3.1)':
+  '@reactive-dot/core@0.9.0(polkadot-api@1.0.1(jiti@1.21.6)(postcss@8.4.41)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.0))':
     dependencies:
-      '@reactive-dot/core': 0.8.0(polkadot-api@1.0.1(jiti@1.21.6)(postcss@8.4.41)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.0))
+      '@reactive-dot/utils': 0.8.0
+      polkadot-api: 1.0.1(jiti@1.21.6)(postcss@8.4.41)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.0)
+
+  '@reactive-dot/react@0.9.0(@types/react@18.3.3)(polkadot-api@1.0.1(jiti@1.21.6)(postcss@8.4.41)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.0))(react@18.3.1)':
+    dependencies:
+      '@reactive-dot/core': 0.9.0(polkadot-api@1.0.1(jiti@1.21.6)(postcss@8.4.41)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.0))
       jotai: 2.9.3(@types/react@18.3.3)(react@18.3.1)
-      jotai-scope: 0.7.1(jotai@2.9.3(@types/react@18.3.3)(react@18.3.1))(react@18.3.1)
+      jotai-scope: 0.7.2(jotai@2.9.3(@types/react@18.3.3)(react@18.3.1))(react@18.3.1)
       react: 18.3.1
     transitivePeerDependencies:
       - '@types/react'
@@ -5173,7 +5190,7 @@ snapshots:
 
   jiti@1.21.6: {}
 
-  jotai-scope@0.7.1(jotai@2.9.3(@types/react@18.3.3)(react@18.3.1))(react@18.3.1):
+  jotai-scope@0.7.2(jotai@2.9.3(@types/react@18.3.3)(react@18.3.1))(react@18.3.1):
     dependencies:
       jotai: 2.9.3(@types/react@18.3.3)(react@18.3.1)
       react: 18.3.1
