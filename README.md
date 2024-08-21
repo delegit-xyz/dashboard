@@ -15,3 +15,15 @@ This applies to politics around the world, and to Polkadot.
 
 To increase turnout (1-3% currently) we need more participation, which leads to more decentralization
 Delegation is a way to give power to delegatees, that can vote on your behalf.
+
+## Development
+Requirements, [node](https://nodejs.org/en/download/package-manager/current) and [pnpm](https://pnpm.io/installation). <-- install them by clicking on the links
+
+To run the project
+- clone this repo
+  `git clone https://github.com/delegit-xyz/dashboard.git && cd dashboard`
+- install dependencies
+  `pnpm install`
+- run in dev mode
+  `pnpm dev`
+- enjoy on http://localhost:5173
