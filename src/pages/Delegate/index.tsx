@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { getDelegateTx } from '@/lib/currentVotesAndDelegations'
 import { useAccounts } from '@/contexts/AccountsContext'
 import { Slider } from '@/components/ui/slider'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 export const Delegate = () => {
   const { address } = useParams()
@@ -27,7 +27,6 @@ export const Delegate = () => {
   )
   const { api } = useNetwork()
   const { selectedAccount } = useAccounts()
-  const navigate = useNavigate()
 
   useEffect(() => {
     if (!api) return
