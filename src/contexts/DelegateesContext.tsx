@@ -13,7 +13,7 @@ type DelegateesContextProps = {
   children: React.ReactNode | React.ReactNode[]
 }
 
-type DelegateeProps = {
+export type Delegatee = {
   address: string
   name: string
   image: string
@@ -23,7 +23,8 @@ type DelegateeProps = {
 }
 
 export interface IDelegateesContext {
-  delegetees: DelegateeProps[]
+  delegetees: Delegatee[]
+  getDelegateeByAddress: (address?: string) => Delegatee | undefined
 }
 
 const DelegateesContext = createContext<IDelegateesContext | undefined>(
@@ -32,16 +33,21 @@ const DelegateesContext = createContext<IDelegateesContext | undefined>(
 
 const DelegateeContextProvider = ({ children }: DelegateesContextProps) => {
   const { network } = useNetwork()
-  const [delegetees, setDelegatees] = useState<DelegateeProps[]>([])
+  const [delegetees, setDelegatees] = useState<Delegatee[]>([])
 
   useEffect(() => {
     setDelegatees(
       (network === 'polkadot'
         ? polkadotList
-        : kusamaList) as unknown as DelegateeProps[],
+        : kusamaList) as unknown as Delegatee[],
     )
   }, [network])
 
+  const getDelegateeByAddress = (address?: string) => {
+    if (!address) return undefined
+
+    return delegetees.find((d) => d.address === address)
+  }
   // Votes thingy - pause for now
   // useEffect(() => {
   //   const a = async (delegetees: any[]) => {
@@ -56,7 +62,7 @@ const DelegateeContextProvider = ({ children }: DelegateesContextProps) => {
   // }, [delegetees])
 
   return (
-    <DelegateesContext.Provider value={{ delegetees }}>
+    <DelegateesContext.Provider value={{ delegetees, getDelegateeByAddress }}>
       {children}
     </DelegateesContext.Provider>
   )
