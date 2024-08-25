@@ -15,6 +15,7 @@ import { useParams } from 'react-router-dom'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
 import { msgs } from '@/consts'
+import { evalUnits, planckToUnit } from '@polkadot-ui/utils'
 
 type AlertProps = {
   title: string
@@ -33,7 +34,8 @@ export const Delegate = () => {
   const { address } = useParams()
   const { getDelegateeByAddress } = useDelegatees()
   const [delegatee, setDelegatee] = useState(getDelegateeByAddress(address))
-  const [amount, setAmount] = useState<number>(0)
+  const [amount, setAmount] = useState<bigint>(0n)
+  const [amountVisible, setAmountVisible] = useState<string>('0')
   const [conviction, setConviction] = useState<VotingConviction>(
     VotingConviction.None,
   )
@@ -42,7 +44,7 @@ export const Delegate = () => {
   const [convictionList, setConvictionList] = useState<Record<string, bigint>>(
     {},
   )
-  const { api } = useNetwork()
+  const { api, chainInfo } = useNetwork()
   const { selectedAccount } = useAccounts()
 
   useEffect(() => {
@@ -68,12 +70,20 @@ export const Delegate = () => {
 
   if (!delegatee || !api) return <div>No delegatee found</div>
 
-  const onChangeAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAmount(Number(e.target.value))
+  const onChangeAmount = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    decimals: number,
+  ) => {
+    const res = evalUnits(e.target.value, decimals)
+    console.log('e.target.value', res[0], res[1])
+    if (res[0] === null) res[0] = 0n
+    setAmount(res[0])
+    setAmountVisible(e.target.value)
+    // setAmount(Number(e.target.value))
   }
 
   const onSign = async () => {
-    if (selectedAccount) {
+    if (selectedAccount && amount) {
       const allTracks = await api.constants.Referenda.Tracks()
         .then((tracks) => {
           return tracks.map(([track]) => track)
@@ -84,7 +94,7 @@ export const Delegate = () => {
         from: selectedAccount?.address,
         target: delegatee.address,
         conviction: conviction,
-        amount: BigInt(amount),
+        amount,
         tracks: allTracks || [],
         api,
       })
@@ -122,8 +132,18 @@ export const Delegate = () => {
       </h1>
       <div className="pageTop">
         <Label>Amount</Label>
-        <Input onChange={onChangeAmount} value={amount} />
+        <Input
+          onChange={(value) => onChangeAmount(value, chainInfo.chainDecimals)}
+          value={amountVisible}
+        />
       </div>
+
+      {amount === 0n && (
+        <AlertNote
+          title={msgs.zeroAmount.title}
+          message={msgs.zeroAmount.message}
+        />
+      )}
 
       <Slider
         disabled={!api || !selectedAccount}
@@ -143,18 +163,16 @@ export const Delegate = () => {
       <Label className="flex">
         Conviction:<div className="ml-2">{convictionShow}</div>
       </Label>
-
-      {amount === 0 && (
-        <AlertNote
-          title={msgs.zeroAmount.title}
-          message={msgs.zeroAmount.message}
-        />
-      )}
       <Button
         onClick={onSign}
-        disabled={amount === 0 || !api || !selectedAccount}
+        disabled={amount === 0n || !api || !selectedAccount}
       >
-        Delegate
+        Delegate{' '}
+        {amount !== null &&
+          planckToUnit(amount, chainInfo.chainDecimals).toLocaleString(
+            'en',
+          )}{' '}
+        {chainInfo.symbol}
       </Button>
     </main>
   )
