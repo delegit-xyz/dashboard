@@ -77,7 +77,6 @@ export const Delegate = () => {
   ) => {
     setAmountError('')
     const res = evalUnits(e.target.value, decimals)
-    console.log('e.target.value', res[0], res[1])
     if (res[0] === null) {
       res[0] = 0n
       setAmountError(res[1])
@@ -185,7 +184,7 @@ export const Delegate = () => {
           planckToUnit(amount, chainInfo.chainDecimals).toLocaleString(
             'en',
           )}{' '}
-        {chainInfo.symbol}
+        {chainInfo.symbol} with {convictionNo}x conviction.
       </Button>
     </main>
   )
