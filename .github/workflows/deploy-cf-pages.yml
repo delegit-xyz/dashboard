@@ -1,0 +1,31 @@
+name: UI deployment
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          cache: pnpm
+          node-version: 21
+          cache-dependency-path: 'pnpm-lock.yaml'
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_PAGE_GITHUB_API_TOKEN }}
+          accountId: ${{secrets.CLOUDFLARE_ACCOUNT_ID}}
+          projectName: delegit
+          directory: ./build
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
