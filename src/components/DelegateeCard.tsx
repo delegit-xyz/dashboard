@@ -13,8 +13,6 @@ import { useNavigate } from 'react-router-dom'
 import copy from 'copy-to-clipboard'
 import { useEffect, useState } from 'react'
 import { Delegatee } from '@/contexts/DelegateesContext'
-import { useNetwork } from '@/contexts/NetworkContext'
-import { useAccounts } from '@/contexts/AccountsContext'
 
 interface Props {
   delegatee: Delegatee
@@ -22,9 +20,6 @@ interface Props {
 export const DelegateeCard = ({ delegatee: d }: Props) => {
   const [copied, setCopied] = useState<boolean>(false)
   const navigate = useNavigate()
-
-  const { api } = useNetwork()
-  const { selectedAccount } = useAccounts()
 
   useEffect(() => {
     if (copied) {
