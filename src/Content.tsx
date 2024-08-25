@@ -27,7 +27,6 @@ export const Content = () => {
     isLight && lightClientLoaded && toast.success('Light client: Synced')
   }, [isLight, lightClientLoaded])
 
-  console.log('==> Delegit FTW!!!')
   return (
     <>
       <Routes>
