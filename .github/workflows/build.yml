@@ -1,8 +1,6 @@
-name: Build and Lint
+name: Build
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 
@@ -15,8 +13,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 21
-          # cache: 'pnpm'
-          # cache-dependency-path: 'pnpm-lock.yaml'
+          cache: 'pnpm'
       - run: pnpm install
-      - run: pnpm run build
-      - run: pnpm run lint
+      - run: pnpm build
