@@ -55,8 +55,6 @@ export const Delegate = () => {
     setAmount(Number(e.target.value))
   }
 
-  if (!api || !selectedAccount) return <div>No account found</div>
-
   const onSign = async () => {
     const allTracks = await api.constants.Referenda.Tracks()
       .then((tracks) => {

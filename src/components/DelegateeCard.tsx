@@ -13,6 +13,8 @@ import { useNavigate } from 'react-router-dom'
 import copy from 'copy-to-clipboard'
 import { useEffect, useState } from 'react'
 import { Delegatee } from '@/contexts/DelegateesContext'
+import { useNetwork } from '@/contexts/NetworkContext'
+import { useAccounts } from '@/contexts/AccountsContext'
 
 interface Props {
   delegatee: Delegatee
@@ -20,6 +22,9 @@ interface Props {
 export const DelegateeCard = ({ delegatee: d }: Props) => {
   const [copied, setCopied] = useState<boolean>(false)
   const navigate = useNavigate()
+
+  const { api } = useNetwork()
+  const { selectedAccount } = useAccounts()
 
   useEffect(() => {
     if (copied) {
@@ -39,7 +44,12 @@ export const DelegateeCard = ({ delegatee: d }: Props) => {
         <div className="p-2 w-[85%]">
           <div className="font-bold">{d.name}</div>
           <div className="">{d.shortDescription}</div>
-          <Button variant="default" className="mt-2" onClick={onDelegate}>
+          <Button
+            variant="default"
+            className="mt-2"
+            disabled={!api || !selectedAccount}
+            onClick={onDelegate}
+          >
             Delegate
           </Button>
         </div>
