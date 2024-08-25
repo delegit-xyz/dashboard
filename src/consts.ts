@@ -73,79 +73,22 @@ const rankInfo: RankInfoType[] = [
   },
 ]
 
-/*
- * colors
- */
-
-const lightTheme = {
-  primary: '#f8f7f7',
-  invert: '#2D292D',
-  invertTertiarty: '#FF2097',
-  accent: '#E6007A',
-  colorFillAlter: '#eee',
-  colorBgContainer: '#f8f7f7',
-  colorBgElevated: '#E5E5E5',
-  warning: '#FFA500',
-  success: '#32CD32',
-}
-
-const darkTheme = {
-  primary: '#2D292D',
-  invert: '#f8f7f7',
-  invertTertiarty: '#FF2097',
-  accent: '#E6007A',
-  colorFillAlter: '#242024',
-  colorBgContainer: '#2D292D',
-  colorBgElevated: '#221F22',
-  warning: '#FFFF00',
-  success: '#32CD32',
-}
-
-// AntD Tokens
-const lightTokens = {
-  components: {
-    Menu: {
-      itemColor: lightTheme.accent,
-      itemSelectedBg: lightTheme.accent,
-    },
-    Drawer: {
-      colorSplit: 'rgba(0, 0, 0, 0)',
-      colorIcon: lightTheme.invert,
-    },
+const msgs = {
+  api: {
+    title: 'API Error.',
+    message: 'API is not connected.This page will not work correctly.',
+    variant: 'destructive',
   },
-  token: {
-    colorPrimary: lightTheme.invert,
-    colorFillAlter: lightTheme.colorFillAlter,
-    colorBgElevated: lightTheme.colorBgElevated,
-    colorText: lightTheme.invert,
-    colorTextTertiary: lightTheme.invertTertiarty,
-    colorBgContainer: lightTheme.colorBgContainer,
-    colorBgLayout: lightTheme.colorBgContainer,
+  account: {
+    title: 'Wallet is not connected.',
+    message:
+      'You must connect an account through a wallet. Delegation is disabled.',
+    variant: 'destructive',
   },
-}
-
-const darkTokens = {
-  components: {
-    Menu: {
-      itemColor: darkTheme.accent,
-      itemSelectedBg: darkTheme.accent,
-      darkSubMenuItemBg: darkTheme.colorFillAlter,
-    },
-    Drawer: {
-      colorTextTertiary: darkTheme.invertTertiarty,
-      colorSplit: 'rgba(0, 0, 0, 0)',
-      colorIcon: darkTheme.invert,
-    },
-  },
-  token: {
-    itemSelectedColor: darkTheme.primary,
-    colorPrimary: darkTheme.accent,
-    colorFillAlter: darkTheme.colorFillAlter,
-    colorBgElevated: darkTheme.colorBgElevated,
-    colorText: darkTheme.invert,
-    colorTextTertiary: lightTheme.invertTertiarty,
-    colorBgContainer: darkTheme.colorBgContainer,
-    colorBgLayout: darkTheme.colorBgContainer,
+  zeroAmount: {
+    title: 'Amount is zero',
+    message:
+      'The delegation amount cannot be 0. Please add a DOT amount for delegation.',
   },
 }
 
@@ -171,9 +114,6 @@ export {
   type,
   // site details
   rankInfo,
-  // colors
-  lightTheme,
-  darkTheme,
-  lightTokens,
-  darkTokens,
+  // Alert messsages
+  msgs,
 }

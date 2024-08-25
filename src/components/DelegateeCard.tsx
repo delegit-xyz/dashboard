@@ -44,12 +44,7 @@ export const DelegateeCard = ({ delegatee: d }: Props) => {
         <div className="p-2 w-[85%]">
           <div className="font-bold">{d.name}</div>
           <div className="">{d.shortDescription}</div>
-          <Button
-            variant="default"
-            className="mt-2"
-            disabled={!api || !selectedAccount}
-            onClick={onDelegate}
-          >
+          <Button variant="default" className="mt-2" onClick={onDelegate}>
             Delegate
           </Button>
         </div>

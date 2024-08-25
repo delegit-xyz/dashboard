@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useDelegatees } from '@/contexts/DelegateesContext'
@@ -11,6 +12,23 @@ import { getDelegateTx } from '@/lib/currentVotesAndDelegations'
 import { useAccounts } from '@/contexts/AccountsContext'
 import { Slider } from '@/components/ui/slider'
 import { useParams } from 'react-router-dom'
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { AlertCircle } from 'lucide-react'
+import { msgs } from '@/consts'
+
+type AlertProps = {
+  title: string
+  message: string
+  variant?: 'default' | 'destructive' | null | undefined
+}
+const AlertNote = ({ title, message, variant = 'default' }: AlertProps) => (
+  <Alert variant={variant}>
+    <AlertCircle className="h-4 w-4" />
+    <AlertTitle>{title}</AlertTitle>
+    <AlertDescription>{message}</AlertDescription>
+  </Alert>
+)
 
 export const Delegate = () => {
   const { address } = useParams()
@@ -56,28 +74,50 @@ export const Delegate = () => {
   }
 
   const onSign = async () => {
-    const allTracks = await api.constants.Referenda.Tracks()
-      .then((tracks) => {
-        return tracks.map(([track]) => track)
+    if (selectedAccount) {
+      const allTracks = await api.constants.Referenda.Tracks()
+        .then((tracks) => {
+          return tracks.map(([track]) => track)
+        })
+        .catch(console.error)
+
+      const tx = getDelegateTx({
+        from: selectedAccount?.address,
+        target: delegatee.address,
+        conviction: conviction,
+        amount: BigInt(amount),
+        tracks: allTracks || [],
+        api,
       })
-      .catch(console.error)
 
-    const tx = getDelegateTx({
-      from: selectedAccount?.address,
-      target: delegatee.address,
-      conviction: conviction,
-      amount: BigInt(amount),
-      tracks: allTracks || [],
-      api,
-    })
-
-    ;(await tx)
-      .signSubmitAndWatch(selectedAccount.polkadotSigner)
-      .forEach((value) => console.log('value', value))
+      ;(await tx)
+        .signSubmitAndWatch(selectedAccount?.polkadotSigner)
+        .forEach((value) => console.log('value', value))
+    } else {
+      return
+    }
   }
 
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:mx-[5%] xl:mx-[20%] mx-0 sm:px-6 sm:py-0 md:gap-8">
+      {!api && (
+        <AlertNote
+          title={msgs.api.title}
+          message={msgs.api.message}
+          variant={
+            msgs.api.variant as 'default' | 'destructive' | null | undefined
+          }
+        />
+      )}
+      {!selectedAccount && (
+        <AlertNote
+          title={msgs.account.title}
+          message={msgs.account.message}
+          variant={
+            msgs.account.variant as 'default' | 'destructive' | null | undefined
+          }
+        />
+      )}
       <h1 className="font-unbounded text-primary flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
         Delegate to {delegatee.name}
       </h1>
@@ -87,6 +127,7 @@ export const Delegate = () => {
       </div>
 
       <Slider
+        disabled={!api || !selectedAccount}
         defaultValue={[0]}
         min={0}
         max={6}
@@ -103,7 +144,17 @@ export const Delegate = () => {
       <Label className="flex">
         Conviction:<div className="ml-2">{convictionShow}</div>
       </Label>
-      <Button onClick={onSign} disabled={amount === 0}>
+
+      {amount === 0 && (
+        <AlertNote
+          title={msgs.zeroAmount.title}
+          message={msgs.zeroAmount.message}
+        />
+      )}
+      <Button
+        onClick={onSign}
+        disabled={amount === 0 || !api || !selectedAccount}
+      >
         Delegate
       </Button>
     </main>
