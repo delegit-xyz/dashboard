@@ -1,33 +1,33 @@
-name: UI deployment
-on:
-  push:
-    branches: ['main']
-  # pull_request:
-  #   branches: ['main']
+# name: UI deployment
+# on:
+#   push:
+#     branches: ['main']
+#   # pull_request:
+#   #   branches: ['main']
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      deployments: write
-    steps:
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 21
-          cache: 'pnpm'
-          cache-dependency-path: 'pnpm-lock.yaml'
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
-      - name: Publish to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_PAGE_GITHUB_API_TOKEN }}
-          accountId: ${{secrets.CLOUDFLARE_ACCOUNT_ID}}
-          projectName: delegit
-          directory: ./build
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+#     permissions:
+#       contents: read
+#       deployments: write
+#     steps:
+#       - uses: pnpm/action-setup@v4
+#         with:
+#           version: 9
+#       - uses: actions/checkout@v4
+#       - uses: actions/setup-node@v4
+#         with:
+#           node-version: 21
+#           cache: 'pnpm'
+#           cache-dependency-path: 'pnpm-lock.yaml'
+#       - run: pnpm install --frozen-lockfile
+#       - run: pnpm build
+#       - name: Publish to Cloudflare Pages
+#         uses: cloudflare/pages-action@v1
+#         with:
+#           apiToken: ${{ secrets.CLOUDFLARE_PAGE_GITHUB_API_TOKEN }}
+#           accountId: ${{secrets.CLOUDFLARE_ACCOUNT_ID}}
+#           projectName: delegit
+#           directory: ./build
+#           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
