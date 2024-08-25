@@ -36,6 +36,7 @@ export const Delegate = () => {
   const [delegatee, setDelegatee] = useState(getDelegateeByAddress(address))
   const [amount, setAmount] = useState<bigint>(0n)
   const [amountVisible, setAmountVisible] = useState<string>('0')
+  const [amountError, setAmountError] = useState<string>('')
   const [conviction, setConviction] = useState<VotingConviction>(
     VotingConviction.None,
   )
@@ -74,12 +75,15 @@ export const Delegate = () => {
     e: React.ChangeEvent<HTMLInputElement>,
     decimals: number,
   ) => {
+    setAmountError('')
     const res = evalUnits(e.target.value, decimals)
     console.log('e.target.value', res[0], res[1])
-    if (res[0] === null) res[0] = 0n
+    if (res[0] === null) {
+      res[0] = 0n
+      setAmountError(res[1])
+    }
     setAmount(res[0])
     setAmountVisible(e.target.value)
-    // setAmount(Number(e.target.value))
   }
 
   const onSign = async () => {
@@ -138,11 +142,20 @@ export const Delegate = () => {
         />
       </div>
 
-      {amount === 0n && (
+      {amountError ? (
         <AlertNote
-          title={msgs.zeroAmount.title}
-          message={msgs.zeroAmount.message}
+          title={'Input Error'}
+          message={amountError}
+          variant="destructive"
         />
+      ) : (
+        amount === 0n && (
+          <AlertNote
+            title={msgs.zeroAmount.title}
+            message={msgs.zeroAmount.message}
+            variant="default"
+          />
+        )
       )}
 
       <Slider
