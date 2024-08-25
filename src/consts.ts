@@ -86,9 +86,8 @@ const msgs = {
     variant: 'destructive',
   },
   zeroAmount: {
-    title: 'Amount is zero',
-    message:
-      'The delegation amount cannot be 0. Please add a DOT amount for delegation.',
+    title: 'Invalid Amount',
+    message: 'Please type an amount to delegate.',
   },
 }
 
