@@ -1,7 +1,7 @@
 {
-  "name": "dashboard",
+  "name": "delegit",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "packageManager": "pnpm@9.1.4",
   "scripts": {
@@ -10,8 +10,6 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "deploy": "gh-pages -d build",
-    "build:pages": "tsc && vite build --base '/dashboard/'",
-    "deploy:pages": "pnpm run build:pages && gh-pages -d build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css}\""
