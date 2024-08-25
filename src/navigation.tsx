@@ -44,7 +44,7 @@ export const Navigation = () => {
             <TooltipTrigger asChild>
               <a
                 className={linkStyle(pathname, '/' + (r.link || ''))}
-                href={`/#/${r.link || ''}`}
+                href={`/${r.link || ''}`}
               >
                 <r.icon className="h-5 w-5" />
                 <span className="sr-only">{r.name}</span>
