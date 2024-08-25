@@ -22,9 +22,12 @@ const pages = [
 
 export const Content = () => {
   const { lightClientLoaded, isLight } = useNetwork()
+
   useEffect(() => {
     isLight && lightClientLoaded && toast.success('Light client: Synced')
   }, [isLight, lightClientLoaded])
+
+  console.log('==> Delegit FTW!!!')
   return (
     <>
       <Routes>
