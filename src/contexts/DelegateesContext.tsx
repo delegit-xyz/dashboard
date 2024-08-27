@@ -23,8 +23,8 @@ export type Delegatee = {
 }
 
 export interface IDelegateesContext {
-  delegetees: Delegatee[]
-  getDelegateeByAddress: (address?: string) => Delegatee | undefined
+  delegatees: Delegatee[]
+  getDelegateeByAddress: (address: string) => Delegatee | undefined
 }
 
 const DelegateesContext = createContext<IDelegateesContext | undefined>(
@@ -33,7 +33,7 @@ const DelegateesContext = createContext<IDelegateesContext | undefined>(
 
 const DelegateeContextProvider = ({ children }: DelegateesContextProps) => {
   const { network } = useNetwork()
-  const [delegetees, setDelegatees] = useState<Delegatee[]>([])
+  const [delegatees, setDelegatees] = useState<Delegatee[]>([])
 
   useEffect(() => {
     setDelegatees(
@@ -43,26 +43,24 @@ const DelegateeContextProvider = ({ children }: DelegateesContextProps) => {
     )
   }, [network])
 
-  const getDelegateeByAddress = (address?: string) => {
-    if (!address) return undefined
+  const getDelegateeByAddress = (address: string) =>
+    delegatees.find((d) => d.address === address)
 
-    return delegetees.find((d) => d.address === address)
-  }
   // Votes thingy - pause for now
   // useEffect(() => {
-  //   const a = async (delegetees: any[]) => {
-  //     const result: Promise<any>[] = delegetees.map((d) => {
+  //   const a = async (delegatees: any[]) => {
+  //     const result: Promise<any>[] = delegatees.map((d) => {
   //       return dotApi.query.ConvictionVoting.VotingFor.getEntries(d.address)
   //     })
   //     await Promise.all(result).then((res) => {
   //       console.log(res)
   //     })
   //   }
-  //   a(delegetees)
-  // }, [delegetees])
+  //   a(delegatees)
+  // }, [delegatees])
 
   return (
-    <DelegateesContext.Provider value={{ delegetees, getDelegateeByAddress }}>
+    <DelegateesContext.Provider value={{ delegatees, getDelegateeByAddress }}>
       {children}
     </DelegateesContext.Provider>
   )
