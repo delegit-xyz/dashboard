@@ -14,7 +14,7 @@ import { useParams } from 'react-router-dom'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
-import { msgs } from '@/consts'
+import { msgs } from '@/lib/constants'
 import { evalUnits, planckToUnit } from '@polkadot-ui/utils'
 
 type AlertProps = {
@@ -31,9 +31,13 @@ const AlertNote = ({ title, message, variant = 'default' }: AlertProps) => (
 )
 
 export const Delegate = () => {
+  const { api, assetInfo } = useNetwork()
   const { address } = useParams()
+
   const { getDelegateeByAddress } = useDelegatees()
-  const [delegatee, setDelegatee] = useState(getDelegateeByAddress(address))
+  const [delegatee, setDelegatee] = useState(
+    address && getDelegateeByAddress(address),
+  )
   const [amount, setAmount] = useState<bigint>(0n)
   const [amountVisible, setAmountVisible] = useState<string>('0')
   const [amountError, setAmountError] = useState<string>('')
@@ -45,13 +49,20 @@ export const Delegate = () => {
   const [convictionList, setConvictionList] = useState<Record<string, bigint>>(
     {},
   )
-  const { api, chainInfo } = useNetwork()
   const { selectedAccount } = useAccounts()
+
+  useEffect(() => {
+    // API change denotes that the netowork changed. Due to the fact that
+    // decimals of network may change as well we should conver the amount to 0n
+    // in order to make sure that correct number will be used.
+    setAmount(0n)
+    setAmountVisible('0')
+  }, [api])
 
   useEffect(() => {
     if (!api) return
     getLockTimes(api).then(setConvictionList).catch(console.error)
-  }, [api])
+  }, [address, api])
 
   useEffect(() => {
     Object.entries(convictionList).filter((a, i) => {
@@ -64,9 +75,9 @@ export const Delegate = () => {
   }, [convictionNo, convictionList])
 
   useEffect(() => {
-    if (delegatee) return
-
-    setDelegatee(getDelegateeByAddress(address))
+    if (!address || delegatee) return
+    const res = getDelegateeByAddress(address)
+    setDelegatee(res)
   }, [address, delegatee, getDelegateeByAddress])
 
   if (!delegatee || !api) return <div>No delegatee found</div>
@@ -76,12 +87,13 @@ export const Delegate = () => {
     decimals: number,
   ) => {
     setAmountError('')
-    const res = evalUnits(e.target.value, decimals)
-    if (res[0] === null) {
-      res[0] = 0n
-      setAmountError(res[1])
+    // eslint-disable-next-line prefer-const
+    let [bnResult, sanitizedValue] = evalUnits(e.target.value, decimals)
+    if (bnResult === null) {
+      bnResult = 0n
+      setAmountError(sanitizedValue)
     }
-    setAmount(res[0])
+    setAmount(bnResult)
     setAmountVisible(e.target.value)
   }
 
@@ -136,7 +148,7 @@ export const Delegate = () => {
       <div className="pageTop">
         <Label>Amount</Label>
         <Input
-          onChange={(value) => onChangeAmount(value, chainInfo.chainDecimals)}
+          onChange={(value) => onChangeAmount(value, assetInfo.precision)}
           value={amountVisible}
         />
       </div>
@@ -181,10 +193,8 @@ export const Delegate = () => {
       >
         Delegate{' '}
         {amount !== null &&
-          planckToUnit(amount, chainInfo.chainDecimals).toLocaleString(
-            'en',
-          )}{' '}
-        {chainInfo.symbol} with {convictionNo}x conviction.
+          planckToUnit(amount, assetInfo.precision).toLocaleString('en')}{' '}
+        {assetInfo.symbol} with {convictionNo}x conviction.
       </Button>
     </main>
   )

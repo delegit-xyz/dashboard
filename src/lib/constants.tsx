@@ -3,6 +3,8 @@
  * Global Constants
  */
 
+import type { MsgType } from './types'
+
 const THRESHOLD = BigInt(500)
 const DEFAULT_TIME = BigInt(6000)
 const ONE_DAY = BigInt(24 * 60 * 60 * 1000)
@@ -23,7 +25,7 @@ const PolkadotUrl = 'https://delegit-xyz.github.io/dashboard'
 
 const GithubOwner = 'delegit-xyz'
 
-const msgs = {
+const msgs: Record<string, MsgType> = {
   api: {
     title: 'API Error.',
     message: 'API is not connected.This page will not work correctly.',
@@ -41,6 +43,12 @@ const msgs = {
   },
 }
 
+const supportedNetworksChainIds = {
+  polkadot:
+    '0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3',
+  kusama: '0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe',
+}
+
 // Exports
 export {
   // Site specifics
@@ -52,6 +60,7 @@ export {
   DappName,
   PolkadotUrl,
   GithubOwner,
+  supportedNetworksChainIds,
   // Alert messsages
   msgs,
 }
