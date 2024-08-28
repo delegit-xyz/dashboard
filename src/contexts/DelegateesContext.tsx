@@ -1,13 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState } from 'react'
-import polkadotList from '@/polkadot.json'
-import kusamaList from '@/kusama.json'
 import { useNetwork } from './NetworkContext'
+import { DelegeeListKusama, DelegeeListPolkadot } from '@/lib/constants'
 // import { dotApi } from '@/clients'
-export const DelegeeListPolkadot =
-  'https://raw.githubusercontent.com/novasamatech/opengov-delegate-registry/master/registry/polkadot.json'
-export const DelegeeListKusama =
-  'https://raw.githubusercontent.com/novasamatech/opengov-delegate-registry/master/registry/kusama.json'
 
 type DelegateesContextProps = {
   children: React.ReactNode | React.ReactNode[]
@@ -33,14 +28,19 @@ const DelegateesContext = createContext<IDelegateesContext | undefined>(
 
 const DelegateeContextProvider = ({ children }: DelegateesContextProps) => {
   const { network } = useNetwork()
+  // const [list, setList] = useState<Delegatee[]>()
   const [delegatees, setDelegatees] = useState<Delegatee[]>([])
 
   useEffect(() => {
-    setDelegatees(
-      (network === 'polkadot'
-        ? polkadotList
-        : kusamaList) as unknown as Delegatee[],
-    )
+    const fetchOpenPRs = async () => {
+      const response = await (
+        await fetch(
+          network === 'polkadot' ? DelegeeListPolkadot : DelegeeListKusama,
+        )!
+      ).json()
+      setDelegatees(response)
+    }
+    fetchOpenPRs()
   }, [network])
 
   const getDelegateeByAddress = (address: string) =>
