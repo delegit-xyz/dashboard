@@ -1,20 +1,18 @@
-import { useLocks } from '@/contexts/LocksContext'
 import { useNetwork } from '@/contexts/NetworkContext'
 import { useGetLocks, VoteLock } from '@/hooks/useGetLocks'
 import { convertMiliseconds } from '@/lib/convertMiliseconds'
 import { getExpectedBlockTimeMs } from '@/lib/locks'
 import { Card } from '@polkadot-ui/react'
 import { useEffect, useState } from 'react'
-import { evalUnits, planckToUnit } from '@polkadot-ui/utils'
+import { planckToUnit } from '@polkadot-ui/utils'
 
 export const LocksCard = () => {
-  const { currentLocks } = useLocks()
   const [currentBlock, setCurrentBlock] = useState(0)
   const [expectedBlockTime, setExpectedBlockTime] = useState(0)
   const { api } = useNetwork()
   const { getLocks } = useGetLocks()
   const [locks, setLocks] = useState<VoteLock[]>([])
-  const {assetInfo} = useNetwork()
+  const { assetInfo } = useNetwork()
 
   useEffect(() => {
     getLocks()
@@ -44,7 +42,7 @@ export const LocksCard = () => {
       .catch(console.error)
   }, [api])
 
-  if (!currentLocks || !Object.entries(currentLocks).length) return null
+  if (!locks || !locks.length) return null
 
   return (
     <>
@@ -62,8 +60,13 @@ export const LocksCard = () => {
             <div key={refId}>
               <ul>
                 <li>ref: {refId}</li>
-                <li>Amount: {planckToUnit(amount, assetInfo.precision).toLocaleString('en')}{' '}
-                {assetInfo.symbol}}}</li>
+                <li>
+                  Amount:{' '}
+                  {planckToUnit(amount, assetInfo.precision).toLocaleString(
+                    'en',
+                  )}{' '}
+                  {assetInfo.symbol}
+                </li>
                 <li>Release: {remainingTime > 0 ? tempTime : 'Free'}</li>
               </ul>
             </div>
