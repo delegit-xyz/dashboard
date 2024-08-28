@@ -1,5 +1,5 @@
-[
-  {
+{
+  "polkadot": {
     "name": "Polkadot",
     "specName": "polkadot",
     "addressPrefix": 0,
@@ -7,6 +7,10 @@
     "icon": "https://raw.githubusercontent.com/novasamatech/nova-spektr-utils/main/icons/v1/chains/Polkadot.svg",
     "options": ["multisig"],
     "nodes": [
+      {
+        "url": "wss://rpc.ibp.network/polkadot",
+        "name": "IBP network node"
+      },
       {
         "url": "wss://polkadot.public.curie.radiumblock.co/ws",
         "name": "Radium node"
@@ -26,10 +30,6 @@
       {
         "url": "wss://rpc-polkadot.luckyfriday.io",
         "name": "LuckyFriday node"
-      },
-      {
-        "url": "wss://rpc.ibp.network/polkadot",
-        "name": "IBP network node"
       },
       {
         "url": "wss://rpc.dotters.network/polkadot",
@@ -84,7 +84,7 @@
       ]
     }
   },
-  {
+  "kusama": {
     "name": "Kusama",
     "specName": "kusama",
     "addressPrefix": 2,
@@ -92,6 +92,10 @@
     "icon": "https://raw.githubusercontent.com/novasamatech/nova-spektr-utils/main/icons/v1/chains/Kusama.svg",
     "options": ["multisig"],
     "nodes": [
+      {
+        "url": "wss://rpc.ibp.network/kusama",
+        "name": "IBP network node"
+      },
       {
         "url": "wss://kusama-rpc.dwellir.com",
         "name": "Dwellir node"
@@ -103,10 +107,6 @@
       {
         "url": "wss://1rpc.io/ksm",
         "name": "Automata 1RPC node"
-      },
-      {
-        "url": "wss://rpc.ibp.network/kusama",
-        "name": "IBP network node"
       },
       {
         "url": "wss://rpc.dotters.network/kusama",
@@ -169,7 +169,7 @@
       ]
     }
   },
-  {
+  "westend": {
     "name": "Westend",
     "specName": "westend",
     "addressPrefix": 42,
@@ -231,4 +231,4 @@
       ]
     }
   }
-]
+}

@@ -7,7 +7,6 @@ import { getWsProvider } from 'polkadot-api/ws-provider/web'
 import { getSmProvider } from 'polkadot-api/sm-provider'
 import SmWorker from 'polkadot-api/smoldot/worker?worker'
 import { startFromWorker } from 'polkadot-api/smoldot/from-worker'
-import { supportedNetworksChainIds } from '@/lib/constants'
 import { getChainInformation } from '@/lib/utils'
 import { AssetType } from '@/lib/types'
 
@@ -46,19 +45,16 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
     switch (network) {
       case 'polkadot':
         {
-          const [wsProv, assetInformation] = getChainInformation('polkadot')
-          setAssetInfo(assetInformation)
+          const { assetInfo, wsEndpoint } = getChainInformation('polkadot')
+          setAssetInfo(assetInfo)
           setIsLight(false)
-          if (!wsProv) return
-          cl = createClient(getWsProvider(wsProv))
+          cl = createClient(getWsProvider(wsEndpoint))
           typedApi = cl.getTypedApi(dot)
         }
         break
       case 'polkadot-lc': {
-        const [, assetInformation] = getChainInformation(
-          supportedNetworksChainIds.polkadot,
-        )
-        setAssetInfo(assetInformation)
+        const { assetInfo } = getChainInformation('polkadot')
+        setAssetInfo(assetInfo)
         setIsLight(true)
         const smoldot = startFromWorker(new SmWorker())
         const dotRelayChain = import('polkadot-api/chains/polkadot').then(
@@ -70,21 +66,17 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
       }
       case 'kusama':
         {
-          const [wsProv, assetInformation] = getChainInformation(
-            supportedNetworksChainIds.kusama,
-          )
-          setAssetInfo(assetInformation)
+          const { assetInfo, wsEndpoint } = getChainInformation('kusama')
+          setAssetInfo(assetInfo)
           setIsLight(false)
-          if (!wsProv) return
-          cl = createClient(getWsProvider(wsProv))
+
+          cl = createClient(getWsProvider(wsEndpoint))
           typedApi = cl.getTypedApi(ksm)
         }
         break
       case 'kusama-lc': {
-        const [, assetInformation] = getChainInformation(
-          supportedNetworksChainIds.kusama,
-        )
-        setAssetInfo(assetInformation)
+        const { assetInfo } = getChainInformation('kusama')
+        setAssetInfo(assetInfo)
         setIsLight(true)
         const smoldot = startFromWorker(new SmWorker())
         const ksmRelayChain = import('polkadot-api/chains/ksmcc3').then(
