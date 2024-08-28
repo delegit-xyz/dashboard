@@ -50,7 +50,7 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
           setAssetInfo(assetInformation)
           setIsLight(false)
           if (!wsProv) return
-          cl = createClient(getWsProvider('wss://rpc.ibp.network/polkadot'))
+          cl = createClient(getWsProvider(wsProv))
           typedApi = cl.getTypedApi(dot)
         }
         break

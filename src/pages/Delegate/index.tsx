@@ -87,13 +87,9 @@ export const Delegate = () => {
     decimals: number,
   ) => {
     setAmountError('')
-    // eslint-disable-next-line prefer-const
-    let [bnResult, sanitizedValue] = evalUnits(e.target.value, decimals)
-    if (bnResult === null) {
-      bnResult = 0n
-      setAmountError(sanitizedValue)
-    }
-    setAmount(bnResult)
+    const [bnResult, errorMessage] = evalUnits(e.target.value, decimals)
+    setAmount(bnResult || 0n)
+    errorMessage && setAmountError(errorMessage)
     setAmountVisible(e.target.value)
   }
 
