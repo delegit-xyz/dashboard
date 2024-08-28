@@ -32,18 +32,18 @@ export const getExpectedBlockTime = async (api: ApiType): Promise<bigint> => {
 }
 
 export const getLockTimes = async (api: ApiType) => {
-  const voteLockingPeriod =
+  const voteLockingPeriodBlocks =
     await api.constants.ConvictionVoting.VoteLockingPeriod()
 
-  const expectedBlockTime = await getExpectedBlockTime(api)
+  const expectedBlockTimeMs = await getExpectedBlockTime(api)
 
   const requests = convictionList.map((conviction) => {
-    const relativetime =
-      expectedBlockTime *
-      BigInt(voteLockingPeriod) *
+    const lockTimeMs =
+      expectedBlockTimeMs *
+      BigInt(voteLockingPeriodBlocks) *
       BigInt(lockPeriod[conviction])
 
-    return [conviction, relativetime] as const
+    return [conviction, lockTimeMs] as const
   })
 
   return requests.reduce(

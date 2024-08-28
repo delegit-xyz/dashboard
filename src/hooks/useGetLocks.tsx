@@ -1,22 +1,34 @@
 import { useAccounts } from '@/contexts/AccountsContext'
 import { useNetwork } from '@/contexts/NetworkContext'
+import { getLockTimes } from '@/lib/locks'
 import {
   ConvictionVotingVoteAccountVote,
   ConvictionVotingVoteVoting,
+  DotQueries,
+  KsmQueries,
 } from '@polkadot-api/descriptors'
-import { useEffect, useState } from 'react'
+
+import { useEffect, useMemo, useState } from 'react'
+
+type RefInfo =
+  | DotQueries['Referenda']['ReferendumInfoFor']['Value']
+  | KsmQueries['Referenda']['ReferendumInfoFor']['Value']
+type RefRecap = Record<
+  number,
+  { refInfo?: RefInfo; vote: ConvictionVotingVoteAccountVote }
+>
 
 export const useGetLocks = () => {
   const { selectedAccount } = useAccounts()
   const { api } = useNetwork()
 
   const [lockTracks, setLockTracks] = useState<number[]>([])
-  const [currentVotes, setCurrentVotes] = useState<
+  const [refRecap, setRefRecap] = useState<RefRecap>({})
+  const [currentVoteLocks, setCurrentVoteLocks] = useState<
     ConvictionVotingVoteVoting[]
   >([])
-  const [refsVotedOn, setRefsVotedOn] = useState<
-    [number, ConvictionVotingVoteAccountVote][]
-  >([])
+
+  const [refInfo, setRefInfo] = useState<RefInfo[]>([])
 
   // retrieve the tracks with locks for the selected account
   useEffect(() => {
@@ -31,6 +43,8 @@ export const useGetLocks = () => {
     return () => sub.unsubscribe()
   }, [api, selectedAccount])
 
+  // retrieve all the votes for the selected account
+  // they can be directly casted or delegated
   useEffect(() => {
     if (!selectedAccount || !api || !lockTracks.length) return
 
@@ -38,8 +52,8 @@ export const useGetLocks = () => {
       selectedAccount.address,
     ).then((res) => {
       const votes = res.map(({ value }) => value)
-      setCurrentVotes(votes)
-      console.log('votes', votes)
+      setCurrentVoteLocks(votes)
+      console.log('votes either casted or delegated', votes)
     })
 
     //     const params = lockTracks.map((id) => [selectedAccount.address, id]) as [
@@ -52,41 +66,91 @@ export const useGetLocks = () => {
     //       .catch(console.error)
   }, [api, lockTracks, lockTracks.length, selectedAccount])
 
-  useEffect(() => {
-    if (!selectedAccount || !api || !currentVotes.length) return
+  // get the ref for which we have a vote casted directly
+  const refsVotedOn = useMemo(() => {
+    if (!selectedAccount || !currentVoteLocks.length) return
 
-    const res = currentVotes
+    const res: Record<
+      number,
+      { refInfo?: RefInfo; vote: ConvictionVotingVoteAccountVote }
+    > = {}
+
+    currentVoteLocks
       // filter for all the directly casted votes
       .filter((res) => res.type == 'Casting' && 'votes' in res.value)
-      .map(({ type, value }) => {
-        if (type == 'Casting') {
-          return value.votes[0]
+      .forEach(({ type, value }) => {
+        if (type === 'Casting') {
+          value.votes.forEach(([refId, vote]) => {
+            res[refId] = { vote }
+          })
         }
       })
-      // remove potentially undefined values
-      .filter((val) => !!val)
 
-    setRefsVotedOn(res)
-  }, [api, currentVotes, currentVotes.length, selectedAccount])
-
+    return res
+  }, [currentVoteLocks, selectedAccount])
   console.log('refsVotedOn', refsVotedOn)
-  return { lockTracks, currentVotes }
 
-  //   // retrieve the specific votes casted over the classes & address
-  //   const voteParams = useMemo(
-  //     () => getVoteParams(address, lockClasses),
-  //     [address, lockClasses]
-  //   );
+  useEffect(() => {
+    if (
+      !selectedAccount ||
+      !api ||
+      !refsVotedOn ||
+      !Object.entries(refsVotedOn).length
+    )
+      return
 
-  //   const votes = useCall<[BN, BN[], PalletConvictionVotingVoteCasting][] | undefined>(voteParams && api.query[palletVote]?.votingFor.multi, voteParams, OPT_VOTES);
+    const refParams = Object.keys(refsVotedOn).map((id) => [Number(id)]) as [
+      number,
+    ][]
 
-  //   // retrieve the referendums that were voted on
-  //   const refParams = useMemo(
-  //     () => getRefParams(votes),
-  //     [votes]
-  //   );
+    const tempRefs = refsVotedOn
+    api.query.Referenda.ReferendumInfoFor.getValues(refParams)
+      .then((res) => {
+        if (!res.values) return
 
-  //   const referenda = useCall(refParams && api.query[palletReferenda]?.referendumInfoFor.multi, refParams, OPT_REFS);
+        const definedRefInfo = res.filter((r) => !!r)
+
+        setRefInfo(definedRefInfo)
+        Object.keys(refsVotedOn).forEach((id, index) => {
+          if (!res[index]?.value) return
+          tempRefs[Number(id)].refInfo = definedRefInfo[index]
+        })
+
+        setRefRecap(tempRefs)
+      })
+      .catch(console.error)
+  }, [api, refsVotedOn, selectedAccount])
+
+  console.log('refInfo', refInfo)
+  console.log('refRecap', refRecap)
+  // this works but TS isn't happy.
+  // console.log('ref value', refInfo[0].type, refInfo[0].value)
+
+  const getLocks = async () => {
+    if (!api || !refRecap) return
+    const lockTimes = await getLockTimes(api)
+    const locks: any[] = []
+
+    Object.entries(refRecap).forEach(([id, { refInfo, vote }]) => {
+      let total = 0n
+      if (vote.type === 'Standard') {
+        const { balance, vote: currVote } = vote.value
+
+        total = balance
+        console.log('currVote', currVote)
+      } else if (vote.type === 'Split') {
+        //
+      } else if (vote.type === 'SplitAbstain') {
+        //
+      }
+    })
+  }
+  //   for (const ref of refsVotedOn) {
+  //     console.log('ref', ref)
+  //   }
+  //   console.log('currentVoteLocks', currentVoteLocks)
+
+  return { lockTracks, currentVoteLocks, refsVotedOn, getLocks }
 
   //   // combine the referenda outcomes and the votes into locks
   //   return useMemo(

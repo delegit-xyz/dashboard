@@ -1,6 +1,6 @@
 import { useLocks } from '@/contexts/LocksContext'
 import { useNetwork } from '@/contexts/NetworkContext'
-// import { useGetLocks } from '@/hooks/useGetLocks'
+import { useGetLocks } from '@/hooks/useGetLocks'
 import { convertMiliseconds } from '@/lib/convertMiliseconds'
 import { getExpectedBlockTime } from '@/lib/locks'
 import { Card } from '@polkadot-ui/react'
@@ -11,10 +11,12 @@ export const LocksCard = () => {
   const [currentBlock, setCurrentBlock] = useState(0)
   const [expectedBlockTime, setExpectedBlockTime] = useState(0)
   const { api } = useNetwork()
-  // const { lockTracks } = useGetLocks()
+  const { getLocks } = useGetLocks()
 
   useEffect(() => {
     if (!api) return
+
+    getLocks()
 
     const sub = api.query.System.Number.watchValue('best').subscribe(
       (value) => {
