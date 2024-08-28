@@ -1,6 +1,11 @@
 import { useAccounts } from '@/contexts/AccountsContext'
 import { useNetwork } from '@/contexts/NetworkContext'
-import { getLockTimes } from '@/lib/locks'
+import {
+  getLockTimes,
+  indexToConviction,
+  getExpectedBlockTimeMs,
+} from '@/lib/locks'
+import { getVoteFromNumber } from '@/lib/utils'
 import {
   ConvictionVotingVoteAccountVote,
   ConvictionVotingVoteVoting,
@@ -8,7 +13,14 @@ import {
   KsmQueries,
 } from '@polkadot-api/descriptors'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+
+export interface VoteLock {
+  isOngoing: boolean
+  refId: number
+  endBlock: bigint
+  amount: bigint
+}
 
 type RefInfo =
   | DotQueries['Referenda']['ReferendumInfoFor']['Value']
@@ -28,11 +40,14 @@ export const useGetLocks = () => {
     ConvictionVotingVoteVoting[]
   >([])
 
-  const [refInfo, setRefInfo] = useState<RefInfo[]>([])
+  // const [refInfo, setRefInfo] = useState<RefInfo[]>([])
 
   // retrieve the tracks with locks for the selected account
   useEffect(() => {
+    console.log('go 3')
+
     if (!selectedAccount || !api) return
+
     const sub = api.query.ConvictionVoting.ClassLocksFor.watchValue(
       selectedAccount.address,
     ).subscribe((value) => {
@@ -53,7 +68,6 @@ export const useGetLocks = () => {
     ).then((res) => {
       const votes = res.map(({ value }) => value)
       setCurrentVoteLocks(votes)
-      console.log('votes either casted or delegated', votes)
     })
 
     //     const params = lockTracks.map((id) => [selectedAccount.address, id]) as [
@@ -68,6 +82,8 @@ export const useGetLocks = () => {
 
   // get the ref for which we have a vote casted directly
   const refsVotedOn = useMemo(() => {
+    console.log('memo 1')
+
     if (!selectedAccount || !currentVoteLocks.length) return
 
     const res: Record<
@@ -88,9 +104,10 @@ export const useGetLocks = () => {
 
     return res
   }, [currentVoteLocks, selectedAccount])
-  console.log('refsVotedOn', refsVotedOn)
 
   useEffect(() => {
+    console.log('go 2')
+
     if (
       !selectedAccount ||
       !api ||
@@ -110,7 +127,7 @@ export const useGetLocks = () => {
 
         const definedRefInfo = res.filter((r) => !!r)
 
-        setRefInfo(definedRefInfo)
+        // setRefInfo(definedRefInfo)
         Object.keys(refsVotedOn).forEach((id, index) => {
           if (!res[index]?.value) return
           tempRefs[Number(id)].refInfo = definedRefInfo[index]
@@ -121,30 +138,56 @@ export const useGetLocks = () => {
       .catch(console.error)
   }, [api, refsVotedOn, selectedAccount])
 
-  console.log('refInfo', refInfo)
-  console.log('refRecap', refRecap)
-  // this works but TS isn't happy.
-  // console.log('ref value', refInfo[0].type, refInfo[0].value)
+  const getLocks = useCallback(async () => {
+    console.log('go 1')
 
-  const getLocks = async () => {
     if (!api || !refRecap) return
+    const locks: VoteLock[] = []
     const lockTimes = await getLockTimes(api)
-    const locks: any[] = []
+    const blockTimeMs = await getExpectedBlockTimeMs(api)
 
     Object.entries(refRecap).forEach(([id, { refInfo, vote }]) => {
       let total = 0n
       if (vote.type === 'Standard') {
         const { balance, vote: currVote } = vote.value
+        const voteConviction = getVoteFromNumber(currVote)
+        const convictionString = indexToConviction(voteConviction.conviction)
+        const convictionLockTimeBlocks =
+          lockTimes[convictionString] / blockTimeMs
+        // console.log('-----> lockTimes', lockTimes[convictionString])
+        // console.log('-----> voteConviction', voteConviction, convictionString)
 
+        if (
+          (refInfo?.type === 'Approved' && voteConviction.aye) ||
+          (refInfo?.type === 'Rejected' && !voteConviction.aye)
+        ) {
+          // endBlock = lockPeriod
+          // .muln(convictionIndex ? CONVICTIONS[convictionIndex - 1][durationIndex] : 0)
+          // .add(
+          //   tally.isApproved
+          //     ? tally.asApproved[0]
+          //     : tally.asRejected[0]
+          // );
+
+          const refEndBlock = BigInt(refInfo.value[0])
+
+          locks.push({
+            isOngoing: false,
+            endBlock: refEndBlock + convictionLockTimeBlocks,
+            amount: balance,
+            refId: Number(id),
+          })
+        }
         total = balance
-        console.log('currVote', currVote)
       } else if (vote.type === 'Split') {
         //
       } else if (vote.type === 'SplitAbstain') {
         //
       }
     })
-  }
+
+    return locks
+  }, [api, refRecap])
   //   for (const ref of refsVotedOn) {
   //     console.log('ref', ref)
   //   }

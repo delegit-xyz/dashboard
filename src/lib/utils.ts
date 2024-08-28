@@ -20,3 +20,15 @@ export const routes: RouterType[] = [
   { link: 'home', name: 'Home', icon: House },
 ]
 
+interface Vote {
+  aye: boolean
+  conviction: number
+}
+
+export const getVoteFromNumber = (input: number): Vote => ({
+  aye: Boolean(input & 0b1000_0000),
+  conviction: input & 0b0111_1111,
+})
+
+export const getNumberFromVote = ({ aye, conviction }: Vote): number =>
+  +aye * 0b1000_0000 + conviction

@@ -13,9 +13,13 @@ export interface Locks {
   }
 }
 
+export const indexToConviction = (index: number) => {
+  return Object.keys(lockPeriod)[index]
+}
+
 const convictionList = Object.keys(lockPeriod)
 
-export const getExpectedBlockTime = async (api: ApiType): Promise<bigint> => {
+export const getExpectedBlockTimeMs = async (api: ApiType): Promise<bigint> => {
   const expectedBlockTime = await api.constants.Babe.ExpectedBlockTime()
   if (expectedBlockTime) {
     return bnMin(ONE_DAY, expectedBlockTime)
@@ -35,7 +39,7 @@ export const getLockTimes = async (api: ApiType) => {
   const voteLockingPeriodBlocks =
     await api.constants.ConvictionVoting.VoteLockingPeriod()
 
-  const expectedBlockTimeMs = await getExpectedBlockTime(api)
+  const expectedBlockTimeMs = await getExpectedBlockTimeMs(api)
 
   const requests = convictionList.map((conviction) => {
     const lockTimeMs =

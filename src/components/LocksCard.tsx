@@ -1,10 +1,11 @@
 import { useLocks } from '@/contexts/LocksContext'
 import { useNetwork } from '@/contexts/NetworkContext'
-import { useGetLocks } from '@/hooks/useGetLocks'
+import { useGetLocks, VoteLock } from '@/hooks/useGetLocks'
 import { convertMiliseconds } from '@/lib/convertMiliseconds'
-import { getExpectedBlockTime } from '@/lib/locks'
+import { getExpectedBlockTimeMs } from '@/lib/locks'
 import { Card } from '@polkadot-ui/react'
 import { useEffect, useState } from 'react'
+import { evalUnits, planckToUnit } from '@polkadot-ui/utils'
 
 export const LocksCard = () => {
   const { currentLocks } = useLocks()
@@ -12,12 +13,20 @@ export const LocksCard = () => {
   const [expectedBlockTime, setExpectedBlockTime] = useState(0)
   const { api } = useNetwork()
   const { getLocks } = useGetLocks()
+  const [locks, setLocks] = useState<VoteLock[]>([])
+  const {assetInfo} = useNetwork()
+
+  useEffect(() => {
+    getLocks()
+      .then((locks) => {
+        !!locks && setLocks(locks)
+        console.log('----> locks', locks)
+      })
+      .catch(console.error)
+  }, [getLocks])
 
   useEffect(() => {
     if (!api) return
-
-    getLocks()
-
     const sub = api.query.System.Number.watchValue('best').subscribe(
       (value) => {
         setCurrentBlock(value)
@@ -25,12 +34,12 @@ export const LocksCard = () => {
     )
 
     return () => sub.unsubscribe()
-  }, [api])
+  }, [api, getLocks])
 
   useEffect(() => {
     if (!api) return
 
-    getExpectedBlockTime(api)
+    getExpectedBlockTimeMs(api)
       .then((value) => setExpectedBlockTime(Number(value)))
       .catch(console.error)
   }, [api])
@@ -43,27 +52,23 @@ export const LocksCard = () => {
         Locks
       </h1>
       <Card className="border-2 p-2 px-4 mb-5">
-        {Object.entries(currentLocks)
-          .filter(
-            ([, value]) =>
-              value.lock.blockNumber > 0n || value.lock.amount > 0n,
+        {locks.map(({ amount, endBlock, refId, isOngoing }) => {
+          let tempTime = ''
+          const remainingTime =
+            (Number(endBlock) - currentBlock) * expectedBlockTime
+          const { d, h, m, s } = convertMiliseconds(remainingTime)
+          tempTime = `${d} days ${h}h ${m}min ${s}s`
+          return (
+            <div key={refId}>
+              <ul>
+                <li>ref: {refId}</li>
+                <li>Amount: {planckToUnit(amount, assetInfo.precision).toLocaleString('en')}{' '}
+                {assetInfo.symbol}}}</li>
+                <li>Release: {remainingTime > 0 ? tempTime : 'Free'}</li>
+              </ul>
+            </div>
           )
-          .map(([track, lockValue]) => {
-            let tempTime = ''
-            const remainingTime =
-              (lockValue.lock.blockNumber - currentBlock) * expectedBlockTime
-            const { d, h, m, s } = convertMiliseconds(remainingTime)
-            tempTime = `${d} days ${h}h ${m}min ${s}s`
-            return (
-              <div key={track}>
-                <ul>
-                  <li>track: {track}</li>
-                  <li>Amount: {lockValue.lock.amount.toString()}</li>
-                  <li>Release: {tempTime}</li>
-                </ul>
-              </div>
-            )
-          })}
+        })}
       </Card>
     </>
   )
