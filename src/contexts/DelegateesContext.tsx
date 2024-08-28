@@ -4,11 +4,11 @@ import { useNetwork } from './NetworkContext'
 import { DelegeeListKusama, DelegeeListPolkadot } from '@/lib/constants'
 // import { dotApi } from '@/clients'
 
-type DelegateesContextProps = {
+type DelegatesContextProps = {
   children: React.ReactNode | React.ReactNode[]
 }
 
-export type Delegatee = {
+export type Delegate = {
   address: string
   name: string
   image: string
@@ -17,18 +17,16 @@ export type Delegatee = {
   isOrganization: boolean
 }
 
-export interface IDelegateesContext {
-  delegatees: Delegatee[]
-  getDelegateeByAddress: (address: string) => Delegatee | undefined
+export interface IDelegatesContext {
+  delegates: Delegate[]
+  getDelegateByAddress: (address: string) => Delegate | undefined
 }
 
-const DelegateesContext = createContext<IDelegateesContext | undefined>(
-  undefined,
-)
+const DelegatesContext = createContext<IDelegatesContext | undefined>(undefined)
 
-const DelegateeContextProvider = ({ children }: DelegateesContextProps) => {
+const DelegateContextProvider = ({ children }: DelegatesContextProps) => {
   const { network } = useNetwork()
-  const [delegatees, setDelegatees] = useState<Delegatee[]>([])
+  const [delegates, setDelegates] = useState<Delegate[]>([])
 
   useEffect(() => {
     const fetchOpenPRs = async () => {
@@ -37,42 +35,42 @@ const DelegateeContextProvider = ({ children }: DelegateesContextProps) => {
           network === 'polkadot' ? DelegeeListPolkadot : DelegeeListKusama,
         )!
       ).json()
-      setDelegatees(response)
+      setDelegates(response)
     }
     fetchOpenPRs()
   }, [network])
 
-  const getDelegateeByAddress = (address: string) =>
-    delegatees.find((d) => d.address === address)
+  const getDelegateByAddress = (address: string) =>
+    delegates.find((d) => d.address === address)
 
   // Votes thingy - pause for now
   // useEffect(() => {
-  //   const a = async (delegatees: any[]) => {
-  //     const result: Promise<any>[] = delegatees.map((d) => {
+  //   const a = async (delegates: any[]) => {
+  //     const result: Promise<any>[] = delegates.map((d) => {
   //       return dotApi.query.ConvictionVoting.VotingFor.getEntries(d.address)
   //     })
   //     await Promise.all(result).then((res) => {
   //       console.log(res)
   //     })
   //   }
-  //   a(delegatees)
-  // }, [delegatees])
+  //   a(delegates)
+  // }, [delegates])
 
   return (
-    <DelegateesContext.Provider value={{ delegatees, getDelegateeByAddress }}>
+    <DelegatesContext.Provider value={{ delegates, getDelegateByAddress }}>
       {children}
-    </DelegateesContext.Provider>
+    </DelegatesContext.Provider>
   )
 }
 
-const useDelegatees = () => {
-  const context = useContext(DelegateesContext)
+const useDelegates = () => {
+  const context = useContext(DelegatesContext)
   if (context === undefined) {
     throw new Error(
-      'useDelegatees must be used within a DelegateesContextProvider',
+      'useDelegates must be used within a DelegatesContextProvider',
     )
   }
   return context
 }
 
-export { DelegateeContextProvider, useDelegatees }
+export { DelegateContextProvider, useDelegates }
