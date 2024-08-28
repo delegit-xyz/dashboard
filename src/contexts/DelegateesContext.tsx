@@ -28,7 +28,6 @@ const DelegateesContext = createContext<IDelegateesContext | undefined>(
 
 const DelegateeContextProvider = ({ children }: DelegateesContextProps) => {
   const { network } = useNetwork()
-  // const [list, setList] = useState<Delegatee[]>()
   const [delegatees, setDelegatees] = useState<Delegatee[]>([])
 
   useEffect(() => {
