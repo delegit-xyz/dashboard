@@ -12,11 +12,35 @@ import { useAccounts } from '@/contexts/AccountsContext'
 import { Slider } from '@/components/ui/slider'
 import { useParams } from 'react-router-dom'
 
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { AlertCircle } from 'lucide-react'
+import { msgs } from '@/lib/constants'
+import { evalUnits, planckToUnit } from '@polkadot-ui/utils'
+
+type AlertProps = {
+  title: string
+  message: string
+  variant?: 'default' | 'destructive' | null | undefined
+}
+const AlertNote = ({ title, message, variant = 'default' }: AlertProps) => (
+  <Alert variant={variant}>
+    <AlertCircle className="h-4 w-4" />
+    <AlertTitle>{title}</AlertTitle>
+    <AlertDescription>{message}</AlertDescription>
+  </Alert>
+)
+
 export const Delegate = () => {
+  const { api, assetInfo } = useNetwork()
   const { address } = useParams()
+
   const { getDelegateeByAddress } = useDelegatees()
-  const [delegatee, setDelegatee] = useState(getDelegateeByAddress(address))
-  const [amount, setAmount] = useState<number>(0)
+  const [delegatee, setDelegatee] = useState(
+    address && getDelegateeByAddress(address),
+  )
+  const [amount, setAmount] = useState<bigint>(0n)
+  const [amountVisible, setAmountVisible] = useState<string>('0')
+  const [amountError, setAmountError] = useState<string>('')
   const [conviction, setConviction] = useState<VotingConviction>(
     VotingConviction.None,
   )
@@ -25,13 +49,20 @@ export const Delegate = () => {
   const [convictionList, setConvictionList] = useState<Record<string, bigint>>(
     {},
   )
-  const { api } = useNetwork()
   const { selectedAccount } = useAccounts()
+
+  useEffect(() => {
+    // API change denotes that the netowork changed. Due to the fact that
+    // decimals of network may change as well we should conver the amount to 0n
+    // in order to make sure that correct number will be used.
+    setAmount(0n)
+    setAmountVisible('0')
+  }, [api])
 
   useEffect(() => {
     if (!api) return
     getLockTimes(api).then(setConvictionList).catch(console.error)
-  }, [api])
+  }, [address, api])
 
   useEffect(() => {
     Object.entries(convictionList).filter((a, i) => {
@@ -44,51 +75,98 @@ export const Delegate = () => {
   }, [convictionNo, convictionList])
 
   useEffect(() => {
-    if (delegatee) return
-
-    setDelegatee(getDelegateeByAddress(address))
+    if (!address || delegatee) return
+    const res = getDelegateeByAddress(address)
+    setDelegatee(res)
   }, [address, delegatee, getDelegateeByAddress])
 
   if (!delegatee || !api) return <div>No delegatee found</div>
 
-  const onChangeAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAmount(Number(e.target.value))
+  const onChangeAmount = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    decimals: number,
+  ) => {
+    setAmountError('')
+    const [bnResult, errorMessage] = evalUnits(e.target.value, decimals)
+    setAmount(bnResult || 0n)
+    errorMessage && setAmountError(errorMessage)
+    setAmountVisible(e.target.value)
   }
 
-  if (!api || !selectedAccount) return <div>No account found</div>
-
   const onSign = async () => {
-    const allTracks = await api.constants.Referenda.Tracks()
-      .then((tracks) => {
-        return tracks.map(([track]) => track)
+    if (selectedAccount && amount) {
+      const allTracks = await api.constants.Referenda.Tracks()
+        .then((tracks) => {
+          return tracks.map(([track]) => track)
+        })
+        .catch(console.error)
+
+      const tx = getDelegateTx({
+        from: selectedAccount?.address,
+        target: delegatee.address,
+        conviction: conviction,
+        amount,
+        tracks: allTracks || [],
+        api,
       })
-      .catch(console.error)
 
-    const tx = getDelegateTx({
-      from: selectedAccount?.address,
-      target: delegatee.address,
-      conviction: conviction,
-      amount: BigInt(amount),
-      tracks: allTracks || [],
-      api,
-    })
-
-    ;(await tx)
-      .signSubmitAndWatch(selectedAccount.polkadotSigner)
-      .forEach((value) => console.log('value', value))
+      ;(await tx)
+        .signSubmitAndWatch(selectedAccount?.polkadotSigner)
+        .forEach((value) => console.log('value', value))
+    } else {
+      return
+    }
   }
 
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:mx-[5%] xl:mx-[20%] mx-0 sm:px-6 sm:py-0 md:gap-8">
+      {!api && (
+        <AlertNote
+          title={msgs.api.title}
+          message={msgs.api.message}
+          variant={
+            msgs.api.variant as 'default' | 'destructive' | null | undefined
+          }
+        />
+      )}
+      {!selectedAccount && (
+        <AlertNote
+          title={msgs.account.title}
+          message={msgs.account.message}
+          variant={
+            msgs.account.variant as 'default' | 'destructive' | null | undefined
+          }
+        />
+      )}
       <h1 className="font-unbounded text-primary flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
         Delegate to {delegatee.name}
       </h1>
       <div className="pageTop">
         <Label>Amount</Label>
-        <Input onChange={onChangeAmount} value={amount} />
+        <Input
+          onChange={(value) => onChangeAmount(value, assetInfo.precision)}
+          value={amountVisible}
+        />
       </div>
 
+      {amountError ? (
+        <AlertNote
+          title={'Input Error'}
+          message={amountError}
+          variant="destructive"
+        />
+      ) : (
+        amount === 0n && (
+          <AlertNote
+            title={msgs.zeroAmount.title}
+            message={msgs.zeroAmount.message}
+            variant="default"
+          />
+        )
+      )}
+
       <Slider
+        disabled={!api || !selectedAccount}
         defaultValue={[0]}
         min={0}
         max={6}
@@ -105,8 +183,14 @@ export const Delegate = () => {
       <Label className="flex">
         Conviction:<div className="ml-2">{convictionShow}</div>
       </Label>
-      <Button onClick={onSign} disabled={amount === 0}>
-        Delegate
+      <Button
+        onClick={onSign}
+        disabled={amount === 0n || !api || !selectedAccount}
+      >
+        Delegate{' '}
+        {amount !== null &&
+          planckToUnit(amount, assetInfo.precision).toLocaleString('en')}{' '}
+        {assetInfo.symbol} with {convictionNo}x conviction.
       </Button>
     </main>
   )
