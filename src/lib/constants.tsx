@@ -21,7 +21,12 @@ const lockPeriod: Record<string, number> = {
 
 const AppVersion = '0.1.1'
 const DappName = 'Delegit'
-const PolkadotUrl = 'https://delegit-xyz.github.io/dashboard'
+const SiteUrl = 'https://delegit.xyz'
+
+const DelegeeListPolkadot =
+  'https://raw.githubusercontent.com/novasamatech/opengov-delegate-registry/master/registry/polkadot.json'
+const DelegeeListKusama =
+  'https://raw.githubusercontent.com/novasamatech/opengov-delegate-registry/master/registry/kusama.json'
 
 const GithubOwner = 'delegit-xyz'
 
@@ -58,7 +63,9 @@ export {
   lockPeriod,
   AppVersion,
   DappName,
-  PolkadotUrl,
+  SiteUrl,
+  DelegeeListPolkadot,
+  DelegeeListKusama,
   GithubOwner,
   supportedNetworksChainIds,
   // Alert messsages

@@ -15,16 +15,21 @@ type MsgType = {
   variant?: 'destructive' | 'default'
 }
 
-type NameUrlType = {
+type NameUrl = {
   url: string
   name: string
+}
+
+type TypeUrl = {
+  type: string
+  url: string
 }
 
 type AssetType = {
   assetId: number
   symbol: string
   precision: number
-  priceId: string
+  priceId?: string
   staking: string
   icon: string
   name: string
@@ -45,13 +50,13 @@ type NetworkType = {
   chainId: string
   icon: string
   options: string[]
-  nodes: NameUrlType[]
+  nodes: NameUrl[]
   assets: AssetType[]
   explorers?: ExplorerType[]
   externalApi?: {
-    staking?: NameUrlType[]
-    history?: NameUrlType[]
+    staking?: TypeUrl[]
+    history?: TypeUrl[]
   }
 }
 
-export type { NetworkType, RouterType, AssetType, NameUrlType, MsgType }
+export type { NetworkType, RouterType, AssetType, NameUrl, TypeUrl, MsgType }

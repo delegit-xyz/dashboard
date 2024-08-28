@@ -1,9 +1,9 @@
 import { type ClassValue, clsx } from 'clsx'
 import { House } from 'lucide-react'
-import networks from '@/lib/networks.json'
+import networks from '@/assets/networks.json'
 
 import { twMerge } from 'tailwind-merge'
-import type { AssetType, NameUrlType, NetworkType, RouterType } from './types'
+import type { AssetType, NameUrl, NetworkType, RouterType } from './types'
 import { supportedNetworksChainIds } from './constants'
 
 const cn = (...inputs: ClassValue[]) => {
@@ -18,7 +18,7 @@ const getSupportedNetworkInfo = (chainId: string): NetworkType => {
       return n
     }
   })
-  return network[0] as NetworkType
+  return network as unknown as NetworkType
 }
 
 const getChainInformation = (nw: string): [string | null, AssetType] => {
@@ -27,7 +27,7 @@ const getChainInformation = (nw: string): [string | null, AssetType] => {
       ? supportedNetworksChainIds.polkadot
       : supportedNetworksChainIds.kusama,
   )
-  const ws = network?.nodes?.map((n: NameUrlType) => n.url)
+  const ws = network?.nodes?.map((n: NameUrl) => n.url)
   if (!ws) return [null, {} as AssetType]
 
   const randomWs = Math.floor(Math.random() * ws.length)
