@@ -1,13 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState } from 'react'
-import polkadotList from '@/polkadot.json'
-import kusamaList from '@/kusama.json'
 import { useNetwork } from './NetworkContext'
+import { DelegeeListKusama, DelegeeListPolkadot } from '@/lib/constants'
 // import { dotApi } from '@/clients'
-export const DelegeeListPolkadot =
-  'https://raw.githubusercontent.com/novasamatech/opengov-delegate-registry/master/registry/polkadot.json'
-export const DelegeeListKusama =
-  'https://raw.githubusercontent.com/novasamatech/opengov-delegate-registry/master/registry/kusama.json'
 
 type DelegateesContextProps = {
   children: React.ReactNode | React.ReactNode[]
@@ -23,8 +18,8 @@ export type Delegatee = {
 }
 
 export interface IDelegateesContext {
-  delegetees: Delegatee[]
-  getDelegateeByAddress: (address?: string) => Delegatee | undefined
+  delegatees: Delegatee[]
+  getDelegateeByAddress: (address: string) => Delegatee | undefined
 }
 
 const DelegateesContext = createContext<IDelegateesContext | undefined>(
@@ -33,36 +28,38 @@ const DelegateesContext = createContext<IDelegateesContext | undefined>(
 
 const DelegateeContextProvider = ({ children }: DelegateesContextProps) => {
   const { network } = useNetwork()
-  const [delegetees, setDelegatees] = useState<Delegatee[]>([])
+  const [delegatees, setDelegatees] = useState<Delegatee[]>([])
 
   useEffect(() => {
-    setDelegatees(
-      (network === 'polkadot'
-        ? polkadotList
-        : kusamaList) as unknown as Delegatee[],
-    )
+    const fetchOpenPRs = async () => {
+      const response = await (
+        await fetch(
+          network === 'polkadot' ? DelegeeListPolkadot : DelegeeListKusama,
+        )!
+      ).json()
+      setDelegatees(response)
+    }
+    fetchOpenPRs()
   }, [network])
 
-  const getDelegateeByAddress = (address?: string) => {
-    if (!address) return undefined
+  const getDelegateeByAddress = (address: string) =>
+    delegatees.find((d) => d.address === address)
 
-    return delegetees.find((d) => d.address === address)
-  }
   // Votes thingy - pause for now
   // useEffect(() => {
-  //   const a = async (delegetees: any[]) => {
-  //     const result: Promise<any>[] = delegetees.map((d) => {
+  //   const a = async (delegatees: any[]) => {
+  //     const result: Promise<any>[] = delegatees.map((d) => {
   //       return dotApi.query.ConvictionVoting.VotingFor.getEntries(d.address)
   //     })
   //     await Promise.all(result).then((res) => {
   //       console.log(res)
   //     })
   //   }
-  //   a(delegetees)
-  // }, [delegetees])
+  //   a(delegatees)
+  // }, [delegatees])
 
   return (
-    <DelegateesContext.Provider value={{ delegetees, getDelegateeByAddress }}>
+    <DelegateesContext.Provider value={{ delegatees, getDelegateeByAddress }}>
       {children}
     </DelegateesContext.Provider>
   )
