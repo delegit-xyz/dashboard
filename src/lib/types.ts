@@ -1,5 +1,6 @@
 import { LucideProps } from 'lucide-react'
 import { ForwardRefExoticComponent, RefAttributes } from 'react'
+import networks from '@/assets/networks.json'
 
 type RouterType = {
   link?: string
@@ -58,5 +59,7 @@ type NetworkType = {
     history?: TypeUrl[]
   }
 }
+
+export type SupportedNetworkNames = keyof typeof networks
 
 export type { NetworkType, RouterType, AssetType, NameUrl, TypeUrl, MsgType }

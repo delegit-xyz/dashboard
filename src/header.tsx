@@ -25,17 +25,26 @@ import { useAccounts } from './contexts/AccountsContext'
 import { useEffect } from 'react'
 import { NetworkProps, useNetwork } from './contexts/NetworkContext'
 
-const networkList = [
-  'Polkadot|polkadot',
-  'Polkadot Light Client|polkadot-lc',
-  'Kusama|kusama',
-  'Kusama Light Client|kusama-lc',
+const networkList: { name: NetworkProps; display: string }[] = [
+  { name: 'polkadot', display: 'Polkadot' },
+  { name: 'polkadot-lc', display: 'Polkadot Light Client' },
+  { name: 'kusama', display: 'Kusama' },
+  { name: 'kusama-lc', display: 'Kusama Light Client' },
 ]
 
 export const Header = () => {
   const { network, setNetwork } = useNetwork()
   const { accounts, selectAccount, selectedAccount } = useAccounts()
   const [, disconnectAll] = useWalletDisconnector()
+
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      networkList.push(
+        { name: 'westend', display: 'Westend' },
+        { name: 'fast-westend', display: 'Fast Westend' },
+      )
+    }
+  }, [])
 
   useEffect(() => {
     if (!selectedAccount?.address && accounts.length > 0) {
@@ -94,13 +103,13 @@ export const Header = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              {networkList.map((n) => (
+              {networkList.map(({ name, display }) => (
                 <DropdownMenuItem
                   className="cursor-pointer"
-                  key={n}
-                  onClick={() => setNetwork(n.split('|')[1] as NetworkProps)}
+                  key={name}
+                  onClick={() => setNetwork(name)}
                 >
-                  {n.split('|')[0]}
+                  {display}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>

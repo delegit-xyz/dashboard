@@ -1,21 +1,35 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState } from 'react'
-import { dot, ksm } from '@polkadot-api/descriptors'
-import { PolkadotClient, TypedApi, createClient } from 'polkadot-api'
+import { dot, fastWestend, ksm, westend } from '@polkadot-api/descriptors'
+import {
+  ChainDefinition,
+  PolkadotClient,
+  TypedApi,
+  createClient,
+} from 'polkadot-api'
 import { getWsProvider } from 'polkadot-api/ws-provider/web'
 
 import { getSmProvider } from 'polkadot-api/sm-provider'
 import SmWorker from 'polkadot-api/smoldot/worker?worker'
 import { startFromWorker } from 'polkadot-api/smoldot/from-worker'
 import { getChainInformation } from '@/lib/utils'
-import { AssetType } from '@/lib/types'
+import { AssetType, SupportedNetworkNames } from '@/lib/types'
 
 type NetworkContextProps = {
   children: React.ReactNode | React.ReactNode[]
 }
 
-export type NetworkProps = 'polkadot' | 'kusama' | 'polkadot-lc' | 'kusama-lc'
+export type NetworkProps = 'polkadot-lc' | 'kusama-lc' | SupportedNetworkNames
 export type ApiType = TypedApi<typeof dot | typeof ksm>
+
+export const descriptorName: Record<NetworkProps, ChainDefinition> = {
+  polkadot: dot,
+  'polkadot-lc': dot,
+  kusama: ksm,
+  'kusama-lc': ksm,
+  westend: westend,
+  'fast-westend': fastWestend,
+}
 
 export interface INetworkContext {
   lightClientLoaded: boolean
@@ -39,55 +53,39 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
   const [network, setNetwork] = useState<NetworkProps>('polkadot')
 
   useEffect(() => {
-    let cl: PolkadotClient
-    let typedApi: ApiType
+    let client: PolkadotClient
 
-    switch (network) {
-      case 'polkadot':
-        {
-          const { assetInfo, wsEndpoint } = getChainInformation('polkadot')
-          setAssetInfo(assetInfo)
-          setIsLight(false)
-          cl = createClient(getWsProvider(wsEndpoint))
-          typedApi = cl.getTypedApi(dot)
-        }
-        break
-      case 'polkadot-lc': {
-        const { assetInfo } = getChainInformation('polkadot')
-        setAssetInfo(assetInfo)
-        setIsLight(true)
-        const smoldot = startFromWorker(new SmWorker())
-        const dotRelayChain = import('polkadot-api/chains/polkadot').then(
+    if (network === 'polkadot-lc' || network === 'kusama-lc') {
+      const relay = network === 'polkadot-lc' ? 'polkadot' : 'kusama'
+
+      const { assetInfo } = getChainInformation(relay)
+      setAssetInfo(assetInfo)
+      setIsLight(true)
+      const smoldot = startFromWorker(new SmWorker())
+      let relayChain: Promise<unknown>
+      if (relay === 'polkadot') {
+        relayChain = import('polkadot-api/chains/polkadot').then(
           ({ chainSpec }) => smoldot.addChain({ chainSpec }),
         )
-        cl = createClient(getSmProvider(dotRelayChain))
-        typedApi = cl.getTypedApi(dot)
-        break
-      }
-      case 'kusama':
-        {
-          const { assetInfo, wsEndpoint } = getChainInformation('kusama')
-          setAssetInfo(assetInfo)
-          setIsLight(false)
-
-          cl = createClient(getWsProvider(wsEndpoint))
-          typedApi = cl.getTypedApi(ksm)
-        }
-        break
-      case 'kusama-lc': {
-        const { assetInfo } = getChainInformation('kusama')
-        setAssetInfo(assetInfo)
-        setIsLight(true)
-        const smoldot = startFromWorker(new SmWorker())
-        const ksmRelayChain = import('polkadot-api/chains/ksmcc3').then(
+      } else {
+        relayChain = import('polkadot-api/chains/ksmcc3').then(
           ({ chainSpec }) => smoldot.addChain({ chainSpec }),
         )
-        cl = createClient(getSmProvider(ksmRelayChain))
-        typedApi = cl.getTypedApi(ksm)
-        break
       }
+      //@ts-expect-error the Chain type isn't exported
+      client = createClient(getSmProvider(relayChain as unknown))
+    } else {
+      const { assetInfo, wsEndpoint } = getChainInformation(network)
+      setAssetInfo(assetInfo)
+      setIsLight(false)
+
+      client = createClient(getWsProvider(wsEndpoint))
     }
-    setClient(cl)
+
+    const descriptor = descriptorName[network]
+    const typedApi = client.getTypedApi(descriptor)
+
+    setClient(client)
     setApi(typedApi)
   }, [network])
 
