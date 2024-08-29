@@ -8,8 +8,8 @@ import React, {
 } from 'react'
 import { InjectedPolkadotAccount } from 'polkadot-api/pjs-signer'
 import { useAccounts as useRedotAccounts } from '@reactive-dot/react'
-
-const LOCALSTORAGE_SELECTED_ACCOUNT_KEY = 'delegit.selectedAccount'
+import { useLocalStorage } from 'usehooks-ts'
+import { SELECTED_ACCOUNT_KEY } from '@/lib/constants'
 
 type AccountContextProps = {
   children: React.ReactNode | React.ReactNode[]
@@ -28,33 +28,29 @@ const AccountContextProvider = ({ children }: AccountContextProps) => {
   const [selectedAccount, setSelected] = useState<
     InjectedPolkadotAccount | undefined
   >()
+  const [localStorageAccount, setLocalStorageAccount] = useLocalStorage(
+    SELECTED_ACCOUNT_KEY,
+    '',
+  )
 
   const selectAccount = useCallback(
     (account: InjectedPolkadotAccount | undefined) => {
-      account?.address &&
-        localStorage.setItem(
-          LOCALSTORAGE_SELECTED_ACCOUNT_KEY,
-          account?.address,
-        )
+      account?.address && setLocalStorageAccount(account.address)
       setSelected(account)
     },
-    [],
+    [setLocalStorageAccount],
   )
 
   useEffect(() => {
-    const previousAccountAddress = localStorage.getItem(
-      LOCALSTORAGE_SELECTED_ACCOUNT_KEY,
-    )
-
-    if (previousAccountAddress) {
+    if (localStorageAccount) {
       const account = accounts.find(
-        (account) => account.address === previousAccountAddress,
+        (account) => account.address === localStorageAccount,
       )
       !!account && selectAccount(account)
     } else {
       selectAccount(accounts[0])
     }
-  }, [accounts, selectAccount])
+  }, [accounts, localStorageAccount, selectAccount])
 
   return (
     <AccountContext.Provider
