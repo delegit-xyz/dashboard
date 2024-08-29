@@ -23,9 +23,9 @@ import { PanelLeft } from 'lucide-react'
 // } from '@/components/ui/menubar'
 import { useAccounts } from './contexts/AccountsContext'
 import { useEffect } from 'react'
-import { NetworkProps, useNetwork } from './contexts/NetworkContext'
+import { SupportedNetworkNames, useNetwork } from './contexts/NetworkContext'
 
-const networkList: { name: NetworkProps; display: string }[] = [
+const networkList: { name: SupportedNetworkNames; display: string }[] = [
   { name: 'polkadot', display: 'Polkadot' },
   { name: 'polkadot-lc', display: 'Polkadot Light Client' },
   { name: 'kusama', display: 'Kusama' },

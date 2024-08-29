@@ -13,16 +13,20 @@ import { getSmProvider } from 'polkadot-api/sm-provider'
 import SmWorker from 'polkadot-api/smoldot/worker?worker'
 import { startFromWorker } from 'polkadot-api/smoldot/from-worker'
 import { getChainInformation } from '@/lib/utils'
-import { AssetType, SupportedNetworkNames } from '@/lib/types'
+import { AssetType } from '@/lib/types'
+import networks from '@/assets/networks.json'
 
 type NetworkContextProps = {
   children: React.ReactNode | React.ReactNode[]
 }
-
-export type NetworkProps = 'polkadot-lc' | 'kusama-lc' | SupportedNetworkNames
+export type NetworksFromConfig = keyof typeof networks
+export type SupportedNetworkNames =
+  | 'polkadot-lc'
+  | 'kusama-lc'
+  | NetworksFromConfig
 export type ApiType = TypedApi<typeof dot | typeof ksm>
 
-export const descriptorName: Record<NetworkProps, ChainDefinition> = {
+export const descriptorName: Record<SupportedNetworkNames, ChainDefinition> = {
   polkadot: dot,
   'polkadot-lc': dot,
   kusama: ksm,
@@ -34,10 +38,10 @@ export const descriptorName: Record<NetworkProps, ChainDefinition> = {
 export interface INetworkContext {
   lightClientLoaded: boolean
   isLight: boolean
-  setNetwork: React.Dispatch<React.SetStateAction<NetworkProps>>
+  setNetwork: React.Dispatch<React.SetStateAction<SupportedNetworkNames>>
   client: PolkadotClient | undefined
   api: TypedApi<typeof dot | typeof ksm> | undefined
-  network: NetworkProps
+  network: SupportedNetworkNames
   assetInfo: AssetType
 }
 
@@ -50,7 +54,7 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
   const [api, setApi] = useState<ApiType>()
 
   const [assetInfo, setAssetInfo] = useState<AssetType>({} as AssetType)
-  const [network, setNetwork] = useState<NetworkProps>('polkadot')
+  const [network, setNetwork] = useState<SupportedNetworkNames>('polkadot')
 
   useEffect(() => {
     let client: PolkadotClient
@@ -73,6 +77,7 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
         )
       }
       //@ts-expect-error the Chain type isn't exported
+      //it comes from 'smoldot' that we don't import
       client = createClient(getSmProvider(relayChain as unknown))
     } else {
       const { assetInfo, wsEndpoint } = getChainInformation(network)
