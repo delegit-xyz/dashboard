@@ -1,6 +1,6 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useDelegatees } from '@/contexts/DelegateesContext'
+import { useDelegates } from '@/contexts/DelegatesContext'
 import { useNetwork } from '@/contexts/NetworkContext'
 import { getLockTimes } from '@/lib/locks'
 import { VotingConviction } from '@polkadot-api/descriptors'
@@ -34,9 +34,9 @@ export const Delegate = () => {
   const { api, assetInfo } = useNetwork()
   const { address } = useParams()
 
-  const { getDelegateeByAddress } = useDelegatees()
-  const [delegatee, setDelegatee] = useState(
-    address && getDelegateeByAddress(address),
+  const { getDelegateByAddress } = useDelegates()
+  const [delegate, setDelegate] = useState(
+    address && getDelegateByAddress(address),
   )
   const [amount, setAmount] = useState<bigint>(0n)
   const [amountVisible, setAmountVisible] = useState<string>('0')
@@ -75,12 +75,12 @@ export const Delegate = () => {
   }, [convictionNo, convictionList])
 
   useEffect(() => {
-    if (!address || delegatee) return
-    const res = getDelegateeByAddress(address)
-    setDelegatee(res)
-  }, [address, delegatee, getDelegateeByAddress])
+    if (!address || delegate) return
+    const res = getDelegateByAddress(address)
+    setDelegate(res)
+  }, [address, delegate, getDelegateByAddress])
 
-  if (!delegatee || !api) return <div>No delegatee found</div>
+  if (!delegate || !api) return <div>No delegate found</div>
 
   const onChangeAmount = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -103,7 +103,7 @@ export const Delegate = () => {
 
       const tx = getDelegateTx({
         from: selectedAccount?.address,
-        target: delegatee.address,
+        target: delegate.address,
         conviction: conviction,
         amount,
         tracks: allTracks || [],
@@ -139,7 +139,7 @@ export const Delegate = () => {
         />
       )}
       <h1 className="font-unbounded text-primary flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
-        Delegate to {delegatee.name}
+        Delegate to {delegate.name}
       </h1>
       <div className="pageTop">
         <Label>Amount</Label>
