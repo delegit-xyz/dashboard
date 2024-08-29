@@ -12,12 +12,12 @@ import { ellipsisFn } from '@polkadot-ui/utils'
 import { useNavigate } from 'react-router-dom'
 import copy from 'copy-to-clipboard'
 import { useEffect, useState } from 'react'
-import { Delegatee } from '@/contexts/DelegateesContext'
+import { Delegate } from '@/contexts/DelegatesContext'
 
 interface Props {
-  delegatee: Delegatee
+  delegate: Delegate
 }
-export const DelegateeCard = ({ delegatee: d }: Props) => {
+export const DelegateCard = ({ delegate: d }: Props) => {
   const [copied, setCopied] = useState<boolean>(false)
   const navigate = useNavigate()
 
