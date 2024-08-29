@@ -20,6 +20,7 @@ export interface VoteLock {
   refId: number
   endBlock: bigint
   amount: bigint
+  trackId: number
 }
 
 type RefInfo =
@@ -27,7 +28,7 @@ type RefInfo =
   | KsmQueries['Referenda']['ReferendumInfoFor']['Value']
 type RefRecap = Record<
   number,
-  { refInfo?: RefInfo; vote: ConvictionVotingVoteAccountVote }
+  { refInfo?: RefInfo; vote: ConvictionVotingVoteAccountVote; trackId: number }
 >
 
 export const useGetLocks = () => {
@@ -37,15 +38,14 @@ export const useGetLocks = () => {
   const [lockTracks, setLockTracks] = useState<number[]>([])
   const [refRecap, setRefRecap] = useState<RefRecap>({})
   const [currentVoteLocks, setCurrentVoteLocks] = useState<
-    ConvictionVotingVoteVoting[]
+    {
+      trackId: number
+      vote: NonNullable<ConvictionVotingVoteVoting>
+    }[]
   >([])
-
-  // const [refInfo, setRefInfo] = useState<RefInfo[]>([])
 
   // retrieve the tracks with locks for the selected account
   useEffect(() => {
-    console.log('go 3')
-
     if (!selectedAccount || !api) return
 
     const sub = api.query.ConvictionVoting.ClassLocksFor.watchValue(
@@ -66,7 +66,10 @@ export const useGetLocks = () => {
     api.query.ConvictionVoting.VotingFor.getEntries(
       selectedAccount.address,
     ).then((res) => {
-      const votes = res.map(({ value }) => value)
+      const votes = res.map(({ keyArgs: [, trackId], value }) => ({
+        trackId,
+        vote: value,
+      }))
       setCurrentVoteLocks(votes)
     })
 
@@ -82,22 +85,27 @@ export const useGetLocks = () => {
 
   // get the ref for which we have a vote casted directly
   const refsVotedOn = useMemo(() => {
-    console.log('memo 1')
-
     if (!selectedAccount || !currentVoteLocks.length) return
 
     const res: Record<
       number,
-      { refInfo?: RefInfo; vote: ConvictionVotingVoteAccountVote }
+      {
+        refInfo?: RefInfo
+        trackId: number
+        vote: ConvictionVotingVoteAccountVote
+      }
     > = {}
 
     currentVoteLocks
       // filter for all the directly casted votes
-      .filter((res) => res.type == 'Casting' && 'votes' in res.value)
-      .forEach(({ type, value }) => {
+      .filter(({ vote }) => vote.type == 'Casting' && 'votes' in vote.value)
+      .forEach(({ trackId, vote: { type, value } }) => {
         if (type === 'Casting') {
           value.votes.forEach(([refId, vote]) => {
-            res[refId] = { vote }
+            res[refId] = {
+              trackId,
+              vote,
+            }
           })
         }
       })
@@ -106,8 +114,6 @@ export const useGetLocks = () => {
   }, [currentVoteLocks, selectedAccount])
 
   useEffect(() => {
-    console.log('go 2')
-
     if (
       !selectedAccount ||
       !api ||
@@ -127,7 +133,6 @@ export const useGetLocks = () => {
 
         const definedRefInfo = res.filter((r) => !!r)
 
-        // setRefInfo(definedRefInfo)
         Object.keys(refsVotedOn).forEach((id, index) => {
           if (!res[index]?.value) return
           tempRefs[Number(id)].refInfo = definedRefInfo[index]
@@ -139,15 +144,13 @@ export const useGetLocks = () => {
   }, [api, refsVotedOn, selectedAccount])
 
   const getLocks = useCallback(async () => {
-    console.log('go 1')
-
     if (!api || !refRecap) return
     const locks: VoteLock[] = []
     const lockTimes = await getLockTimes(api)
     const blockTimeMs = await getExpectedBlockTimeMs(api)
 
-    Object.entries(refRecap).forEach(([id, { refInfo, vote }]) => {
-      let total = 0n
+    Object.entries(refRecap).forEach(([id, { refInfo, vote, trackId }]) => {
+      // let total = 0n
       if (vote.type === 'Standard') {
         const { balance, vote: currVote } = vote.value
         const voteConviction = getVoteFromNumber(currVote)
@@ -161,14 +164,6 @@ export const useGetLocks = () => {
           (refInfo?.type === 'Approved' && voteConviction.aye) ||
           (refInfo?.type === 'Rejected' && !voteConviction.aye)
         ) {
-          // endBlock = lockPeriod
-          // .muln(convictionIndex ? CONVICTIONS[convictionIndex - 1][durationIndex] : 0)
-          // .add(
-          //   tally.isApproved
-          //     ? tally.asApproved[0]
-          //     : tally.asRejected[0]
-          // );
-
           const refEndBlock = BigInt(refInfo.value[0])
 
           locks.push({
@@ -176,9 +171,47 @@ export const useGetLocks = () => {
             endBlock: refEndBlock + convictionLockTimeBlocks,
             amount: balance,
             refId: Number(id),
+            trackId,
           })
         }
-        total = balance
+
+        if (refInfo?.type === 'Cancelled' || refInfo?.type === 'TimedOut') {
+          const refEndBlock = BigInt(refInfo.value[0])
+
+          locks.push({
+            isOngoing: false,
+            endBlock: refEndBlock,
+            amount: balance,
+            refId: Number(id),
+            trackId,
+          })
+        }
+
+        if (refInfo?.type === 'Killed') {
+          const refEndBlock = BigInt(refInfo.value)
+
+          locks.push({
+            isOngoing: false,
+            endBlock: refEndBlock,
+            amount: balance,
+            refId: Number(id),
+            trackId,
+          })
+        }
+
+        if (refInfo?.type === 'Ongoing') {
+          const refEndBlock = BigInt(Number.MAX_SAFE_INTEGER)
+
+          locks.push({
+            isOngoing: true,
+            endBlock: refEndBlock,
+            amount: balance,
+            refId: Number(id),
+            trackId,
+          })
+        }
+
+        // total = balance
       } else if (vote.type === 'Split') {
         //
       } else if (vote.type === 'SplitAbstain') {
@@ -188,16 +221,6 @@ export const useGetLocks = () => {
 
     return locks
   }, [api, refRecap])
-  //   for (const ref of refsVotedOn) {
-  //     console.log('ref', ref)
-  //   }
-  //   console.log('currentVoteLocks', currentVoteLocks)
 
   return { lockTracks, currentVoteLocks, refsVotedOn, getLocks }
-
-  //   // combine the referenda outcomes and the votes into locks
-  //   return useMemo(
-  //     () => votes && referenda && getLocks(api, palletVote, votes, referenda),
-  //     [api, palletVote, referenda, votes]
-  //   );
 }

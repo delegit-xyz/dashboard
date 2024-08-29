@@ -1,27 +1,56 @@
 import { useNetwork } from '@/contexts/NetworkContext'
 import { useGetLocks, VoteLock } from '@/hooks/useGetLocks'
-import { convertMiliseconds } from '@/lib/convertMiliseconds'
+import {
+  convertMiliseconds,
+  displayRemainingTime,
+} from '@/lib/convertMiliseconds'
 import { getExpectedBlockTimeMs } from '@/lib/locks'
-import { Card } from '@polkadot-ui/react'
+import { Card } from './ui/card'
 import { useEffect, useState } from 'react'
 import { planckToUnit } from '@polkadot-ui/utils'
+import { Button } from './ui/button'
+import { Title } from './ui/title'
+import { ContentReveal } from './ui/content-reveal'
+import { Clock2, LockKeyholeOpen, Vote } from 'lucide-react'
+import { Badge } from './ui/badge'
 
 export const LocksCard = () => {
   const [currentBlock, setCurrentBlock] = useState(0)
   const [expectedBlockTime, setExpectedBlockTime] = useState(0)
   const { api } = useNetwork()
   const { getLocks } = useGetLocks()
-  const [locks, setLocks] = useState<VoteLock[]>([])
   const { assetInfo } = useNetwork()
+  const [ongoingVoteLocks, setOngoingVoteLocks] = useState<VoteLock[]>([])
+  const [freeLocks, setFreeLocks] = useState<VoteLock[]>([])
+  const [currentLocks, setCurrentLocks] = useState<VoteLock[]>([])
 
   useEffect(() => {
+    if (!currentBlock) return
+
     getLocks()
       .then((locks) => {
-        !!locks && setLocks(locks)
-        console.log('----> locks', locks)
+        if (!locks) return
+
+        const tempOngoingLocks: VoteLock[] = []
+        const tempFree: VoteLock[] = []
+        const tempCurrent: VoteLock[] = []
+
+        locks.forEach((lock) => {
+          if (lock.isOngoing) {
+            tempOngoingLocks.push(lock)
+          } else if (lock.endBlock <= currentBlock) {
+            tempFree.push(lock)
+          } else {
+            tempCurrent.push(lock)
+          }
+        })
+
+        setOngoingVoteLocks(tempOngoingLocks)
+        setFreeLocks(tempFree)
+        setCurrentLocks(tempCurrent)
       })
       .catch(console.error)
-  }, [getLocks])
+  }, [currentBlock, getLocks])
 
   useEffect(() => {
     if (!api) return
@@ -42,37 +71,102 @@ export const LocksCard = () => {
       .catch(console.error)
   }, [api])
 
-  if (!locks || !locks.length) return null
+  if (!ongoingVoteLocks?.length && !freeLocks?.length && !currentLocks.length)
+    return null
 
   return (
-    <>
-      <h1 className="font-unbounded text-primary flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
-        Locks
-      </h1>
-      <Card className="border-2 p-2 px-4 mb-5">
-        {locks.map(({ amount, endBlock, refId, isOngoing }) => {
-          let tempTime = ''
-          const remainingTime =
-            (Number(endBlock) - currentBlock) * expectedBlockTime
-          const { d, h, m, s } = convertMiliseconds(remainingTime)
-          tempTime = `${d} days ${h}h ${m}min ${s}s`
-          return (
-            <div key={refId}>
-              <ul>
-                <li>ref: {refId}</li>
-                <li>
-                  Amount:{' '}
-                  {planckToUnit(amount, assetInfo.precision).toLocaleString(
-                    'en',
-                  )}{' '}
-                  {assetInfo.symbol}
-                </li>
-                <li>Release: {remainingTime > 0 ? tempTime : 'Free'}</li>
-              </ul>
+    <div className="flex w-full gap-x-2">
+      {freeLocks.length > 0 && (
+        <Card className="border-2 p-2 px-4 w-4/12 h-full relative">
+          <div className="relative z-10">
+            <Title variant="h4">Unlockable</Title>
+            <div className="font-bold text-5xl">
+              {freeLocks.length}
+              <LockKeyholeOpen className="w-8 h-8 inline-block rotate-[10deg] text-gray-200" />
             </div>
-          )
-        })}
-      </Card>
-    </>
+            {freeLocks.length > 0 && (
+              <>
+                <Button className="w-full my-4">Unlock</Button>
+                <ContentReveal>
+                  {freeLocks.map(({ amount, refId, trackId }) => {
+                    return (
+                      <div key={refId}>
+                        <ul>
+                          <li className="mb-2">
+                            {trackId} - <Badge>#{refId}</Badge>{' '}
+                            {planckToUnit(
+                              amount,
+                              assetInfo.precision,
+                            ).toLocaleString('en')}{' '}
+                            {assetInfo.symbol}
+                          </li>
+                        </ul>
+                      </div>
+                    )
+                  })}
+                </ContentReveal>
+              </>
+            )}
+          </div>
+        </Card>
+      )}
+      {currentLocks.length > 0 && (
+        <Card className="border-2 p-2 px-4 w-4/12 h-full">
+          <Title variant="h4">Locked</Title>
+          <div className="font-bold text-5xl">
+            {currentLocks.length}
+            <Clock2 className="w-8 h-8 inline-block rotate-[10deg] text-gray-200" />
+          </div>
+          <ContentReveal>
+            {currentLocks.map(({ amount, endBlock, refId }) => {
+              const remainingTimeMs =
+                (Number(endBlock) - currentBlock) * expectedBlockTime
+              const remainingDisplay = convertMiliseconds(remainingTimeMs)
+              return (
+                <div key={refId}>
+                  <ul>
+                    <li>
+                      <Badge>#{refId}</Badge>{' '}
+                      {planckToUnit(amount, assetInfo.precision).toLocaleString(
+                        'en',
+                      )}{' '}
+                      {assetInfo.symbol}
+                      <br />
+                      Remaining: {displayRemainingTime(remainingDisplay)}
+                    </li>
+                  </ul>
+                </div>
+              )
+            })}
+          </ContentReveal>
+        </Card>
+      )}
+      {ongoingVoteLocks.length > 0 && (
+        <Card className="border-2 p-2 px-4 w-4/12 h-full">
+          <Title variant="h4">Votes</Title>
+          <div className="font-bold text-5xl">
+            {ongoingVoteLocks.length}
+            <Vote className="w-8 h-8 inline-block text-gray-200" />
+          </div>
+          <ContentReveal>
+            {ongoingVoteLocks.map(({ amount, refId }) => {
+              return (
+                <div key={refId}>
+                  <ul>
+                    <li>
+                      <Badge>#{refId}</Badge>{' '}
+                      {planckToUnit(amount, assetInfo.precision).toLocaleString(
+                        'en',
+                      )}{' '}
+                      {assetInfo.symbol}
+                    </li>
+                  </ul>
+                </div>
+              )
+            })}
+          </ContentReveal>
+        </Card>
+      )}
+    </div>
   )
 }
