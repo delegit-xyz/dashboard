@@ -1,19 +1,59 @@
-import { useLocks } from '@/contexts/LocksContext'
 import { useNetwork } from '@/contexts/NetworkContext'
-import { convertMiliseconds } from '@/lib/convertMiliseconds'
-import { getExpectedBlockTime } from '@/lib/locks'
-import { Card } from '@polkadot-ui/react'
-import { useEffect, useState } from 'react'
+import {
+  convertMiliseconds,
+  displayRemainingTime,
+} from '@/lib/convertMiliseconds'
+import { getExpectedBlockTimeMs } from '@/lib/utils'
+import { Card } from './ui/card'
+import { useCallback, useEffect, useState } from 'react'
+import { planckToUnit } from '@polkadot-ui/utils'
+import { Button } from './ui/button'
+import { Title } from './ui/title'
+import { ContentReveal } from './ui/content-reveal'
+import { Clock2, LockKeyholeOpen, Vote } from 'lucide-react'
+import { Badge } from './ui/badge'
+import { dot } from '@polkadot-api/descriptors'
+import { useAccounts } from '@/contexts/AccountsContext'
+import { TypedApi } from 'polkadot-api'
+import { getUnlockUnvoteTx } from '@/lib/utils'
+import { useLocks, VoteLock } from '@/contexts/LocksContext'
 
 export const LocksCard = () => {
-  const { currentLocks } = useLocks()
   const [currentBlock, setCurrentBlock] = useState(0)
   const [expectedBlockTime, setExpectedBlockTime] = useState(0)
   const { api } = useNetwork()
+  const { locks } = useLocks()
+  const { assetInfo } = useNetwork()
+  const [ongoingVoteLocks, setOngoingVoteLocks] = useState<VoteLock[]>([])
+  const [freeLocks, setFreeLocks] = useState<VoteLock[]>([])
+  const [currentLocks, setCurrentLocks] = useState<VoteLock[]>([])
+  const { selectedAccount } = useAccounts()
+  const [isUnlockingLoading, setIsUnlockingLoading] = useState(false)
+
+  useEffect(() => {
+    if (!currentBlock || !locks.length) return
+
+    const tempOngoingLocks: VoteLock[] = []
+    const tempFree: VoteLock[] = []
+    const tempCurrent: VoteLock[] = []
+
+    locks.forEach((lock) => {
+      if (lock.isOngoing) {
+        tempOngoingLocks.push(lock)
+      } else if (lock.endBlock <= currentBlock) {
+        tempFree.push(lock)
+      } else {
+        tempCurrent.push(lock)
+      }
+    })
+
+    setOngoingVoteLocks(tempOngoingLocks)
+    setFreeLocks(tempFree)
+    setCurrentLocks(tempCurrent)
+  }, [currentBlock, locks])
 
   useEffect(() => {
     if (!api) return
-
     const sub = api.query.System.Number.watchValue('best').subscribe(
       (value) => {
         setCurrentBlock(value)
@@ -26,41 +66,142 @@ export const LocksCard = () => {
   useEffect(() => {
     if (!api) return
 
-    getExpectedBlockTime(api)
+    getExpectedBlockTimeMs(api)
       .then((value) => setExpectedBlockTime(Number(value)))
       .catch(console.error)
   }, [api])
 
-  if (!currentLocks || !Object.entries(currentLocks).length) return null
+  const onUnlockClick = useCallback(() => {
+    if (!api || !selectedAccount) return
+
+    setIsUnlockingLoading(true)
+    const { unVoteTxs, unlockTxs } = getUnlockUnvoteTx(
+      freeLocks,
+      api,
+      selectedAccount,
+    )
+
+    // We need thisto make TS happy for now
+    const dotApi = api as TypedApi<typeof dot>
+
+    dotApi.tx.Utility.batch({ calls: [...unVoteTxs, ...unlockTxs] })
+      .signSubmitAndWatch(selectedAccount.polkadotSigner)
+      .subscribe({
+        next: (event) => {
+          console.log(event)
+          if (event.type === 'finalized') {
+            setIsUnlockingLoading(false)
+          }
+        },
+        error: (error) => {
+          console.error(error)
+          setIsUnlockingLoading(false)
+        },
+      })
+  }, [api, freeLocks, selectedAccount])
+
+  if (!ongoingVoteLocks?.length && !freeLocks?.length && !currentLocks.length)
+    return null
 
   return (
-    <>
-      <h1 className="font-unbounded text-primary flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
-        Locks
-      </h1>
-      <Card className="border-2 p-2 px-4 mb-5">
-        {Object.entries(currentLocks)
-          .filter(
-            ([, value]) =>
-              value.lock.blockNumber > 0n || value.lock.amount > 0n,
-          )
-          .map(([track, lockValue]) => {
-            let tempTime = ''
-            const remainingTime =
-              (lockValue.lock.blockNumber - currentBlock) * expectedBlockTime
-            const { d, h, m, s } = convertMiliseconds(remainingTime)
-            tempTime = `${d} days ${h}h ${m}min ${s}s`
-            return (
-              <div key={track}>
-                <ul>
-                  <li>track: {track}</li>
-                  <li>Amount: {lockValue.lock.amount.toString()}</li>
-                  <li>Release: {tempTime}</li>
-                </ul>
-              </div>
-            )
-          })}
-      </Card>
-    </>
+    <div className="flex w-full gap-x-2">
+      {freeLocks.length > 0 && (
+        <Card className="border-2 p-2 px-4 w-4/12 h-full relative">
+          <div className="relative z-10">
+            <Title variant="h4">Unlockable</Title>
+            <div className="font-bold text-5xl">
+              {freeLocks.length}
+              <LockKeyholeOpen className="w-8 h-8 inline-block rotate-[10deg] text-gray-200" />
+            </div>
+            {freeLocks.length > 0 && (
+              <>
+                <Button
+                  className="w-full my-4"
+                  onClick={onUnlockClick}
+                  disabled={isUnlockingLoading}
+                >
+                  Unlock
+                </Button>
+                <ContentReveal>
+                  {freeLocks.map(({ amount, refId, trackId }) => {
+                    return (
+                      <div key={refId}>
+                        <ul>
+                          <li className="mb-2">
+                            {trackId} - <Badge>#{refId}</Badge>{' '}
+                            {planckToUnit(
+                              amount,
+                              assetInfo.precision,
+                            ).toLocaleString('en')}{' '}
+                            {assetInfo.symbol}
+                          </li>
+                        </ul>
+                      </div>
+                    )
+                  })}
+                </ContentReveal>
+              </>
+            )}
+          </div>
+        </Card>
+      )}
+      {currentLocks.length > 0 && (
+        <Card className="border-2 p-2 px-4 w-4/12 h-full">
+          <Title variant="h4">Locked</Title>
+          <div className="font-bold text-5xl">
+            {currentLocks.length}
+            <Clock2 className="w-8 h-8 inline-block rotate-[10deg] text-gray-200" />
+          </div>
+          <ContentReveal>
+            {currentLocks.map(({ amount, endBlock, refId }) => {
+              const remainingTimeMs =
+                (Number(endBlock) - currentBlock) * expectedBlockTime
+              const remainingDisplay = convertMiliseconds(remainingTimeMs)
+              return (
+                <div key={refId}>
+                  <ul>
+                    <li>
+                      <Badge>#{refId}</Badge>{' '}
+                      {planckToUnit(amount, assetInfo.precision).toLocaleString(
+                        'en',
+                      )}{' '}
+                      {assetInfo.symbol}
+                      <br />
+                      Remaining: {displayRemainingTime(remainingDisplay)}
+                    </li>
+                  </ul>
+                </div>
+              )
+            })}
+          </ContentReveal>
+        </Card>
+      )}
+      {ongoingVoteLocks.length > 0 && (
+        <Card className="border-2 p-2 px-4 w-4/12 h-full">
+          <Title variant="h4">Votes</Title>
+          <div className="font-bold text-5xl">
+            {ongoingVoteLocks.length}
+            <Vote className="w-8 h-8 inline-block text-gray-200" />
+          </div>
+          <ContentReveal>
+            {ongoingVoteLocks.map(({ amount, refId }) => {
+              return (
+                <div key={refId}>
+                  <ul>
+                    <li>
+                      <Badge>#{refId}</Badge>{' '}
+                      {planckToUnit(amount, assetInfo.precision).toLocaleString(
+                        'en',
+                      )}{' '}
+                      {assetInfo.symbol}
+                    </li>
+                  </ul>
+                </div>
+              )
+            })}
+          </ContentReveal>
+        </Card>
+      )}
+    </div>
   )
 }
