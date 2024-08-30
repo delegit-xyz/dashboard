@@ -35,10 +35,10 @@ export const LocksCard = () => {
 
   return (
     <>
-      <h1 className="font-unbounded text-primary flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
+      <h1 className="flex-1 shrink-0 whitespace-nowrap font-unbounded text-xl font-semibold tracking-tight text-primary sm:grow-0">
         Locks
       </h1>
-      <Card className="border-2 p-2 px-4 mb-5">
+      <Card className="mb-5 border-2 p-2 px-4">
         {Object.entries(currentLocks)
           .filter(
             ([, value]) =>

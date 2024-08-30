@@ -31,12 +31,12 @@ export const DelegateCard = ({ delegate: d }: Props) => {
     navigate(`/delegate/${d.address}`)
   }
   return (
-    <Card className="border-2 flex flex-col p-2 mb-5">
+    <Card className="mb-5 flex flex-col border-2 p-2">
       <div className="flex columns-3">
-        <div className="p-2 w-[10%]">
+        <div className="w-[10%] p-2">
           <img className="rounded-3xl" width="100" src={d.image} />
         </div>
-        <div className="p-2 w-[85%]">
+        <div className="w-[85%] p-2">
           <div className="font-bold">{d.name}</div>
           <div className="">{d.shortDescription}</div>
           <Button variant="default" className="mt-2" onClick={onDelegate}>
@@ -55,7 +55,7 @@ export const DelegateCard = ({ delegate: d }: Props) => {
             </DialogHeader>
             <DialogDescription className="flex">
               <div>{ellipsisFn(d.address)}</div>
-              <div className="pl-4 cursor-pointer">
+              <div className="cursor-pointer pl-4">
                 {copied ? (
                   <Check className="text-[green]" />
                 ) : (
