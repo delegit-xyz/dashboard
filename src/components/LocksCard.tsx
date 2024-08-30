@@ -103,9 +103,6 @@ export const LocksCard = () => {
       })
   }, [api, freeLocks, selectedAccount])
 
-  // if (!ongoingVoteLocks?.length && !freeLocks?.length && !currentLocks.length)
-  //   return null
-
   return (
     <div className="flex w-full gap-x-2">
       {freeLocks.length > 0 && (
