@@ -73,7 +73,7 @@ export const Delegate = () => {
     getLockTimes(api).then(setConvictionList).catch(console.error)
   }, [address, api])
 
-  const convistionDisplay = useMemo(() => {
+  const convictionDisplay = useMemo(() => {
     if (convictionNo === 0) {
       return 'x0.1 | no lock'
     }
@@ -162,7 +162,7 @@ export const Delegate = () => {
 
 
       <Label className="flex">
-        Conviction:<div className="ml-2">{convistionDisplay}</div>
+        Conviction:<div className="ml-2">{convictionDisplay}</div>
       </Label>
       <Slider
         disabled={!api || !selectedAccount}
