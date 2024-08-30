@@ -13,7 +13,7 @@ export const ContentReveal = ({ children, className }: Props) => {
     <div className={className}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-center w-full"
+        className="flex w-full items-center justify-center"
       >
         <ChevronDown
           className={`transition-transform duration-300 ${

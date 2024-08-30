@@ -28,17 +28,21 @@ const AccountContextProvider = ({ children }: AccountContextProps) => {
   const [selectedAccount, setSelected] = useState<
     InjectedPolkadotAccount | undefined
   >()
-  const [localStorageAccount, setLocalStorageAccount] = useLocalStorage(
-    SELECTED_ACCOUNT_KEY,
-    '',
-  )
+  const [
+    localStorageAccount,
+    setLocalStorageAccount,
+    removeLocalStorageAccount,
+  ] = useLocalStorage(SELECTED_ACCOUNT_KEY, '')
 
   const selectAccount = useCallback(
     (account: InjectedPolkadotAccount | undefined) => {
+      if (!account) {
+        removeLocalStorageAccount()
+      }
       account?.address && setLocalStorageAccount(account.address)
       setSelected(account)
     },
-    [setLocalStorageAccount],
+    [removeLocalStorageAccount, setLocalStorageAccount],
   )
 
   useEffect(() => {
