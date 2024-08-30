@@ -77,7 +77,7 @@ export const Header = () => {
           </nav>
         </SheetContent>
       </Sheet>
-      <div className="flex justify-between w-full">
+      <div className="flex w-full justify-between">
         <div>
           {/* TODO: split submenu based on routes 
           <Menubar>
@@ -99,7 +99,7 @@ export const Header = () => {
         <div className="flex">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button size="default" className="cursor-pointer mx-2">
+              <Button size="default" className="mx-2 cursor-pointer">
                 {network.charAt(0).toUpperCase() + network.slice(1)}
               </Button>
             </DropdownMenuTrigger>
@@ -124,7 +124,7 @@ export const Header = () => {
                 <Button
                   variant="outline"
                   size="default"
-                  className="overflow-hidden cursor-pointer"
+                  className="cursor-pointer overflow-hidden"
                 >
                   <Polkicon
                     size={36}
