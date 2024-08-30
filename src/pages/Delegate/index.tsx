@@ -170,17 +170,13 @@ export const Delegate = () => {
       </Label>
       <Slider
         disabled={!api || !selectedAccount}
-        defaultValue={[0]}
+        value={[convictionNo]}
         min={0}
         max={6}
         step={1}
+        marks
+        marksPreFix={'x'}
         labelPosition="bottom"
-        label={() => (
-          <span className="text-sm">
-            {!convictionNo ? 'None' : 'x' + convictionNo}
-          </span>
-        )}
-        className={'w-[100%]'}
         onValueChange={(v: SetStateAction<number>[]) => {
           const value = v[0] === 0 ? 'None' : `Locked${v[0]}x`
           setConvictionNo(v[0])
