@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import React, {
   createContext,
   useCallback,
@@ -107,6 +106,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
 
     currentVoteLocks
       // filter for all the directly casted votes
+      // we ignore delegation here
       .filter(({ vote }) => vote.type == 'Casting' && 'votes' in vote.value)
       .forEach(({ trackId, vote: { type, value } }) => {
         if (type === 'Casting') {
@@ -221,8 +221,6 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
             trackId,
           })
         }
-
-        // total = balance
       } else if (vote.type === 'Split') {
         const { aye, nay } = vote.value
         const refEndBlock =
@@ -243,6 +241,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
         const { abstain, aye, nay } = vote.value
 
         // type Ongoing and Killed are special
+        // the endblock is in refInfo.value
         const refEndBlock =
           refInfo?.type === 'Ongoing' || !refInfo
             ? BigInt(Number.MAX_SAFE_INTEGER)
@@ -284,4 +283,5 @@ const useLocks = () => {
   return context
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export { LocksContextProvider, useLocks }
