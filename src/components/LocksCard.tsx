@@ -1,56 +1,56 @@
 import { useNetwork } from '@/contexts/NetworkContext'
-import { useGetLocks, VoteLock } from '@/hooks/useGetLocks'
 import {
   convertMiliseconds,
   displayRemainingTime,
 } from '@/lib/convertMiliseconds'
-import { getExpectedBlockTimeMs } from '@/lib/locks'
+import { getExpectedBlockTimeMs } from '@/lib/utils'
 import { Card } from './ui/card'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { planckToUnit } from '@polkadot-ui/utils'
 import { Button } from './ui/button'
 import { Title } from './ui/title'
 import { ContentReveal } from './ui/content-reveal'
 import { Clock2, LockKeyholeOpen, Vote } from 'lucide-react'
 import { Badge } from './ui/badge'
+import { dot } from '@polkadot-api/descriptors'
+import { useAccounts } from '@/contexts/AccountsContext'
+import { TypedApi } from 'polkadot-api'
+import { getUnlockUnvoteTx } from '@/lib/utils'
+import { useLocks, VoteLock } from '@/contexts/LocksContext'
 
 export const LocksCard = () => {
   const [currentBlock, setCurrentBlock] = useState(0)
   const [expectedBlockTime, setExpectedBlockTime] = useState(0)
   const { api } = useNetwork()
-  const { getLocks } = useGetLocks()
+  const { locks } = useLocks()
   const { assetInfo } = useNetwork()
   const [ongoingVoteLocks, setOngoingVoteLocks] = useState<VoteLock[]>([])
   const [freeLocks, setFreeLocks] = useState<VoteLock[]>([])
   const [currentLocks, setCurrentLocks] = useState<VoteLock[]>([])
+  const { selectedAccount } = useAccounts()
+  const [isUnlockingLoading, setIsUnlockingLoading] = useState(false)
 
   useEffect(() => {
-    if (!currentBlock) return
+    if (!currentBlock || !locks.length) return
 
-    getLocks()
-      .then((locks) => {
-        if (!locks) return
+    const tempOngoingLocks: VoteLock[] = []
+    const tempFree: VoteLock[] = []
+    const tempCurrent: VoteLock[] = []
 
-        const tempOngoingLocks: VoteLock[] = []
-        const tempFree: VoteLock[] = []
-        const tempCurrent: VoteLock[] = []
+    locks.forEach((lock) => {
+      if (lock.isOngoing) {
+        tempOngoingLocks.push(lock)
+      } else if (lock.endBlock <= currentBlock) {
+        tempFree.push(lock)
+      } else {
+        tempCurrent.push(lock)
+      }
+    })
 
-        locks.forEach((lock) => {
-          if (lock.isOngoing) {
-            tempOngoingLocks.push(lock)
-          } else if (lock.endBlock <= currentBlock) {
-            tempFree.push(lock)
-          } else {
-            tempCurrent.push(lock)
-          }
-        })
-
-        setOngoingVoteLocks(tempOngoingLocks)
-        setFreeLocks(tempFree)
-        setCurrentLocks(tempCurrent)
-      })
-      .catch(console.error)
-  }, [currentBlock, getLocks])
+    setOngoingVoteLocks(tempOngoingLocks)
+    setFreeLocks(tempFree)
+    setCurrentLocks(tempCurrent)
+  }, [currentBlock, locks])
 
   useEffect(() => {
     if (!api) return
@@ -61,7 +61,7 @@ export const LocksCard = () => {
     )
 
     return () => sub.unsubscribe()
-  }, [api, getLocks])
+  }, [api])
 
   useEffect(() => {
     if (!api) return
@@ -70,6 +70,35 @@ export const LocksCard = () => {
       .then((value) => setExpectedBlockTime(Number(value)))
       .catch(console.error)
   }, [api])
+
+  const onUnlockClick = useCallback(() => {
+    if (!api || !selectedAccount) return
+
+    setIsUnlockingLoading(true)
+    const { unVoteTxs, unlockTxs } = getUnlockUnvoteTx(
+      freeLocks,
+      api,
+      selectedAccount,
+    )
+
+    // We need thisto make TS happy for now
+    const dotApi = api as TypedApi<typeof dot>
+
+    dotApi.tx.Utility.batch({ calls: [...unVoteTxs, ...unlockTxs] })
+      .signSubmitAndWatch(selectedAccount.polkadotSigner)
+      .subscribe({
+        next: (event) => {
+          console.log(event)
+          if (event.type === 'finalized') {
+            setIsUnlockingLoading(false)
+          }
+        },
+        error: (error) => {
+          console.error(error)
+          setIsUnlockingLoading(false)
+        },
+      })
+  }, [api, freeLocks, selectedAccount])
 
   if (!ongoingVoteLocks?.length && !freeLocks?.length && !currentLocks.length)
     return null
@@ -86,7 +115,13 @@ export const LocksCard = () => {
             </div>
             {freeLocks.length > 0 && (
               <>
-                <Button className="w-full my-4">Unlock</Button>
+                <Button
+                  className="w-full my-4"
+                  onClick={onUnlockClick}
+                  disabled={isUnlockingLoading}
+                >
+                  Unlock
+                </Button>
                 <ContentReveal>
                   {freeLocks.map(({ amount, refId, trackId }) => {
                     return (
