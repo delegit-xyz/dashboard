@@ -1,7 +1,7 @@
 import { LucideProps } from 'lucide-react'
 import { ForwardRefExoticComponent, RefAttributes } from 'react'
 
-type RouterType = {
+export type RouterType = {
   link?: string
   name: string
   icon: ForwardRefExoticComponent<
@@ -9,23 +9,23 @@ type RouterType = {
   >
 }
 
-type MsgType = {
+export type MsgType = {
   title: string
   message: string
   variant?: 'destructive' | 'default'
 }
 
-type NameUrl = {
+export type NameUrl = {
   url: string
   name: string
 }
 
-type TypeUrl = {
+export type TypeUrl = {
   type: string
   url: string
 }
 
-type AssetType = {
+export type AssetType = {
   assetId: number
   symbol: string
   precision: number
@@ -35,7 +35,7 @@ type AssetType = {
   name: string
 }
 
-type ExplorerType = {
+export type ExplorerType = {
   name?: string
   extrinsic?: string
   account?: string
@@ -43,7 +43,7 @@ type ExplorerType = {
   event?: string
 }
 
-type NetworkType = {
+export type NetworkType = {
   name: string
   specName: string
   addressPrefix: number
@@ -59,4 +59,7 @@ type NetworkType = {
   }
 }
 
-export type { NetworkType, RouterType, AssetType, NameUrl, TypeUrl, MsgType }
+export interface Vote {
+  aye: boolean
+  conviction: number
+}
