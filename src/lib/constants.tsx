@@ -44,11 +44,7 @@ const msgs: Record<string, MsgType> = {
     message:
       'You must connect an account through a wallet. Delegation is disabled.',
     variant: 'destructive',
-  },
-  zeroAmount: {
-    title: 'Invalid Amount',
-    message: 'Please type an amount to delegate.',
-  },
+  }
 }
 
 // Exports

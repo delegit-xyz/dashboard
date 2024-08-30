@@ -4,7 +4,7 @@ import { useDelegates } from '@/contexts/DelegatesContext'
 import { useNetwork } from '@/contexts/NetworkContext'
 import { getLockTimes } from '@/lib/utils'
 import { VotingConviction } from '@polkadot-api/descriptors'
-import { SetStateAction, useEffect, useState } from 'react'
+import { SetStateAction, useEffect, useMemo, useState } from 'react'
 import { convertMiliseconds } from '@/lib/convertMiliseconds'
 import { Button } from '@/components/ui/button'
 import { getDelegateTx } from '@/lib/currentVotesAndDelegations'
@@ -38,6 +38,7 @@ export const Delegate = () => {
   const [delegate, setDelegate] = useState(
     address && getDelegateByAddress(address),
   )
+  const [isAmountDirty, setIsAmountDirty] = useState(false)
   const [amount, setAmount] = useState<bigint>(0n)
   const [amountVisible, setAmountVisible] = useState<string>('0')
   const [amountError, setAmountError] = useState<string>('')
@@ -51,9 +52,17 @@ export const Delegate = () => {
   )
   const { selectedAccount } = useAccounts()
 
+  const amountErrorDisplay = useMemo(() => {
+    if (!isAmountDirty) return ''
+    
+    if(amountError) return amountError
+
+    return ''
+
+  },[amountError, isAmountDirty])
   useEffect(() => {
     // API change denotes that the netowork changed. Due to the fact that
-    // decimals of network may change as well we should conver the amount to 0n
+    // decimals of network may change as well we should convert the amount to 0n
     // in order to make sure that correct number will be used.
     setAmount(0n)
     setAmountVisible('0')
@@ -61,6 +70,7 @@ export const Delegate = () => {
 
   useEffect(() => {
     if (!api) return
+
     getLockTimes(api).then(setConvictionList).catch(console.error)
   }, [address, api])
 
@@ -76,6 +86,7 @@ export const Delegate = () => {
 
   useEffect(() => {
     if (!address || delegate) return
+
     const res = getDelegateByAddress(address)
     setDelegate(res)
   }, [address, delegate, getDelegateByAddress])
@@ -86,6 +97,7 @@ export const Delegate = () => {
     e: React.ChangeEvent<HTMLInputElement>,
     decimals: number,
   ) => {
+    setIsAmountDirty(true)
     setAmountError('')
     const [bnResult, errorMessage] = evalUnits(e.target.value, decimals)
     setAmount(bnResult || 0n)
@@ -146,25 +158,9 @@ export const Delegate = () => {
         <Input
           onChange={(value) => onChangeAmount(value, assetInfo.precision)}
           value={amountVisible}
+          error={amountErrorDisplay}
         />
       </div>
-
-      {amountError ? (
-        <AlertNote
-          title={'Input Error'}
-          message={amountError}
-          variant="destructive"
-        />
-      ) : (
-        amount === 0n && (
-          <AlertNote
-            title={msgs.zeroAmount.title}
-            message={msgs.zeroAmount.message}
-            variant="default"
-          />
-        )
-      )}
-
       <Slider
         disabled={!api || !selectedAccount}
         defaultValue={[0]}
