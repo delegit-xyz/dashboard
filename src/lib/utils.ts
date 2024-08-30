@@ -4,6 +4,7 @@ import networks from '@/assets/networks.json'
 
 import { twMerge } from 'tailwind-merge'
 import type { NetworkType, RouterType } from './types'
+import { NetworksFromConfig } from '@/contexts/NetworkContext'
 
 const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs))
@@ -11,7 +12,7 @@ const cn = (...inputs: ClassValue[]) => {
 
 const routes: RouterType[] = [{ link: 'home', name: 'Home', icon: House }]
 
-const getChainInformation = (networkName: keyof typeof networks) => {
+const getChainInformation = (networkName: NetworksFromConfig) => {
   const network: NetworkType = networks[networkName]
   return {
     assetInfo: network.assets[0],

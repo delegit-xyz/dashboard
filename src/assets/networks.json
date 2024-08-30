@@ -178,12 +178,12 @@
     "options": ["testnet", "multisig"],
     "nodes": [
       {
-        "url": "wss://westend-rpc.dwellir.com",
-        "name": "Dwellir node"
-      },
-      {
         "url": "wss://rpc.ibp.network/westend",
         "name": "IBP network node"
+      },
+      {
+        "url": "wss://westend-rpc.dwellir.com",
+        "name": "Dwellir node"
       },
       {
         "url": "wss://rpc.dotters.network/westend",
@@ -227,6 +227,44 @@
         {
           "type": "subquery",
           "url": "https://api.subquery.network/sq/nova-wallet/nova-wallet-westend"
+        }
+      ]
+    }
+  },
+  "fast-westend": {
+    "name": "Novasama Testnet - Westend",
+    "specName": "westend",
+    "addressPrefix": 42,
+    "chainId": "0xeb9f47779a9f5033c160c03511b5e4c1b2869210d7bc78a6ad7d0f28897455a7",
+    "icon": "https://raw.githubusercontent.com/novasamatech/nova-spektr-utils/main/icons/v1/chains/Governance2_Testnet.svg",
+    "options": ["testnet"],
+    "nodes": [
+      {
+        "url": "wss://rpc-test-network-1.novasamatech.org",
+        "name": "Development node"
+      }
+    ],
+    "assets": [
+      {
+        "assetId": 0,
+        "symbol": "WND",
+        "precision": 12,
+        "staking": "relaychain",
+        "icon": "https://raw.githubusercontent.com/novasamatech/nova-spektr-utils/main/icons/v1/assets/white/Westend_(WND).svg",
+        "name": "Westend"
+      }
+    ],
+    "externalApi": {
+      "staking": [
+        {
+          "type": "subquery",
+          "url": "https://api.subquery.network/sq/stepanLav/novasama-test-kusama"
+        }
+      ],
+      "history": [
+        {
+          "type": "subquery",
+          "url": "https://api.subquery.network/sq/stepanLav/novasama-test-kusama"
         }
       ]
     }
