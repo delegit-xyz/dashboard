@@ -32,7 +32,9 @@ const DelegateContextProvider = ({ children }: DelegatesContextProps) => {
     const fetchOpenPRs = async () => {
       const response = await (
         await fetch(
-          network === 'polkadot' ? DelegeeListPolkadot : DelegeeListKusama,
+          network === 'polkadot' || network === 'polkadot-lc'
+            ? DelegeeListPolkadot
+            : DelegeeListKusama,
         )!
       ).json()
       setDelegates(response)
