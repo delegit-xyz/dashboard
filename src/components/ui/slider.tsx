@@ -72,7 +72,7 @@ const Slider = forwardRef<
         {marks ? (
           <div
             className={cn(
-              'flex flex-row justify-between relative',
+              'relative flex flex-row justify-between',
               labelPosition === 'top' && 'top-[-4.5rem]',
               labelPosition === 'bottom' && 'top-[-1rem]',
             )}
