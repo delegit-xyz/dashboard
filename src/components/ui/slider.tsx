@@ -13,6 +13,7 @@ interface ExtraSliderProps
   labelPosition?: 'top' | 'bottom'
   label?: (value: number | undefined) => React.ReactNode
   marks?: boolean
+  marksLabels?: string[]
   marksPreFix?: string
   marksPostFix?: string
 }
@@ -27,6 +28,7 @@ const Slider = forwardRef<
       label,
       labelPosition = 'top',
       marks,
+      marksLabels,
       marksPreFix,
       marksPostFix,
       ...props
@@ -76,29 +78,33 @@ const Slider = forwardRef<
             )}
           >
             {props?.max &&
-              Array.from({ length: props?.max + 1 }).map((_, i) => (
-                <span
-                  key={`${props?.max}-${i}`}
-                  className={
-                    props?.max
-                      ? clsx(
-                          'text-sm',
-                          props.value && i !== props.value[0]
-                            ? 'font-light opacity-40'
-                            : 'font-bold',
-                          {
-                            'text-10': i > 0 && i < props?.max,
-                          },
-                        )
-                      : ''
-                  }
-                  role="presentation"
-                >
-                  {marksPreFix}
-                  {i}
-                  {marksPostFix}
-                </span>
-              ))}
+              Array.from({ length: props?.max + 1 }).map((_, i) => {
+                const k = marksLabels ? marksLabels[i] : i
+                console.log(k, props?.value && props?.value[0])
+                return (
+                  <span
+                    key={`${props?.max}-${i}`}
+                    className={
+                      props?.max
+                        ? clsx(
+                            'text-sm',
+                            props.value && parseInt(k) !== props.value[0]
+                              ? 'font-light opacity-40'
+                              : 'font-bold',
+                            {
+                              'text-10': i > 0 && i < props?.max,
+                            },
+                          )
+                        : ''
+                    }
+                    role="presentation"
+                  >
+                    {marksPreFix}
+                    {k}
+                    {marksPostFix}
+                  </span>
+                )
+              })}
           </div>
         ) : null}
       </>

@@ -68,7 +68,7 @@ export const Delegate = () => {
     Object.entries(convictionList).filter((a, i) => {
       if (i === convictionNo) {
         setConvictionShow(
-          `${a[0]} - ${convertMiliseconds(Number(a[1])).d} days`,
+          `${a[0] === 'None' ? 'Locked0.1x' : a[0]} - ${convertMiliseconds(Number(a[1])).d} days`,
         )
       }
     })
@@ -175,10 +175,11 @@ export const Delegate = () => {
         max={6}
         step={1}
         marks
+        marksLabels={['0.1', '1', '2', '3', '4', '5', '6']}
         marksPreFix={'x'}
         labelPosition="bottom"
         onValueChange={(v: SetStateAction<number>[]) => {
-          const value = v[0] === 0 ? 'None' : `Locked${v[0]}x`
+          const value = v[0] === 0 ? '0.1' : `Locked${v[0]}x`
           setConvictionNo(v[0])
           setConviction(
             VotingConviction[value as keyof typeof VotingConviction],
@@ -192,7 +193,8 @@ export const Delegate = () => {
         Delegate{' '}
         {amount !== null &&
           planckToUnit(amount, assetInfo.precision).toLocaleString('en')}{' '}
-        {assetInfo.symbol} with {convictionNo}x conviction.
+        {assetInfo.symbol} with {convictionNo == 0 ? 0.1 : convictionNo}x
+        conviction
       </Button>
     </main>
   )
