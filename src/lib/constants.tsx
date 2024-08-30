@@ -5,6 +5,9 @@
 
 import type { MsgType } from './types'
 
+export const THEME_KEY = 'delegit.theme'
+export const SELECTED_ACCOUNT_KEY = 'delegit.selectedAccount'
+
 const THRESHOLD = BigInt(500)
 const DEFAULT_TIME = BigInt(6000)
 const ONE_DAY = BigInt(24 * 60 * 60 * 1000)

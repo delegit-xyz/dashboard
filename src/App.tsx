@@ -14,9 +14,10 @@ import { AccountContextProvider } from './contexts/AccountsContext'
 import { LocksContextProvider } from './contexts/LocksContext'
 import { DelegateContextProvider } from '@/contexts/DelegatesContext'
 import { NetworkContextProvider } from './contexts/NetworkContext'
+import { THEME_KEY } from './lib/constants'
 
 const App = () => {
-  const [settings] = useLocalStorage('fellowship-settings', {
+  const [settings] = useLocalStorage(THEME_KEY, {
     themeMode: 'light',
   })
 

@@ -23,14 +23,24 @@ import { PanelLeft } from 'lucide-react'
 // } from '@/components/ui/menubar'
 import { useAccounts } from './contexts/AccountsContext'
 import { useEffect } from 'react'
-import { NetworkProps, useNetwork } from './contexts/NetworkContext'
+import { SupportedNetworkNames, useNetwork } from './contexts/NetworkContext'
 
-const networkList = [
-  'Polkadot|polkadot',
-  'Polkadot Light Client|polkadot-lc',
-  'Kusama|kusama',
-  'Kusama Light Client|kusama-lc',
+interface NetworkDisplay {
+  name: SupportedNetworkNames
+  display: string
+}
+const networkList: NetworkDisplay[] = [
+  { name: 'polkadot', display: 'Polkadot' },
+  { name: 'polkadot-lc', display: 'Polkadot Light Client' },
+  { name: 'kusama', display: 'Kusama' },
+  { name: 'kusama-lc', display: 'Kusama Light Client' },
 ]
+
+import.meta.env.DEV &&
+  networkList.push(
+    { name: 'westend', display: 'Westend' },
+    { name: 'fast-westend', display: 'Fast Westend' },
+  )
 
 export const Header = () => {
   const { network, setNetwork } = useNetwork()
@@ -94,13 +104,13 @@ export const Header = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              {networkList.map((n) => (
+              {networkList.map(({ name, display }) => (
                 <DropdownMenuItem
                   className="cursor-pointer"
-                  key={n}
-                  onClick={() => setNetwork(n.split('|')[1] as NetworkProps)}
+                  key={name}
+                  onClick={() => setNetwork(name)}
                 >
-                  {n.split('|')[0]}
+                  {display}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
