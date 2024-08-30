@@ -31,7 +31,7 @@ export const LocksCard = () => {
   const [isUnlockingLoading, setIsUnlockingLoading] = useState(false)
 
   useEffect(() => {
-    if (!currentBlock || !locks.length) return
+    if (!currentBlock) return
 
     const tempOngoingLocks: VoteLock[] = []
     const tempFree: VoteLock[] = []

@@ -63,7 +63,10 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
 
   // retrieve the tracks with locks for the selected account
   useEffect(() => {
-    if (!selectedAccount || !api) return
+    if (!selectedAccount || !api) {
+      setLockTracks([])
+      return
+    }
 
     const sub = api.query.ConvictionVoting.ClassLocksFor.watchValue(
       selectedAccount.address,
@@ -78,7 +81,10 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
   // retrieve all the votes for the selected account
   // they can be directly casted or delegated
   useEffect(() => {
-    if (!selectedAccount || !api || !lockTracks.length) return
+    if (!selectedAccount || !api || !lockTracks.length) {
+      setCurrentVoteLocks([])
+      return
+    }
 
     api.query.ConvictionVoting.VotingFor.getEntries(
       selectedAccount.address,
@@ -93,7 +99,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
 
   // get the ref for which we have a vote casted directly
   const refsVotedOn = useMemo(() => {
-    if (!selectedAccount || !currentVoteLocks.length) return
+    if (!selectedAccount || !currentVoteLocks.length) return {}
 
     const res: Record<
       number,
@@ -128,9 +134,10 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
       !api ||
       !refsVotedOn ||
       !Object.entries(refsVotedOn).length
-    )
+    ) {
+      setRefRecap({})
       return
-
+    }
     const refParams = Object.keys(refsVotedOn).map((id) => [Number(id)]) as [
       number,
     ][]
@@ -153,7 +160,8 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
   }, [api, refsVotedOn, selectedAccount])
 
   const getLocks = useCallback(async () => {
-    if (!api || !refRecap) return
+    if (!api || !Object.entries(refRecap).length) return []
+
     const locks: VoteLock[] = []
     const lockTimes = await getLockTimes(api)
     const blockTimeMs = await getExpectedBlockTimeMs(api)
@@ -263,11 +271,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
   }, [api, refRecap])
 
   useEffect(() => {
-    getLocks()
-      .then((l) => {
-        !!l && setLocks(l)
-      })
-      .catch(console.error)
+    getLocks().then(setLocks).catch(console.error)
   }, [getLocks])
 
   return (
