@@ -53,12 +53,11 @@ export const Delegate = () => {
 
   const amountErrorDisplay = useMemo(() => {
     if (!isAmountDirty) return ''
-    
-    if(amountError) return amountError
+
+    if (amountError) return amountError
 
     return ''
-
-  },[amountError, isAmountDirty])
+  }, [amountError, isAmountDirty])
   useEffect(() => {
     // API change denotes that the netowork changed. Due to the fact that
     // decimals of network may change as well we should convert the amount to 0n
@@ -80,7 +79,7 @@ export const Delegate = () => {
 
     const key = `Locked${convictionNo}x`
     return `x${convictionNo} | ${convertMiliseconds(Number(convictionList[key])).d} days lock`
-  },[convictionList, convictionNo])
+  }, [convictionList, convictionNo])
 
   useEffect(() => {
     if (!address || delegate) return
@@ -159,7 +158,6 @@ export const Delegate = () => {
           error={amountErrorDisplay}
         />
       </div>
-
 
       <Label className="flex">
         Conviction:<div className="ml-2">{convictionDisplay}</div>

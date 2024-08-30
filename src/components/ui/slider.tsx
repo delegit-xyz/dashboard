@@ -43,7 +43,7 @@ const Slider = forwardRef<
         <SliderPrimitive.Root
           ref={ref}
           className={cn(
-            'relative flex w-full touch-none select-none items-center cursor-pointer',
+            'relative flex w-full cursor-pointer touch-none select-none items-center',
             className,
           )}
           {...props}
