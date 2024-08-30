@@ -43,7 +43,7 @@ const Slider = forwardRef<
         <SliderPrimitive.Root
           ref={ref}
           className={cn(
-            'relative flex w-full touch-none select-none items-center',
+            'relative flex w-full cursor-pointer touch-none select-none items-center',
             className,
           )}
           {...props}
@@ -80,7 +80,6 @@ const Slider = forwardRef<
             {props?.max &&
               Array.from({ length: props?.max + 1 }).map((_, i) => {
                 const k: string = marksLabels ? marksLabels[i] : i.toString()
-                console.log(k, props?.value && props?.value[0])
                 return (
                   <span
                     key={`${props?.max}-${i}`}
