@@ -54,7 +54,6 @@ export const LocksCard = () => {
 
   useEffect(() => {
     if (!api) return
-
     const sub = api.query.System.Number.watchValue('best').subscribe(
       (value) => {
         setCurrentBlock(value)
