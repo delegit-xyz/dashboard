@@ -1,4 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
+import { THEME_KEY } from '@/lib/constants'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
 
@@ -27,7 +28,7 @@ export function ThemeProvider({
   defaultTheme = 'light',
   ...props
 }: ThemeProviderProps) {
-  const [settings, setSettings] = useLocalStorage('fellowship-settings', {
+  const [settings, setSettings] = useLocalStorage(THEME_KEY, {
     themeMode: 'light',
   })
 
