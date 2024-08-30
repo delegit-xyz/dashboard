@@ -79,7 +79,7 @@ const Slider = forwardRef<
           >
             {props?.max &&
               Array.from({ length: props?.max + 1 }).map((_, i) => {
-                const k = marksLabels ? marksLabels[i] : i
+                const k: string = marksLabels ? marksLabels[i] : i.toString()
                 console.log(k, props?.value && props?.value[0])
                 return (
                   <span
