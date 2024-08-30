@@ -4,7 +4,7 @@ import { useDelegates } from '@/contexts/DelegatesContext'
 import { useNetwork } from '@/contexts/NetworkContext'
 import { getLockTimes } from '@/lib/utils'
 import { VotingConviction } from '@polkadot-api/descriptors'
-import { SetStateAction, useEffect, useState } from 'react'
+import { SetStateAction, useEffect, useMemo, useState } from 'react'
 import { convertMiliseconds } from '@/lib/convertMiliseconds'
 import { Button } from '@/components/ui/button'
 import { getDelegateTx } from '@/lib/currentVotesAndDelegations'
@@ -38,22 +38,29 @@ export const Delegate = () => {
   const [delegate, setDelegate] = useState(
     address && getDelegateByAddress(address),
   )
+  const [isAmountDirty, setIsAmountDirty] = useState(false)
   const [amount, setAmount] = useState<bigint>(0n)
   const [amountVisible, setAmountVisible] = useState<string>('0')
   const [amountError, setAmountError] = useState<string>('')
   const [conviction, setConviction] = useState<VotingConviction>(
     VotingConviction.None,
   )
-  const [convictionNo, setConvictionNo] = useState<number>(0)
-  const [convictionShow, setConvictionShow] = useState<string>()
+  const [convictionNo, setConvictionNo] = useState(0)
   const [convictionList, setConvictionList] = useState<Record<string, bigint>>(
     {},
   )
   const { selectedAccount } = useAccounts()
 
+  const amountErrorDisplay = useMemo(() => {
+    if (!isAmountDirty) return ''
+
+    if (amountError) return amountError
+
+    return ''
+  }, [amountError, isAmountDirty])
   useEffect(() => {
     // API change denotes that the netowork changed. Due to the fact that
-    // decimals of network may change as well we should conver the amount to 0n
+    // decimals of network may change as well we should convert the amount to 0n
     // in order to make sure that correct number will be used.
     setAmount(0n)
     setAmountVisible('0')
@@ -61,21 +68,22 @@ export const Delegate = () => {
 
   useEffect(() => {
     if (!api) return
+
     getLockTimes(api).then(setConvictionList).catch(console.error)
   }, [address, api])
 
-  useEffect(() => {
-    Object.entries(convictionList).filter((a, i) => {
-      if (i === convictionNo) {
-        setConvictionShow(
-          `${a[0] === 'None' ? 'Locked0.1x' : a[0]} - ${convertMiliseconds(Number(a[1])).d} days`,
-        )
-      }
-    })
-  }, [convictionNo, convictionList])
+  const convictionDisplay = useMemo(() => {
+    if (convictionNo === 0) {
+      return 'x0.1 | no lock'
+    }
+
+    const key = `Locked${convictionNo}x`
+    return `x${convictionNo} | ${convertMiliseconds(Number(convictionList[key])).d} days lock`
+  }, [convictionList, convictionNo])
 
   useEffect(() => {
     if (!address || delegate) return
+
     const res = getDelegateByAddress(address)
     setDelegate(res)
   }, [address, delegate, getDelegateByAddress])
@@ -86,6 +94,7 @@ export const Delegate = () => {
     e: React.ChangeEvent<HTMLInputElement>,
     decimals: number,
   ) => {
+    setIsAmountDirty(true)
     setAmountError('')
     const [bnResult, errorMessage] = evalUnits(e.target.value, decimals)
     setAmount(bnResult || 0n)
@@ -146,27 +155,12 @@ export const Delegate = () => {
         <Input
           onChange={(value) => onChangeAmount(value, assetInfo.precision)}
           value={amountVisible}
+          error={amountErrorDisplay}
         />
       </div>
 
-      {amountError ? (
-        <AlertNote
-          title={'Input Error'}
-          message={amountError}
-          variant="destructive"
-        />
-      ) : (
-        amount === 0n && (
-          <AlertNote
-            title={msgs.zeroAmount.title}
-            message={msgs.zeroAmount.message}
-            variant="default"
-          />
-        )
-      )}
-
       <Label className="flex">
-        Conviction:<div className="ml-2">{convictionShow}</div>
+        Conviction:<div className="ml-2">{convictionDisplay}</div>
       </Label>
       <Slider
         disabled={!api || !selectedAccount}
