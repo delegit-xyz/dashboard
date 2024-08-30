@@ -5,31 +5,31 @@ interface Props {
 export const Title = ({ children, variant = 'h1' }: Props) => {
   if (variant === 'h1')
     return (
-      <h1 className="font-unbounded text-primary flex-1 shrink-0 whitespace-nowrap text-2xl font-semibold tracking-tight sm:grow-0">
+      <h1 className="flex-1 shrink-0 whitespace-nowrap font-unbounded text-2xl font-semibold tracking-tight text-primary sm:grow-0">
         {children}
       </h1>
     )
   if (variant === 'h2')
     return (
-      <h2 className="font-unbounded text-primary flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
+      <h2 className="flex-1 shrink-0 whitespace-nowrap font-unbounded text-xl font-semibold tracking-tight text-primary sm:grow-0">
         {children}
       </h2>
     )
   if (variant === 'h3')
     return (
-      <h3 className="font-unbounded text-primary flex-1 shrink-0 whitespace-nowrap text-lg font-semibold tracking-tight sm:grow-0">
+      <h3 className="flex-1 shrink-0 whitespace-nowrap font-unbounded text-lg font-semibold tracking-tight text-primary sm:grow-0">
         {children}
       </h3>
     )
   if (variant === 'h4')
     return (
-      <h4 className="font-unbounded text-primary flex-1 shrink-0 whitespace-nowrap text-base font-semibold tracking-tight sm:grow-0">
+      <h4 className="flex-1 shrink-0 whitespace-nowrap font-unbounded text-base font-semibold tracking-tight text-primary sm:grow-0">
         {children}
       </h4>
     )
 
   return (
-    <h5 className="font-unbounded text-primary flex-1 shrink-0 whitespace-nowrap text-sm font-semibold tracking-tight sm:grow-0">
+    <h5 className="flex-1 shrink-0 whitespace-nowrap font-unbounded text-sm font-semibold tracking-tight text-primary sm:grow-0">
       {children}
     </h5>
   )

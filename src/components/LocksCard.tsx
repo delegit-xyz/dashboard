@@ -31,7 +31,7 @@ export const LocksCard = () => {
   const [isUnlockingLoading, setIsUnlockingLoading] = useState(false)
 
   useEffect(() => {
-    if (!currentBlock || !locks.length) return
+    if (!currentBlock) return
 
     const tempOngoingLocks: VoteLock[] = []
     const tempFree: VoteLock[] = []
@@ -106,17 +106,17 @@ export const LocksCard = () => {
   return (
     <div className="flex w-full gap-x-2">
       {freeLocks.length > 0 && (
-        <Card className="border-2 p-2 px-4 w-4/12 h-full relative">
+        <Card className="relative h-full w-4/12 border-2 p-2 px-4">
           <div className="relative z-10">
             <Title variant="h4">Unlockable</Title>
-            <div className="font-bold text-5xl">
+            <div className="text-5xl font-bold">
               {freeLocks.length}
-              <LockKeyholeOpen className="w-8 h-8 inline-block rotate-[10deg] text-gray-200" />
+              <LockKeyholeOpen className="inline-block h-8 w-8 rotate-[10deg] text-gray-200" />
             </div>
             {freeLocks.length > 0 && (
               <>
                 <Button
-                  className="w-full my-4"
+                  className="my-4 w-full"
                   onClick={onUnlockClick}
                   disabled={isUnlockingLoading}
                 >
@@ -146,11 +146,11 @@ export const LocksCard = () => {
         </Card>
       )}
       {currentLocks.length > 0 && (
-        <Card className="border-2 p-2 px-4 w-4/12 h-full">
+        <Card className="h-full w-4/12 border-2 p-2 px-4">
           <Title variant="h4">Locked</Title>
-          <div className="font-bold text-5xl">
+          <div className="text-5xl font-bold">
             {currentLocks.length}
-            <Clock2 className="w-8 h-8 inline-block rotate-[10deg] text-gray-200" />
+            <Clock2 className="inline-block h-8 w-8 rotate-[10deg] text-gray-200" />
           </div>
           <ContentReveal>
             {currentLocks.map(({ amount, endBlock, refId }) => {
@@ -177,11 +177,11 @@ export const LocksCard = () => {
         </Card>
       )}
       {ongoingVoteLocks.length > 0 && (
-        <Card className="border-2 p-2 px-4 w-4/12 h-full">
+        <Card className="h-full w-4/12 border-2 p-2 px-4">
           <Title variant="h4">Votes</Title>
-          <div className="font-bold text-5xl">
+          <div className="text-5xl font-bold">
             {ongoingVoteLocks.length}
-            <Vote className="w-8 h-8 inline-block text-gray-200" />
+            <Vote className="inline-block h-8 w-8 text-gray-200" />
           </div>
           <ContentReveal>
             {ongoingVoteLocks.map(({ amount, refId }) => {
