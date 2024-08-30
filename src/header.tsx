@@ -25,26 +25,27 @@ import { useAccounts } from './contexts/AccountsContext'
 import { useEffect } from 'react'
 import { SupportedNetworkNames, useNetwork } from './contexts/NetworkContext'
 
-const networkList: { name: SupportedNetworkNames; display: string }[] = [
+interface NetworkDisplay {
+  name: SupportedNetworkNames
+  display: string
+}
+const networkList: NetworkDisplay[] = [
   { name: 'polkadot', display: 'Polkadot' },
   { name: 'polkadot-lc', display: 'Polkadot Light Client' },
   { name: 'kusama', display: 'Kusama' },
   { name: 'kusama-lc', display: 'Kusama Light Client' },
 ]
 
+import.meta.env.DEV &&
+  networkList.push(
+    { name: 'westend', display: 'Westend' },
+    { name: 'fast-westend', display: 'Fast Westend' },
+  )
+
 export const Header = () => {
   const { network, setNetwork } = useNetwork()
   const { accounts, selectAccount, selectedAccount } = useAccounts()
   const [, disconnectAll] = useWalletDisconnector()
-
-  useEffect(() => {
-    if (import.meta.env.DEV) {
-      networkList.push(
-        { name: 'westend', display: 'Westend' },
-        { name: 'fast-westend', display: 'Fast Westend' },
-      )
-    }
-  }, [])
 
   useEffect(() => {
     if (!selectedAccount?.address && accounts.length > 0) {

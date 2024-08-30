@@ -7,6 +7,7 @@ import {
   TypedApi,
   createClient,
 } from 'polkadot-api'
+import { Chain } from 'polkadot-api/smoldot'
 import { getWsProvider } from 'polkadot-api/ws-provider/web'
 
 import { getSmProvider } from 'polkadot-api/sm-provider'
@@ -66,7 +67,7 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
       setAssetInfo(assetInfo)
       setIsLight(true)
       const smoldot = startFromWorker(new SmWorker())
-      let relayChain: Promise<unknown>
+      let relayChain: Promise<Chain>
       if (relay === 'polkadot') {
         relayChain = import('polkadot-api/chains/polkadot').then(
           ({ chainSpec }) => smoldot.addChain({ chainSpec }),
@@ -76,9 +77,8 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
           ({ chainSpec }) => smoldot.addChain({ chainSpec }),
         )
       }
-      //@ts-expect-error the Chain type isn't exported
-      //it comes from 'smoldot' that we don't import
-      client = createClient(getSmProvider(relayChain as unknown))
+
+      client = createClient(getSmProvider(relayChain))
     } else {
       const { assetInfo, wsEndpoint } = getChainInformation(network)
       setAssetInfo(assetInfo)
