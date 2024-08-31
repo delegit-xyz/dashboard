@@ -7,7 +7,7 @@ import React, {
   useEffect,
 } from 'react'
 import { InjectedPolkadotAccount } from 'polkadot-api/pjs-signer'
-import { useAccounts as useRedotAccounts } from '@reactive-dot/react'
+// import { useAccounts as useRedotAccounts } from '@reactive-dot/react'
 import { useLocalStorage } from 'usehooks-ts'
 import { SELECTED_ACCOUNT_KEY } from '@/lib/constants'
 
@@ -24,7 +24,8 @@ export interface IAccountContext {
 const AccountContext = createContext<IAccountContext | undefined>(undefined)
 
 const AccountContextProvider = ({ children }: AccountContextProps) => {
-  const accounts = useRedotAccounts()
+  // const accounts = useRedotAccounts()
+  const accounts: any[] = []
   const [selectedAccount, setSelected] = useState<
     InjectedPolkadotAccount | undefined
   >()

@@ -10,10 +10,6 @@
       "chain": "ksmcc3",
       "metadata": ".papi/metadata/ksm.scale"
     },
-    "fastWestend": {
-      "wsUrl": "wss://rpc-test-network-1.novasamatech.org",
-      "metadata": ".papi/metadata/fastWestend.scale"
-    },
     "westend": {
       "chain": "westend2",
       "metadata": ".papi/metadata/westend.scale"

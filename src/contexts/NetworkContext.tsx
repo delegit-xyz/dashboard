@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState } from 'react'
-import { dot, fastWestend, ksm, westend } from '@polkadot-api/descriptors'
+import { dot, ksm, westend } from '@polkadot-api/descriptors'
 import {
   ChainDefinition,
   PolkadotClient,
@@ -33,7 +33,7 @@ export const descriptorName: Record<SupportedNetworkNames, ChainDefinition> = {
   kusama: ksm,
   'kusama-lc': ksm,
   westend: westend,
-  'fast-westend': fastWestend,
+  // 'fast-westend': fastWestend,
 }
 
 export interface INetworkContext {

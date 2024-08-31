@@ -9,7 +9,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { routes } from '@/lib/utils'
-import { useWalletDisconnector } from '@reactive-dot/react'
+// import { useWalletDisconnector } from '@reactive-dot/react'
 import { PanelLeft } from 'lucide-react'
 
 // import {
@@ -39,13 +39,13 @@ const networkList: NetworkDisplay[] = [
 import.meta.env.DEV &&
   networkList.push(
     { name: 'westend', display: 'Westend' },
-    { name: 'fast-westend', display: 'Fast Westend' },
+    // { name: 'fast-westend', display: 'Fast Westend' },
   )
 
 export const Header = () => {
   const { network, setNetwork } = useNetwork()
   const { accounts, selectAccount, selectedAccount } = useAccounts()
-  const [, disconnectAll] = useWalletDisconnector()
+  // const [, disconnectAll] = useWalletDisconnector()
 
   useEffect(() => {
     if (!selectedAccount?.address && accounts.length > 0) {
@@ -156,7 +156,7 @@ export const Header = () => {
                   className="cursor-pointer"
                   key={'logout'}
                   onClick={() => {
-                    disconnectAll()
+                    // disconnectAll()
                     selectAccount(undefined)
                   }}
                 >

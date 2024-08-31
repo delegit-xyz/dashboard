@@ -7,9 +7,9 @@ import { Toaster } from '@/components/ui/sonner'
 import './index.css'
 import { Content } from './Content'
 import 'dot-connect/font.css'
-import { config } from './walletConfigs'
-import { ReDotProvider, ReDotChainProvider } from '@reactive-dot/react'
-import { Suspense } from 'react'
+// import { config } from './walletConfigs'
+// import { ReDotProvider, ReDotChainProvider } from '@reactive-dot/react'
+// import { Suspense } from 'react'
 import { AccountContextProvider } from './contexts/AccountsContext'
 import { LocksContextProvider } from './contexts/LocksContext'
 import { DelegateContextProvider } from '@/contexts/DelegatesContext'
@@ -24,29 +24,29 @@ const App = () => {
   return (
     <>
       <ThemeProvider defaultTheme={settings?.themeMode as Theme}>
-        <ReDotProvider config={config}>
+        {/* <ReDotProvider config={config}>
           <ReDotChainProvider chainId="polkadot">
-            <Suspense>
-              <NetworkContextProvider>
-                <DelegateContextProvider>
-                  <AccountContextProvider>
-                    <LocksContextProvider>
-                      <TooltipProvider>
-                        <div className="flex min-h-screen w-full flex-col bg-muted/40">
-                          <Navigation />
-                          <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
-                            <Header />
-                            <Content />
-                          </div>
-                        </div>
-                      </TooltipProvider>
-                    </LocksContextProvider>
-                  </AccountContextProvider>
-                </DelegateContextProvider>
-              </NetworkContextProvider>
-            </Suspense>
+            <Suspense> */}
+        <NetworkContextProvider>
+          <DelegateContextProvider>
+            <AccountContextProvider>
+              <LocksContextProvider>
+                <TooltipProvider>
+                  <div className="flex min-h-screen w-full flex-col bg-muted/40">
+                    <Navigation />
+                    <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
+                      <Header />
+                      <Content />
+                    </div>
+                  </div>
+                </TooltipProvider>
+              </LocksContextProvider>
+            </AccountContextProvider>
+          </DelegateContextProvider>
+        </NetworkContextProvider>
+        {/* </Suspense>
           </ReDotChainProvider>
-        </ReDotProvider>
+        </ReDotProvider> */}
       </ThemeProvider>
       <Toaster />
     </>
