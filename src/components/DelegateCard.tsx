@@ -32,7 +32,7 @@ export const DelegateCard = ({ delegate: d }: Props) => {
           <div className="py-2 text-xl font-bold text-primary">{d.name}</div>
           <div>{d.shortDescription}</div>
           <ContentReveal
-            disabled={
+            hidden={
               d.shortDescription === d.longDescription || !d.longDescription
             }
           >

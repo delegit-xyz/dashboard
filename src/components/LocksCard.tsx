@@ -158,7 +158,7 @@ export const LocksCard = () => {
               {currentLocks.length}
               <Clock2 className="inline-block h-8 w-8 rotate-[10deg] text-gray-200" />
             </div>
-            <ContentReveal disabled={!currentLocks.length}>
+            <ContentReveal hidden={!currentLocks.length}>
               {currentLocks.map(({ amount, endBlock, refId }) => {
                 const remainingTimeMs =
                   (Number(endBlock) - currentBlock) * expectedBlockTime
@@ -189,7 +189,7 @@ export const LocksCard = () => {
               <Vote className="inline-block h-8 w-8 text-gray-200" />
             </div>
             {
-              <ContentReveal disabled={!ongoingVoteLocks.length}>
+              <ContentReveal hidden={!ongoingVoteLocks.length}>
                 {ongoingVoteLocks.map(({ amount, refId }) => {
                   return (
                     <div key={refId}>
