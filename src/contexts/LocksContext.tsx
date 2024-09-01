@@ -31,9 +31,15 @@ export interface VoteLock {
   trackId: number
 }
 
-export interface DelegationLock {
+export interface CurrentDelegation {
   balance: bigint
   conviction: VotingConviction
+  trackId: number
+}
+
+export interface DelegationLock {
+  balance: bigint
+  endBlock: number
   trackId: number
 }
 
@@ -56,7 +62,8 @@ export interface ConvictionDisplay {
 
 export interface ILocksContext {
   locks: VoteLock[]
-  delegations?: Record<string, DelegationLock[]>
+  delegations?: Record<string, CurrentDelegation[]>
+  delegationLocks: DelegationLock[]
   getConvictionLockTimeDisplay: (
     conviction: number | string,
   ) => ConvictionDisplay
@@ -81,6 +88,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
     Record<string, bigint>
   >({})
 
+  console.log('currentVoteLocks', currentVoteLocks)
   useEffect(() => {
     if (!api) return
 
@@ -124,9 +132,14 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
   }, [api, lockTracks, lockTracks.length, selectedAccount])
 
   // get the ref for which we have a vote casted directly
-  const { delegations, castedVotes: refsVotedOn } = useMemo(() => {
+  // or for which we have delegated
+  const {
+    delegations,
+    castedVotes: refsVotedOn,
+    delegationLocks,
+  } = useMemo(() => {
     if (!selectedAccount || !currentVoteLocks.length)
-      return { castedVotes: {}, delegations: {} }
+      return { castedVotes: {}, delegations: {}, delegationLocks: [] }
 
     const castedVotes: Record<
       number,
@@ -137,6 +150,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
       }
     > = {}
     const delegations: ILocksContext['delegations'] = {}
+    const delegationLocks: ILocksContext['delegationLocks'] = []
 
     currentVoteLocks.forEach(({ trackId, vote: { type, value } }) => {
       if (type === 'Delegating') {
@@ -151,16 +165,28 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
           },
         ]
       } else if (type === 'Casting') {
+        // this is when the account has casted a vote directly
+        // votes is empty for delegations
         value.votes.forEach(([refId, vote]) => {
           castedVotes[refId] = {
             trackId,
             vote,
           }
         })
+
+        // this is when the account is delegating
+        // and has undelegated
+        if (value.prior[1] > 0) {
+          delegationLocks.push({
+            trackId,
+            balance: value.prior[1],
+            endBlock: value.prior[0],
+          })
+        }
       }
     })
 
-    return { castedVotes, delegations }
+    return { castedVotes, delegations, delegationLocks }
   }, [currentVoteLocks, selectedAccount])
 
   useEffect(() => {
@@ -177,7 +203,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
       number,
     ][]
 
-    const tempRefs = refsVotedOn
+    const tempRefs = refsVotedOn as RefRecap
     api.query.Referenda.ReferendumInfoFor.getValues(refParams)
       .then((res) => {
         if (!res.values) return
@@ -345,7 +371,12 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
 
   return (
     <LocksContext.Provider
-      value={{ locks, delegations, getConvictionLockTimeDisplay }}
+      value={{
+        locks,
+        delegations,
+        getConvictionLockTimeDisplay,
+        delegationLocks,
+      }}
     >
       {children}
     </LocksContext.Provider>

@@ -16,19 +16,22 @@ import { dot } from '@polkadot-api/descriptors'
 import { useAccounts } from '@/contexts/AccountsContext'
 import { TypedApi } from 'polkadot-api'
 import { getUnlockUnvoteTx } from '@/lib/utils'
-import { useLocks, VoteLock } from '@/contexts/LocksContext'
+import { DelegationLock, useLocks, VoteLock } from '@/contexts/LocksContext'
 import { Skeleton } from './ui/skeleton'
 
 export const LocksCard = () => {
   const [currentBlock, setCurrentBlock] = useState(0)
   const [expectedBlockTime, setExpectedBlockTime] = useState(0)
   const { api } = useNetwork()
-  const { locks } = useLocks()
+  const { locks, delegationLocks } = useLocks()
   const { assetInfo } = useNetwork()
   const [ongoingVoteLocks, setOngoingVoteLocks] = useState<VoteLock[]>([])
   const [freeLocks, setFreeLocks] = useState<VoteLock[]>([])
   const [locksLoaded, setLocksLoaded] = useState<boolean>(false)
   const [currentLocks, setCurrentLocks] = useState<VoteLock[]>([])
+  const [currentDelegationLocks, setCurrentDelegationLocks] = useState<
+    DelegationLock[]
+  >([])
   const { selectedAccount } = useAccounts()
   const [isUnlockingLoading, setIsUnlockingLoading] = useState(false)
 
@@ -49,11 +52,24 @@ export const LocksCard = () => {
       }
     })
 
+    const tempDelegationLocks: DelegationLock[] = []
+
+    delegationLocks.forEach((lock) => {
+      //if the end block is in the future
+      if (lock.endBlock >= currentBlock) {
+        tempDelegationLocks.push(lock)
+      } else {
+        // in this case, the lock is elapsed and can be freed
+        // check track 15 and 30
+      }
+    })
+
     setOngoingVoteLocks(tempOngoingLocks)
     setFreeLocks(tempFree)
     setCurrentLocks(tempCurrent)
+    setCurrentDelegationLocks(tempDelegationLocks)
     setLocksLoaded(true)
-  }, [currentBlock, locks])
+  }, [currentBlock, delegationLocks, locks])
 
   useEffect(() => {
     if (!api) return
@@ -155,31 +171,58 @@ export const LocksCard = () => {
           <Card className="h-full w-4/12 border-2 p-2 px-4">
             <Title variant="h4">Locked</Title>
             <div className="text-5xl font-bold">
-              {currentLocks.length}
+              {currentLocks.length + currentDelegationLocks.length}
               <Clock2 className="inline-block h-8 w-8 rotate-[10deg] text-gray-200" />
             </div>
-            <ContentReveal hidden={!currentLocks.length}>
-              {currentLocks.map(({ amount, endBlock, refId }) => {
-                const remainingTimeMs =
-                  (Number(endBlock) - currentBlock) * expectedBlockTime
-                const remainingDisplay = convertMiliseconds(remainingTimeMs)
-                return (
-                  <div key={refId}>
-                    <ul>
-                      <li>
-                        <Badge>#{refId}</Badge>{' '}
-                        {planckToUnit(
-                          amount,
-                          assetInfo.precision,
-                        ).toLocaleString('en')}{' '}
-                        {assetInfo.symbol}
-                        <br />
-                        Remaining: {displayRemainingTime(remainingDisplay)}
-                      </li>
-                    </ul>
-                  </div>
-                )
-              })}
+            <ContentReveal
+              hidden={currentLocks.length + currentDelegationLocks.length === 0}
+            >
+              <>
+                {currentLocks.map(({ amount, endBlock, refId }) => {
+                  const remainingTimeMs =
+                    (Number(endBlock) - currentBlock) * expectedBlockTime
+                  const remainingDisplay = convertMiliseconds(remainingTimeMs)
+                  return (
+                    <div key={refId}>
+                      <ul>
+                        <li>
+                          <Badge>#{refId}</Badge>{' '}
+                          {planckToUnit(
+                            amount,
+                            assetInfo.precision,
+                          ).toLocaleString('en')}{' '}
+                          {assetInfo.symbol}
+                          <br />
+                          Remaining: {displayRemainingTime(remainingDisplay)}
+                        </li>
+                      </ul>
+                    </div>
+                  )
+                })}
+                {currentDelegationLocks.map(
+                  ({ balance, endBlock, trackId }) => {
+                    const remainingTimeMs =
+                      (Number(endBlock) - currentBlock) * expectedBlockTime
+                    const remainingDisplay = convertMiliseconds(remainingTimeMs)
+                    return (
+                      <div key={trackId}>
+                        <ul>
+                          <li>
+                            <Badge>Delegation /{trackId}</Badge>{' '}
+                            {planckToUnit(
+                              balance,
+                              assetInfo.precision,
+                            ).toLocaleString('en')}{' '}
+                            {assetInfo.symbol}
+                            <br />
+                            Remaining: {displayRemainingTime(remainingDisplay)}
+                          </li>
+                        </ul>
+                      </div>
+                    )
+                  },
+                )}
+              </>
             </ContentReveal>
           </Card>
           <Card className="h-full w-4/12 border-2 p-2 px-4">
