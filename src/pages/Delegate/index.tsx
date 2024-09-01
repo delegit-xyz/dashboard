@@ -2,10 +2,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useDelegates } from '@/contexts/DelegatesContext'
 import { useNetwork } from '@/contexts/NetworkContext'
-import { getLockTimes } from '@/lib/utils'
 import { VotingConviction } from '@polkadot-api/descriptors'
 import { SetStateAction, useEffect, useMemo, useState } from 'react'
-import { convertMiliseconds } from '@/lib/convertMiliseconds'
 import { Button } from '@/components/ui/button'
 import { getDelegateTx } from '@/lib/currentVotesAndDelegations'
 import { useAccounts } from '@/contexts/AccountsContext'
@@ -16,6 +14,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
 import { msgs } from '@/lib/constants'
 import { evalUnits, planckToUnit } from '@polkadot-ui/utils'
+import { useLocks } from '@/contexts/LocksContext'
 
 type AlertProps = {
   title: string
@@ -33,6 +32,7 @@ const AlertNote = ({ title, message, variant = 'default' }: AlertProps) => (
 export const Delegate = () => {
   const { api, assetInfo } = useNetwork()
   const { address } = useParams()
+  const { getConvictionLockTimeDisplay } = useLocks()
 
   const { getDelegateByAddress } = useDelegates()
   const [delegate, setDelegate] = useState(
@@ -46,10 +46,13 @@ export const Delegate = () => {
     VotingConviction.None,
   )
   const [convictionNo, setConvictionNo] = useState(0)
-  const [convictionList, setConvictionList] = useState<Record<string, bigint>>(
-    {},
-  )
   const { selectedAccount } = useAccounts()
+
+  const convictionDisplay = useMemo(() => {
+    const { display, multiplier } = getConvictionLockTimeDisplay(convictionNo)
+
+    return `x${Number(multiplier)} | ${display}`
+  }, [convictionNo, getConvictionLockTimeDisplay])
 
   const amountErrorDisplay = useMemo(() => {
     if (!isAmountDirty) return ''
@@ -65,21 +68,6 @@ export const Delegate = () => {
     setAmount(0n)
     setAmountVisible('0')
   }, [api])
-
-  useEffect(() => {
-    if (!api) return
-
-    getLockTimes(api).then(setConvictionList).catch(console.error)
-  }, [address, api])
-
-  const convictionDisplay = useMemo(() => {
-    if (convictionNo === 0) {
-      return 'x0.1 | no lock'
-    }
-
-    const key = `Locked${convictionNo}x`
-    return `x${convictionNo} | ${convertMiliseconds(Number(convictionList[key])).d} days lock`
-  }, [convictionList, convictionNo])
 
   useEffect(() => {
     if (!address || delegate) return
@@ -160,7 +148,8 @@ export const Delegate = () => {
       </div>
 
       <Label className="flex">
-        Conviction:<div className="ml-2">{convictionDisplay}</div>
+        Conviction: {convictionDisplay}
+        <div className="ml-2">{}</div>
       </Label>
       <Slider
         disabled={!api || !selectedAccount}

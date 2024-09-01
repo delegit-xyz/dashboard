@@ -19,13 +19,21 @@ import {
   ConvictionVotingVoteVoting,
   DotQueries,
   KsmQueries,
+  VotingConviction,
 } from '@polkadot-api/descriptors'
+import { convertMiliseconds } from '@/lib/convertMiliseconds'
 
 export interface VoteLock {
   isOngoing: boolean
   refId: number
   endBlock: bigint
   amount: bigint
+  trackId: number
+}
+
+export interface DelegationLock {
+  balance: bigint
+  conviction: VotingConviction
   trackId: number
 }
 
@@ -41,8 +49,17 @@ type LocksContextProps = {
   children: React.ReactNode | React.ReactNode[]
 }
 
+export interface ConvictionDisplay {
+  multiplier: number
+  display: string
+}
+
 export interface ILocksContext {
   locks: VoteLock[]
+  delegations?: Record<string, DelegationLock[]>
+  getConvictionLockTimeDisplay: (
+    conviction: number | string,
+  ) => ConvictionDisplay
 }
 
 const LocksContext = createContext<ILocksContext | undefined>(undefined)
@@ -60,6 +77,15 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
     }[]
   >([])
   const [locks, setLocks] = useState<VoteLock[]>([])
+  const [convictionLocksMap, setConvictionLocksMap] = useState<
+    Record<string, bigint>
+  >({})
+
+  useEffect(() => {
+    if (!api) return
+
+    getLockTimes(api).then(setConvictionLocksMap).catch(console.error)
+  }, [api])
 
   // retrieve the tracks with locks for the selected account
   useEffect(() => {
@@ -98,10 +124,11 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
   }, [api, lockTracks, lockTracks.length, selectedAccount])
 
   // get the ref for which we have a vote casted directly
-  const refsVotedOn = useMemo(() => {
-    if (!selectedAccount || !currentVoteLocks.length) return {}
+  const { delegations, castedVotes: refsVotedOn } = useMemo(() => {
+    if (!selectedAccount || !currentVoteLocks.length)
+      return { castedVotes: {}, delegations: {} }
 
-    const res: Record<
+    const castedVotes: Record<
       number,
       {
         refInfo?: RefInfo
@@ -109,23 +136,31 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
         vote: ConvictionVotingVoteAccountVote
       }
     > = {}
+    const delegations: ILocksContext['delegations'] = {}
 
-    currentVoteLocks
-      // filter for all the directly casted votes
-      // we ignore delegation here
-      .filter(({ vote }) => vote.type == 'Casting' && 'votes' in vote.value)
-      .forEach(({ trackId, vote: { type, value } }) => {
-        if (type === 'Casting') {
-          value.votes.forEach(([refId, vote]) => {
-            res[refId] = {
-              trackId,
-              vote,
-            }
-          })
-        }
-      })
+    currentVoteLocks.forEach(({ trackId, vote: { type, value } }) => {
+      if (type === 'Delegating') {
+        const prev = delegations[value.target] || []
 
-    return res
+        delegations[value.target] = [
+          ...prev,
+          {
+            trackId,
+            balance: value.balance,
+            conviction: value.conviction,
+          },
+        ]
+      } else if (type === 'Casting') {
+        value.votes.forEach(([refId, vote]) => {
+          castedVotes[refId] = {
+            trackId,
+            vote,
+          }
+        })
+      }
+    })
+
+    return { castedVotes, delegations }
   }, [currentVoteLocks, selectedAccount])
 
   useEffect(() => {
@@ -274,8 +309,46 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
     getLocks().then(setLocks).catch(console.error)
   }, [getLocks])
 
+  /**
+   * Returns an object containing the display text and multiplier for a given conviction lock time.
+   *
+   * @param {number|string} conviction - The conviction value, either a number or a string (e.g. 'Locked3x', 'None')
+   * @returns {object} An object with two properties: `multiplier` (number) and `display` (string) in days or 'no lock'
+   */
+  const getConvictionLockTimeDisplay = useCallback(
+    (conviction: number | string): ConvictionDisplay => {
+      if (typeof conviction === 'string') {
+        if (conviction === 'None') {
+          return {
+            multiplier: 0.1,
+            display: 'no lock',
+          }
+        }
+
+        return {
+          multiplier: Number(conviction.replace('Locked', '').replace('x', '')),
+          display: `${convertMiliseconds(Number(convictionLocksMap[conviction])).d} days lock`,
+        }
+      } else {
+        if (conviction === 0) {
+          return { multiplier: 0.1, display: 'no lock' }
+        }
+        const key = `Locked${conviction}x`
+        return {
+          multiplier: conviction,
+          display: `${convertMiliseconds(Number(convictionLocksMap[key])).d} days lock`,
+        }
+      }
+    },
+    [convictionLocksMap],
+  )
+
   return (
-    <LocksContext.Provider value={{ locks }}>{children}</LocksContext.Provider>
+    <LocksContext.Provider
+      value={{ locks, delegations, getConvictionLockTimeDisplay }}
+    >
+      {children}
+    </LocksContext.Provider>
   )
 }
 

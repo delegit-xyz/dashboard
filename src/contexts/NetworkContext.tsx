@@ -36,6 +36,8 @@ export const descriptorName: Record<SupportedNetworkNames, ChainDefinition> = {
   'fast-westend': fastWestend,
 }
 
+export type TrackList = Record<number, string>
+
 export interface INetworkContext {
   lightClientLoaded: boolean
   isLight: boolean
@@ -44,6 +46,7 @@ export interface INetworkContext {
   api: TypedApi<typeof dot | typeof ksm> | undefined
   network: SupportedNetworkNames
   assetInfo: AssetType
+  trackList: TrackList
 }
 
 const NetworkContext = createContext<INetworkContext | undefined>(undefined)
@@ -53,6 +56,7 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
   const [isLight, setIsLight] = useState<boolean>(false)
   const [client, setClient] = useState<PolkadotClient>()
   const [api, setApi] = useState<ApiType>()
+  const [trackList, setTrackList] = useState<TrackList>({})
 
   const [assetInfo, setAssetInfo] = useState<AssetType>({} as AssetType)
   const [network, setNetwork] = useState<SupportedNetworkNames>('polkadot')
@@ -104,6 +108,21 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
     }
   }, [client?.finalizedBlock$, isLight, lightClientLoaded])
 
+  useEffect(() => {
+    const res: TrackList = {}
+    if (api) {
+      api.constants.Referenda.Tracks()
+        .then((tracks) => {
+          tracks.forEach(([number, { name }]) => {
+            res[number] = name.replace(/_/g, ' ')
+          })
+        })
+        .catch(console.error)
+
+      setTrackList(res)
+    }
+  }, [api])
+
   return (
     <NetworkContext.Provider
       value={{
@@ -114,6 +133,7 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
         client,
         api,
         assetInfo,
+        trackList,
       }}
     >
       {children}
