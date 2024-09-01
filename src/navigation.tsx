@@ -14,6 +14,7 @@ import { Github, Moon, Sun } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useTheme } from '@/components/theme-provider'
 import { useNetwork } from './contexts/NetworkContext'
+import { Link } from 'react-router-dom'
 
 const linkStyle = (pathname: string, link: string) => {
   return `link ${
@@ -39,20 +40,20 @@ export const Navigation = () => {
           width={'2.2rem'}
           height={'2.2rem'}
         />
-        {routes.map((r) => (
-          <Tooltip key={r.name}>
-            <TooltipTrigger asChild>
-              <a
-                className={linkStyle(pathname, '/' + (r.link || ''))}
-                href={`/${r.link || ''}`}
-              >
-                <r.icon className="h-5 w-5" />
-                <span className="sr-only">{r.name}</span>
-              </a>
-            </TooltipTrigger>
-            <TooltipContent side="right">{r.name}</TooltipContent>
-          </Tooltip>
-        ))}
+        {routes.map((r) => {
+          const link = '/' + (r.link || '')
+          return (
+            <Tooltip key={r.name}>
+              <TooltipTrigger asChild>
+                <Link to={link} className={linkStyle(pathname, link)}>
+                  <r.icon className="h-5 w-5" />
+                  <span className="sr-only">{r.name}</span>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right">{r.name}</TooltipContent>
+            </Tooltip>
+          )
+        })}
       </nav>
       <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
         {isLight && (
