@@ -36,11 +36,12 @@ const networkList: NetworkDisplay[] = [
   { name: 'kusama-lc', display: 'Kusama Light Client' },
 ]
 
-import.meta.env.DEV &&
+if (import.meta.env.DEV) {
   networkList.push(
     { name: 'westend', display: 'Westend' },
     { name: 'fast-westend', display: 'Fast Westend' },
   )
+}
 
 export const Header = () => {
   const { network, setNetwork } = useNetwork()

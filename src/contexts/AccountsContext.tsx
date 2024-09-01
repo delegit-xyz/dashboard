@@ -39,7 +39,9 @@ const AccountContextProvider = ({ children }: AccountContextProps) => {
       if (!account) {
         removeLocalStorageAccount()
       }
-      account?.address && setLocalStorageAccount(account.address)
+
+      if (account?.address) setLocalStorageAccount(account.address)
+
       setSelected(account)
     },
     [removeLocalStorageAccount, setLocalStorageAccount],
@@ -50,7 +52,9 @@ const AccountContextProvider = ({ children }: AccountContextProps) => {
       const account = accounts.find(
         (account) => account.address === localStorageAccount,
       )
-      !!account && selectAccount(account)
+      if (account) {
+        selectAccount(account)
+      }
     } else {
       selectAccount(accounts[0])
     }

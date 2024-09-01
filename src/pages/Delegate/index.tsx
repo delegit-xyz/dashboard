@@ -98,7 +98,7 @@ export const Delegate = () => {
     setAmountError('')
     const [bnResult, errorMessage] = evalUnits(e.target.value, decimals)
     setAmount(bnResult || 0n)
-    errorMessage && setAmountError(errorMessage)
+    if (errorMessage) setAmountError(errorMessage)
     setAmountVisible(e.target.value)
   }
 
