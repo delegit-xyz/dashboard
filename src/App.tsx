@@ -15,6 +15,7 @@ import { LocksContextProvider } from './contexts/LocksContext'
 import { DelegateContextProvider } from '@/contexts/DelegatesContext'
 import { NetworkContextProvider } from './contexts/NetworkContext'
 import { THEME_KEY } from './lib/constants'
+import ErrorBoundary from './components/ErrorBoundary'
 
 const App = () => {
   const [settings] = useLocalStorage(THEME_KEY, {
@@ -22,7 +23,7 @@ const App = () => {
   })
 
   return (
-    <>
+    <ErrorBoundary>
       <ThemeProvider defaultTheme={settings?.themeMode as Theme}>
         <ReDotProvider config={config}>
           <ReDotChainProvider chainId="polkadot">
@@ -49,7 +50,7 @@ const App = () => {
         </ReDotProvider>
       </ThemeProvider>
       <Toaster />
-    </>
+    </ErrorBoundary>
   )
 }
 
