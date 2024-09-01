@@ -5,29 +5,29 @@ import { useEffect, useState } from 'react'
 type Props = {
   children: React.ReactNode
   className?: string
-  disabled?: boolean
+  hidden?: boolean
 }
 
-export const ContentReveal = ({ children, className, disabled }: Props) => {
+export const ContentReveal = ({ children, className, hidden }: Props) => {
   const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
-    if (disabled) {
+    if (hidden) {
       setIsOpen(false)
     }
-  }, [disabled])
+  }, [hidden])
 
   return (
     <div className={className}>
       <button
         onClick={() => {
-          !disabled && setIsOpen(!isOpen)
+          !hidden && setIsOpen(!isOpen)
         }}
         className={cn(
           `flex w-full items-center justify-center`,
-          disabled && 'opacity-0',
+          hidden && 'opacity-0',
         )}
-        disabled={disabled}
+        disabled={hidden}
       >
         <ChevronDown
           className={`transition-transform duration-300 ${

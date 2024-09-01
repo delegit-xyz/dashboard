@@ -152,18 +152,45 @@ export const LocksCard = () => {
         </>
       ) : (
         <>
-          {
-            <Card className="h-full w-4/12 border-2 p-2 px-4">
-              <Title variant="h4">Locked</Title>
-              <div className="text-5xl font-bold">
-                {currentLocks.length}
-                <Clock2 className="inline-block h-8 w-8 rotate-[10deg] text-gray-200" />
-              </div>
-              <ContentReveal disabled={!currentLocks.length}>
-                {currentLocks.map(({ amount, endBlock, refId }) => {
-                  const remainingTimeMs =
-                    (Number(endBlock) - currentBlock) * expectedBlockTime
-                  const remainingDisplay = convertMiliseconds(remainingTimeMs)
+          <Card className="h-full w-4/12 border-2 p-2 px-4">
+            <Title variant="h4">Locked</Title>
+            <div className="text-5xl font-bold">
+              {currentLocks.length}
+              <Clock2 className="inline-block h-8 w-8 rotate-[10deg] text-gray-200" />
+            </div>
+            <ContentReveal disabled={!currentLocks.length}>
+              {currentLocks.map(({ amount, endBlock, refId }) => {
+                const remainingTimeMs =
+                  (Number(endBlock) - currentBlock) * expectedBlockTime
+                const remainingDisplay = convertMiliseconds(remainingTimeMs)
+                return (
+                  <div key={refId}>
+                    <ul>
+                      <li>
+                        <Badge>#{refId}</Badge>{' '}
+                        {planckToUnit(
+                          amount,
+                          assetInfo.precision,
+                        ).toLocaleString('en')}{' '}
+                        {assetInfo.symbol}
+                        <br />
+                        Remaining: {displayRemainingTime(remainingDisplay)}
+                      </li>
+                    </ul>
+                  </div>
+                )
+              })}
+            </ContentReveal>
+          </Card>
+          <Card className="h-full w-4/12 border-2 p-2 px-4">
+            <Title variant="h4">Votes</Title>
+            <div className="text-5xl font-bold">
+              {ongoingVoteLocks.length}
+              <Vote className="inline-block h-8 w-8 text-gray-200" />
+            </div>
+            {
+              <ContentReveal disabled={!ongoingVoteLocks.length}>
+                {ongoingVoteLocks.map(({ amount, refId }) => {
                   return (
                     <div key={refId}>
                       <ul>
@@ -174,45 +201,14 @@ export const LocksCard = () => {
                             assetInfo.precision,
                           ).toLocaleString('en')}{' '}
                           {assetInfo.symbol}
-                          <br />
-                          Remaining: {displayRemainingTime(remainingDisplay)}
                         </li>
                       </ul>
                     </div>
                   )
                 })}
               </ContentReveal>
-            </Card>
-          }
-          {
-            <Card className="h-full w-4/12 border-2 p-2 px-4">
-              <Title variant="h4">Votes</Title>
-              <div className="text-5xl font-bold">
-                {ongoingVoteLocks.length}
-                <Vote className="inline-block h-8 w-8 text-gray-200" />
-              </div>
-              {
-                <ContentReveal disabled={!ongoingVoteLocks.length}>
-                  {ongoingVoteLocks.map(({ amount, refId }) => {
-                    return (
-                      <div key={refId}>
-                        <ul>
-                          <li>
-                            <Badge>#{refId}</Badge>{' '}
-                            {planckToUnit(
-                              amount,
-                              assetInfo.precision,
-                            ).toLocaleString('en')}{' '}
-                            {assetInfo.symbol}
-                          </li>
-                        </ul>
-                      </div>
-                    )
-                  })}
-                </ContentReveal>
-              }
-            </Card>
-          }
+            }
+          </Card>
         </>
       )}
     </div>

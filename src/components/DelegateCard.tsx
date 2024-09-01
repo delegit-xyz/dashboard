@@ -1,9 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Check, Copy } from 'lucide-react'
-import { ellipsisFn } from '@polkadot-ui/utils'
 import { useNavigate } from 'react-router-dom'
-import copy from 'copy-to-clipboard'
 import { useEffect, useState } from 'react'
 import { Delegate } from '@/contexts/DelegatesContext'
 import { ContentReveal } from './ui/content-reveal'
@@ -33,22 +30,6 @@ export const DelegateCard = ({ delegate: d }: Props) => {
         </div>
         <div className="w-[85%] p-2">
           <div className="py-2 text-xl font-bold text-primary">{d.name}</div>
-          <div className="flex items-center py-2 text-sm">
-            <div>{ellipsisFn(d.address)}</div>
-            <div className="cursor-pointer pl-4">
-              {copied ? (
-                <Check className="text-[green]" />
-              ) : (
-                <Copy
-                  className="size-4 cursor-pointer"
-                  onClick={() => {
-                    setCopied(true)
-                    copy(d.address)
-                  }}
-                />
-              )}
-            </div>
-          </div>
           <div>{d.shortDescription}</div>
           <ContentReveal
             disabled={
