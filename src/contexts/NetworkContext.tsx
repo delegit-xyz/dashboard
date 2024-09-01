@@ -95,12 +95,13 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
   }, [network])
 
   useEffect(() => {
-    isLight &&
+    if (isLight) {
       client?.finalizedBlock$.subscribe((finalizedBlock) => {
         if (finalizedBlock.number && !lightClientLoaded) {
           setLightClientLoaded(true)
         }
       })
+    }
   }, [client?.finalizedBlock$, isLight, lightClientLoaded])
 
   return (
