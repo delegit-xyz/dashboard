@@ -24,7 +24,9 @@ export const Content = () => {
   const { lightClientLoaded, isLight } = useNetwork()
 
   useEffect(() => {
-    isLight && lightClientLoaded && toast.success('Light client: Synced')
+    if (isLight && lightClientLoaded) {
+      toast.success('Light client: Connected')
+    }
   }, [isLight, lightClientLoaded])
 
   return (

@@ -26,7 +26,7 @@ const App = () => {
       <ThemeProvider defaultTheme={settings?.themeMode as Theme}>
         <ReDotProvider config={config}>
           <ReDotChainProvider chainId="polkadot">
-            <Suspense>
+            <Suspense fallback={<div>Loading...</div>}>
               <NetworkContextProvider>
                 <DelegateContextProvider>
                   <AccountContextProvider>
