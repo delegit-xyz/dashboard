@@ -1,19 +1,33 @@
+import { cn } from '@/lib/utils'
 import { ChevronDown } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 type Props = {
   children: React.ReactNode
   className?: string
+  hidden?: boolean
 }
 
-export const ContentReveal = ({ children, className }: Props) => {
+export const ContentReveal = ({ children, className, hidden }: Props) => {
   const [isOpen, setIsOpen] = useState(false)
+
+  useEffect(() => {
+    if (hidden) {
+      setIsOpen(false)
+    }
+  }, [hidden])
 
   return (
     <div className={className}>
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-center"
+        onClick={() => {
+          !hidden && setIsOpen(!isOpen)
+        }}
+        className={cn(
+          `flex w-full items-center justify-center`,
+          hidden && 'opacity-0',
+        )}
+        disabled={hidden}
       >
         <ChevronDown
           className={`transition-transform duration-300 ${
