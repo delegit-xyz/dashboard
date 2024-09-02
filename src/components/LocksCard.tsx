@@ -16,17 +16,24 @@ import { dot } from '@polkadot-api/descriptors'
 import { useAccounts } from '@/contexts/AccountsContext'
 import { TypedApi } from 'polkadot-api'
 import { getUnlockUnvoteTx } from '@/lib/utils'
-import { DelegationLock, useLocks, VoteLock } from '@/contexts/LocksContext'
+import {
+  DelegationLock,
+  LockType,
+  useLocks,
+  VoteLock,
+} from '@/contexts/LocksContext'
 import { Skeleton } from './ui/skeleton'
 
 export const LocksCard = () => {
   const [currentBlock, setCurrentBlock] = useState(0)
   const [expectedBlockTime, setExpectedBlockTime] = useState(0)
-  const { api } = useNetwork()
+  const { api, trackList } = useNetwork()
   const { locks, delegationLocks } = useLocks()
   const { assetInfo } = useNetwork()
   const [ongoingVoteLocks, setOngoingVoteLocks] = useState<VoteLock[]>([])
-  const [freeLocks, setFreeLocks] = useState<VoteLock[]>([])
+  const [freeLocks, setFreeLocks] = useState<Array<VoteLock | DelegationLock>>(
+    [],
+  )
   const [locksLoaded, setLocksLoaded] = useState<boolean>(false)
   const [currentLocks, setCurrentLocks] = useState<VoteLock[]>([])
   const [currentDelegationLocks, setCurrentDelegationLocks] = useState<
@@ -39,7 +46,7 @@ export const LocksCard = () => {
     if (!currentBlock) return
 
     const tempOngoingLocks: VoteLock[] = []
-    const tempFree: VoteLock[] = []
+    const tempFree: Array<VoteLock | DelegationLock> = []
     const tempCurrent: VoteLock[] = []
 
     locks.forEach((lock) => {
@@ -61,6 +68,7 @@ export const LocksCard = () => {
       } else {
         // in this case, the lock is elapsed and can be freed
         // check track 15 and 30
+        tempFree.push(lock)
       }
     })
 
@@ -139,12 +147,35 @@ export const LocksCard = () => {
                   Unlock
                 </Button>
                 <ContentReveal>
-                  {freeLocks.map(({ amount, refId, trackId }) => {
+                  {freeLocks.map((lock) => {
+                    if (lock.type === LockType.Delegating) {
+                      const { amount, trackId } = lock
+                      return (
+                        <div key={trackId}>
+                          <ul>
+                            <li className="mb-2">
+                              <div className="capitalize">
+                                <span className="capitalize">
+                                  <Badge>{trackList[trackId]}</Badge> /{trackId}
+                                </span>
+                                {planckToUnit(
+                                  amount,
+                                  assetInfo.precision,
+                                ).toLocaleString('en')}{' '}
+                                {assetInfo.symbol}
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                      )
+                    }
+
+                    const { amount, refId } = lock
                     return (
                       <div key={refId}>
                         <ul>
                           <li className="mb-2">
-                            {trackId} - <Badge>#{refId}</Badge>{' '}
+                            <Badge>#{refId}</Badge>{' '}
                             {planckToUnit(
                               amount,
                               assetInfo.precision,
@@ -193,35 +224,37 @@ export const LocksCard = () => {
                           ).toLocaleString('en')}{' '}
                           {assetInfo.symbol}
                           <br />
-                          Remaining: {displayRemainingTime(remainingDisplay)}
+                          <Clock2 className="inline-block h-4 w-4 text-gray-500" />{' '}
+                          {displayRemainingTime(remainingDisplay)}
                         </li>
                       </ul>
                     </div>
                   )
                 })}
-                {currentDelegationLocks.map(
-                  ({ balance, endBlock, trackId }) => {
-                    const remainingTimeMs =
-                      (Number(endBlock) - currentBlock) * expectedBlockTime
-                    const remainingDisplay = convertMiliseconds(remainingTimeMs)
-                    return (
-                      <div key={trackId}>
-                        <ul>
-                          <li>
-                            <Badge>Delegation /{trackId}</Badge>{' '}
-                            {planckToUnit(
-                              balance,
-                              assetInfo.precision,
-                            ).toLocaleString('en')}{' '}
-                            {assetInfo.symbol}
-                            <br />
-                            Remaining: {displayRemainingTime(remainingDisplay)}
-                          </li>
-                        </ul>
-                      </div>
-                    )
-                  },
-                )}
+                {currentDelegationLocks.map(({ amount, endBlock, trackId }) => {
+                  const remainingTimeMs =
+                    (Number(endBlock) - currentBlock) * expectedBlockTime
+                  const remainingDisplay = convertMiliseconds(remainingTimeMs)
+                  return (
+                    <div key={trackId}>
+                      <ul>
+                        <li>
+                          <div className="capitalize">
+                            <Badge>{trackList[trackId]}</Badge> /{trackId}
+                          </div>
+                          {planckToUnit(
+                            amount,
+                            assetInfo.precision,
+                          ).toLocaleString('en')}{' '}
+                          {assetInfo.symbol}
+                          <br />
+                          <Clock2 className="inline-block h-4 w-4 text-gray-500" />{' '}
+                          {displayRemainingTime(remainingDisplay)}
+                        </li>
+                      </ul>
+                    </div>
+                  )
+                })}
               </>
             </ContentReveal>
           </Card>

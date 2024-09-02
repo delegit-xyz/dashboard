@@ -23,7 +23,13 @@ import {
 } from '@polkadot-api/descriptors'
 import { convertMiliseconds } from '@/lib/convertMiliseconds'
 
+// eslint-disable-next-line react-refresh/only-export-components
+export enum LockType {
+  'Casting',
+  'Delegating',
+}
 export interface VoteLock {
+  type: LockType.Casting
   isOngoing: boolean
   refId: number
   endBlock: bigint
@@ -38,7 +44,8 @@ export interface CurrentDelegation {
 }
 
 export interface DelegationLock {
-  balance: bigint
+  type: LockType.Delegating
+  amount: bigint
   endBlock: number
   trackId: number
 }
@@ -178,8 +185,9 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
         // and has undelegated
         if (value.prior[1] > 0) {
           delegationLocks.push({
+            type: LockType.Delegating,
             trackId,
-            balance: value.prior[1],
+            amount: value.prior[1],
             endBlock: value.prior[0],
           })
         }
@@ -242,6 +250,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
           const refEndBlock = BigInt(refInfo.value[0])
 
           locks.push({
+            type: LockType.Casting,
             isOngoing: false,
             endBlock: refEndBlock + convictionLockTimeBlocks,
             amount: balance,
@@ -259,6 +268,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
           const refEndBlock = BigInt(refInfo.value[0])
 
           locks.push({
+            type: LockType.Casting,
             isOngoing: false,
             endBlock: refEndBlock,
             amount: balance,
@@ -271,6 +281,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
           const refEndBlock = BigInt(refInfo.value)
 
           locks.push({
+            type: LockType.Casting,
             isOngoing: false,
             endBlock: refEndBlock,
             amount: balance,
@@ -283,6 +294,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
           const refEndBlock = BigInt(Number.MAX_SAFE_INTEGER)
 
           locks.push({
+            type: LockType.Casting,
             isOngoing: true,
             endBlock: refEndBlock,
             amount: balance,
@@ -300,6 +312,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
               )
 
         locks.push({
+          type: LockType.Casting,
           isOngoing: refInfo?.type === 'Ongoing',
           endBlock: refEndBlock,
           amount: aye + nay,
@@ -319,6 +332,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
               )
 
         locks.push({
+          type: LockType.Casting,
           isOngoing: refInfo?.type === 'Ongoing',
           endBlock: refEndBlock,
           amount: aye + nay + abstain,
