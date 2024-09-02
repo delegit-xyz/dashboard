@@ -74,6 +74,7 @@ export interface ILocksContext {
   getConvictionLockTimeDisplay: (
     conviction: number | string,
   ) => ConvictionDisplay
+  refreshLocks: () => void
 }
 
 const LocksContext = createContext<ILocksContext | undefined>(undefined)
@@ -82,6 +83,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
   const { selectedAccount } = useAccounts()
   const { api } = useNetwork()
 
+  const [forcerefresh, setForceRefresh] = useState(0)
   const [lockTracks, setLockTracks] = useState<number[]>([])
   const [refRecap, setRefRecap] = useState<RefRecap>({})
   const [currentVoteLocks, setCurrentVoteLocks] = useState<
@@ -94,6 +96,10 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
   const [convictionLocksMap, setConvictionLocksMap] = useState<
     Record<string, bigint>
   >({})
+
+  const refreshLocks = useCallback(() => {
+    setForceRefresh((prev) => prev + 1)
+  }, [])
 
   useEffect(() => {
     if (!api) return
@@ -120,6 +126,8 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
 
   // retrieve all the votes for the selected account
   // they can be directly casted or delegated
+  // there's a forcerefresh in the dependancies array
+  // bc the lockTracks doesn't change when the delegation changes
   useEffect(() => {
     if (!selectedAccount || !api || !lockTracks.length) {
       setCurrentVoteLocks([])
@@ -135,7 +143,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
       }))
       setCurrentVoteLocks(votes)
     })
-  }, [api, lockTracks, lockTracks.length, selectedAccount])
+  }, [api, lockTracks, lockTracks.length, selectedAccount, forcerefresh])
 
   // get the ref for which we have a vote casted directly
   // or for which we have delegated
@@ -389,6 +397,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
         delegations,
         getConvictionLockTimeDisplay,
         delegationLocks,
+        refreshLocks,
       }}
     >
       {children}

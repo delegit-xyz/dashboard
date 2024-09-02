@@ -16,7 +16,7 @@ import { dot } from '@polkadot-api/descriptors'
 
 export const MyDelegations = () => {
   const { trackList, assetInfo, api } = useNetwork()
-  const { delegations, getConvictionLockTimeDisplay } = useLocks()
+  const { delegations, getConvictionLockTimeDisplay, refreshLocks } = useLocks()
   const [delegateLoading, setDelegatesLoading] = useState<string[]>([])
   const noDelegations = useMemo(
     () => !!delegations && Object.entries(delegations).length === 0,
@@ -50,6 +50,7 @@ export const MyDelegations = () => {
           console.log(event)
           if (event.type === 'finalized') {
             setDelegatesLoading((prev) => prev.filter((id) => id !== delegate))
+            refreshLocks()
           }
         },
         error: (error) => {
@@ -58,7 +59,7 @@ export const MyDelegations = () => {
         },
       })
     },
-    [api, delegations, selectedAccount],
+    [api, delegations, refreshLocks, selectedAccount],
   )
 
   return (
