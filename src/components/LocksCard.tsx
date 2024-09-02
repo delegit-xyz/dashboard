@@ -10,7 +10,7 @@ import { planckToUnit } from '@polkadot-ui/utils'
 import { Button } from './ui/button'
 import { Title } from './ui/title'
 import { ContentReveal } from './ui/content-reveal'
-import { Clock2, LockKeyholeOpen, Vote } from 'lucide-react'
+import { BadgeCent, Clock2, LockKeyholeOpen, Vote } from 'lucide-react'
 import { Badge } from './ui/badge'
 import { dot } from '@polkadot-api/descriptors'
 import { useAccounts } from '@/contexts/AccountsContext'
@@ -140,7 +140,7 @@ export const LocksCard = () => {
             {freeLocks.length > 0 && (
               <>
                 <Button
-                  className="my-4 w-full"
+                  className="mb-2 mt-4 w-full"
                   onClick={onUnlockClick}
                   disabled={isUnlockingLoading}
                 >
@@ -158,6 +158,8 @@ export const LocksCard = () => {
                                 <span className="capitalize">
                                   <Badge>{trackList[trackId]}</Badge> /{trackId}
                                 </span>
+                                <br />
+                                <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
                                 {planckToUnit(
                                   amount,
                                   assetInfo.precision,
@@ -175,7 +177,9 @@ export const LocksCard = () => {
                       <div key={refId}>
                         <ul>
                           <li className="mb-2">
-                            <Badge>#{refId}</Badge>{' '}
+                            <Badge>#{refId}</Badge>
+                            <br />
+                            <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
                             {planckToUnit(
                               amount,
                               assetInfo.precision,
@@ -217,7 +221,9 @@ export const LocksCard = () => {
                     <div key={refId}>
                       <ul>
                         <li>
-                          <Badge>#{refId}</Badge>{' '}
+                          <Badge>#{refId}</Badge>
+                          <br />
+                          <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
                           {planckToUnit(
                             amount,
                             assetInfo.precision,
@@ -242,6 +248,7 @@ export const LocksCard = () => {
                           <div className="capitalize">
                             <Badge>{trackList[trackId]}</Badge> /{trackId}
                           </div>
+                          <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
                           {planckToUnit(
                             amount,
                             assetInfo.precision,
@@ -271,7 +278,9 @@ export const LocksCard = () => {
                     <div key={refId}>
                       <ul>
                         <li>
-                          <Badge>#{refId}</Badge>{' '}
+                          <Badge>#{refId}</Badge>
+                          <br />
+                          <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
                           {planckToUnit(
                             amount,
                             assetInfo.precision,

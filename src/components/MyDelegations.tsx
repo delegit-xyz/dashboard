@@ -1,6 +1,6 @@
 import { Card } from '@polkadot-ui/react'
 import { Title } from './ui/title'
-import { TreePalm } from 'lucide-react'
+import { BadgeCent, TreePalm } from 'lucide-react'
 import { useLocks } from '@/contexts/LocksContext'
 import { useCallback, useMemo, useState } from 'react'
 import { Skeleton } from './ui/skeleton'
@@ -110,6 +110,7 @@ export const MyDelegations = () => {
                             <Badge>{trackList[trackId]}</Badge> /{trackId}
                           </div>
                           <div>
+                            <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
                             {planckToUnit(
                               balance,
                               assetInfo.precision,
@@ -123,7 +124,7 @@ export const MyDelegations = () => {
                       )
                     })}
                     <Button
-                      className="my-4 w-full"
+                      className="mb-2 mt-4 w-full"
                       variant={'outline'}
                       onClick={() => onUndelegate(key)}
                       disabled={delegateLoading.includes(key)}
