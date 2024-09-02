@@ -95,7 +95,6 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
     Record<string, bigint>
   >({})
 
-  console.log('currentVoteLocks', currentVoteLocks)
   useEffect(() => {
     if (!api) return
 
