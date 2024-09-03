@@ -79,3 +79,7 @@
     @apply bg-background text-foreground;
   }
 }
+
+.break-anywhere {
+  overflow-wrap: anywhere;
+}

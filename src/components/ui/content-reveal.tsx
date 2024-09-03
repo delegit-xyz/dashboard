@@ -18,7 +18,7 @@ export const ContentReveal = ({ children, className, hidden }: Props) => {
   }, [hidden])
 
   return (
-    <div className={className}>
+    <div className={cn('break-anywhere', className)}>
       <button
         onClick={() => {
           !hidden && setIsOpen(!isOpen)
