@@ -62,12 +62,12 @@ export const LocksCard = () => {
     const tempDelegationLocks: DelegationLock[] = []
 
     delegationLocks.forEach((lock) => {
-      //if the end block is in the future
+      // if the end block is in the future
+      // then the funds are locked
       if (lock.endBlock >= currentBlock) {
         tempDelegationLocks.push(lock)
       } else {
-        // in this case, the lock is elapsed and can be freed
-        // check track 15 and 30
+        // otherwise, the lock is elapsed and can be freed
         tempFree.push(lock)
       }
     })
