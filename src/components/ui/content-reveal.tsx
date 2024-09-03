@@ -36,8 +36,8 @@ export const ContentReveal = ({ children, className, hidden }: Props) => {
         />
       </button>
       <div
-        className={`overflow-hidden transition-all duration-300 ${
-          isOpen ? 'max-h-screen' : 'max-h-0'
+        className={`overflow-auto transition-all duration-300 ${
+          isOpen ? 'max-h-96' : 'max-h-0'
         }`}
       >
         {children}
