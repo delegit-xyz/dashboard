@@ -65,12 +65,12 @@ export const MyDelegations = () => {
   return (
     <>
       <Title className="mb-4">My Delegations</Title>
-      <div className="w-full gap-x-2">
+      <div className="grid w-full grid-cols-1 gap-2 md:grid-cols-2">
         {delegations === undefined ? (
           <Skeleton className="h-[116px] rounded-xl" />
         ) : noDelegations ? (
-          <Card className="mb-5 flex w-4/12 justify-center bg-gray-200 p-4">
-            <div className="flex h-full w-4/12 items-center justify-center">
+          <Card className="mb-5 flex justify-center bg-gray-200 p-4">
+            <div className="flex h-full items-center justify-center">
               <TreePalm className="h-12 w-12" />
             </div>
             <div className="mt-4 text-center">
@@ -84,7 +84,7 @@ export const MyDelegations = () => {
 
               return (
                 <Card
-                  className="flex h-full w-4/12 flex-col border-2 bg-white p-2 px-4"
+                  className="flex h-full flex-col border-2 bg-card p-2 px-4"
                   key={key}
                 >
                   <>
