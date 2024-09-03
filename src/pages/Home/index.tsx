@@ -12,7 +12,7 @@ export const Home = () => {
       <LocksCard />
       <MyDelegations />
       <Title>Delegates</Title>
-      <div className="pageTop">
+      <div className="sm:grid sm:grid-cols-1">
         {delegates?.map((d) => <DelegateCard key={d.address} delegate={d} />)}
       </div>
     </main>

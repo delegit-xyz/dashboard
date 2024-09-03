@@ -26,11 +26,11 @@ export const DelegateCard = ({ delegate: d }: Props) => {
     <Card className="mb-5 flex flex-col border-2 p-2">
       <div className="flex columns-3">
         <div className="w-[10%] p-2">
-          <img className="rounded-3xl" width="100" src={d.image} />
+          <img className="rounded-full" width="100" src={d.image} />
         </div>
         <div className="w-[85%] p-2">
           <div className="py-2 text-xl font-bold text-primary">{d.name}</div>
-          <div>{d.shortDescription}</div>
+          <div className="break-anywhere">{d.shortDescription}</div>
           <ContentReveal
             hidden={
               d.shortDescription === d.longDescription || !d.longDescription
@@ -43,7 +43,6 @@ export const DelegateCard = ({ delegate: d }: Props) => {
           Delegate
         </Button>
       </div>
-      <div className="w-full"></div>
     </Card>
   )
 }
