@@ -5,7 +5,6 @@ import { useNetwork } from '@/contexts/NetworkContext'
 import { VotingConviction } from '@polkadot-api/descriptors'
 import { SetStateAction, useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { getDelegateTx } from '@/lib/currentVotesAndDelegations'
 import { useAccounts } from '@/contexts/AccountsContext'
 import { Slider } from '@/components/ui/slider'
 import { useParams } from 'react-router-dom'
@@ -15,6 +14,7 @@ import { AlertCircle } from 'lucide-react'
 import { msgs } from '@/lib/constants'
 import { evalUnits, planckToUnit } from '@polkadot-ui/utils'
 import { useLocks } from '@/contexts/LocksContext'
+import { useGetDelegationTx } from '@/hooks/useGetDelegationTx'
 
 type AlertProps = {
   title: string
@@ -47,6 +47,7 @@ export const Delegate = () => {
   )
   const [convictionNo, setConvictionNo] = useState(0)
   const { selectedAccount } = useAccounts()
+  const { getDelegationTx } = useGetDelegationTx()
 
   const convictionDisplay = useMemo(() => {
     const { display, multiplier } = getConvictionLockTimeDisplay(convictionNo)
@@ -98,15 +99,14 @@ export const Delegate = () => {
         })
         .catch(console.error)
 
-      const tx = getDelegateTx({
-        from: selectedAccount?.address,
+      const tx = getDelegationTx({
         target: delegate.address,
         conviction: conviction,
         amount,
         tracks: allTracks || [],
-        api,
       })
 
+      if (!tx) return
       ;(await tx)
         .signSubmitAndWatch(selectedAccount?.polkadotSigner)
         .forEach((value) => console.log('value', value))

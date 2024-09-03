@@ -15,7 +15,7 @@ import { Badge } from './ui/badge'
 import { dot } from '@polkadot-api/descriptors'
 import { useAccounts } from '@/contexts/AccountsContext'
 import { TypedApi } from 'polkadot-api'
-import { getUnlockUnvoteTx } from '@/lib/utils'
+
 import {
   DelegationLock,
   LockType,
@@ -23,6 +23,7 @@ import {
   VoteLock,
 } from '@/contexts/LocksContext'
 import { Skeleton } from './ui/skeleton'
+import { useGetDelegationTx } from '@/hooks/useGetDelegationTx'
 
 export const LocksCard = () => {
   const [currentBlock, setCurrentBlock] = useState(0)
@@ -41,6 +42,7 @@ export const LocksCard = () => {
   >([])
   const { selectedAccount } = useAccounts()
   const [isUnlockingLoading, setIsUnlockingLoading] = useState(false)
+  const { getUnlockUnvoteTx } = useGetDelegationTx()
 
   useEffect(() => {
     if (!currentBlock) return
@@ -102,11 +104,9 @@ export const LocksCard = () => {
     if (!api || !selectedAccount) return
 
     setIsUnlockingLoading(true)
-    const { unVoteTxs, unlockTxs } = getUnlockUnvoteTx(
-      freeLocks,
-      api,
-      selectedAccount,
-    )
+    const { unVoteTxs, unlockTxs } = getUnlockUnvoteTx(freeLocks) || {}
+
+    if (!unVoteTxs || !unlockTxs) return
 
     // We need thisto make TS happy for now
     const dotApi = api as TypedApi<typeof dot>
@@ -125,7 +125,7 @@ export const LocksCard = () => {
           setIsUnlockingLoading(false)
         },
       })
-  }, [api, freeLocks, selectedAccount])
+  }, [api, freeLocks, getUnlockUnvoteTx, selectedAccount])
 
   return (
     <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
