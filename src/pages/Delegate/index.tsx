@@ -151,7 +151,7 @@ export const Delegate = () => {
       <h1 className="flex-1 shrink-0 whitespace-nowrap font-unbounded text-xl font-semibold tracking-tight text-primary sm:grow-0">
         Delegate to {delegate.name}
       </h1>
-      <div className="pageTop">
+      <div>
         <Label>Amount</Label>
         <Input
           onChange={(value) => onChangeAmount(value, assetInfo.precision)}

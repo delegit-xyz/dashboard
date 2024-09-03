@@ -17,6 +17,7 @@ import { useAccounts } from '@/contexts/AccountsContext'
 import { TypedApi } from 'polkadot-api'
 import { getUnlockUnvoteTx } from '@/lib/utils'
 import { useLocks, VoteLock } from '@/contexts/LocksContext'
+import { Skeleton } from './ui/skeleton'
 
 export const LocksCard = () => {
   const [currentBlock, setCurrentBlock] = useState(0)
@@ -26,6 +27,7 @@ export const LocksCard = () => {
   const { assetInfo } = useNetwork()
   const [ongoingVoteLocks, setOngoingVoteLocks] = useState<VoteLock[]>([])
   const [freeLocks, setFreeLocks] = useState<VoteLock[]>([])
+  const [locksLoaded, setLocksLoaded] = useState<boolean>(false)
   const [currentLocks, setCurrentLocks] = useState<VoteLock[]>([])
   const { selectedAccount } = useAccounts()
   const [isUnlockingLoading, setIsUnlockingLoading] = useState(false)
@@ -50,6 +52,7 @@ export const LocksCard = () => {
     setOngoingVoteLocks(tempOngoingLocks)
     setFreeLocks(tempFree)
     setCurrentLocks(tempCurrent)
+    setLocksLoaded(true)
   }, [currentBlock, locks])
 
   useEffect(() => {
@@ -100,13 +103,10 @@ export const LocksCard = () => {
       })
   }, [api, freeLocks, selectedAccount])
 
-  if (!ongoingVoteLocks?.length && !freeLocks?.length && !currentLocks.length)
-    return null
-
   return (
-    <div className="flex w-full gap-x-2">
+    <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
       {freeLocks.length > 0 && (
-        <Card className="relative h-full w-4/12 border-2 p-2 px-4">
+        <Card className="relative h-full border-2 p-2 px-4">
           <div className="relative z-10">
             <Title variant="h4">Unlockable</Title>
             <div className="text-5xl font-bold">
@@ -145,62 +145,71 @@ export const LocksCard = () => {
           </div>
         </Card>
       )}
-      {currentLocks.length > 0 && (
-        <Card className="h-full w-4/12 border-2 p-2 px-4">
-          <Title variant="h4">Locked</Title>
-          <div className="text-5xl font-bold">
-            {currentLocks.length}
-            <Clock2 className="inline-block h-8 w-8 rotate-[10deg] text-gray-200" />
-          </div>
-          <ContentReveal>
-            {currentLocks.map(({ amount, endBlock, refId }) => {
-              const remainingTimeMs =
-                (Number(endBlock) - currentBlock) * expectedBlockTime
-              const remainingDisplay = convertMiliseconds(remainingTimeMs)
-              return (
-                <div key={refId}>
-                  <ul>
-                    <li>
-                      <Badge>#{refId}</Badge>{' '}
-                      {planckToUnit(amount, assetInfo.precision).toLocaleString(
-                        'en',
-                      )}{' '}
-                      {assetInfo.symbol}
-                      <br />
-                      Remaining: {displayRemainingTime(remainingDisplay)}
-                    </li>
-                  </ul>
-                </div>
-              )
-            })}
-          </ContentReveal>
-        </Card>
-      )}
-      {ongoingVoteLocks.length > 0 && (
-        <Card className="h-full w-4/12 border-2 p-2 px-4">
-          <Title variant="h4">Votes</Title>
-          <div className="text-5xl font-bold">
-            {ongoingVoteLocks.length}
-            <Vote className="inline-block h-8 w-8 text-gray-200" />
-          </div>
-          <ContentReveal>
-            {ongoingVoteLocks.map(({ amount, refId }) => {
-              return (
-                <div key={refId}>
-                  <ul>
-                    <li>
-                      <Badge>#{refId}</Badge>{' '}
-                      {planckToUnit(amount, assetInfo.precision).toLocaleString(
-                        'en',
-                      )}{' '}
-                      {assetInfo.symbol}
-                    </li>
-                  </ul>
-                </div>
-              )
-            })}
-          </ContentReveal>
-        </Card>
+      {!locksLoaded ? (
+        <>
+          <Skeleton className="h-[116px] rounded-xl" />
+          <Skeleton className="h-[116px] rounded-xl" />
+        </>
+      ) : (
+        <>
+          <Card className="h-full border-2 p-2 px-4">
+            <Title variant="h4">Locked</Title>
+            <div className="text-5xl font-bold">
+              {currentLocks.length}
+              <Clock2 className="inline-block h-8 w-8 rotate-[10deg] text-gray-200" />
+            </div>
+            <ContentReveal hidden={!currentLocks.length}>
+              {currentLocks.map(({ amount, endBlock, refId }) => {
+                const remainingTimeMs =
+                  (Number(endBlock) - currentBlock) * expectedBlockTime
+                const remainingDisplay = convertMiliseconds(remainingTimeMs)
+                return (
+                  <div key={refId}>
+                    <ul>
+                      <li>
+                        <Badge>#{refId}</Badge>{' '}
+                        {planckToUnit(
+                          amount,
+                          assetInfo.precision,
+                        ).toLocaleString('en')}{' '}
+                        {assetInfo.symbol}
+                        <br />
+                        Remaining: {displayRemainingTime(remainingDisplay)}
+                      </li>
+                    </ul>
+                  </div>
+                )
+              })}
+            </ContentReveal>
+          </Card>
+          <Card className="h-full border-2 p-2 px-4">
+            <Title variant="h4">Votes</Title>
+            <div className="text-5xl font-bold">
+              {ongoingVoteLocks.length}
+              <Vote className="inline-block h-8 w-8 text-gray-200" />
+            </div>
+            {
+              <ContentReveal hidden={!ongoingVoteLocks.length}>
+                {ongoingVoteLocks.map(({ amount, refId }) => {
+                  return (
+                    <div key={refId}>
+                      <ul>
+                        <li>
+                          <Badge>#{refId}</Badge>{' '}
+                          {planckToUnit(
+                            amount,
+                            assetInfo.precision,
+                          ).toLocaleString('en')}{' '}
+                          {assetInfo.symbol}
+                        </li>
+                      </ul>
+                    </div>
+                  )
+                })}
+              </ContentReveal>
+            }
+          </Card>
+        </>
       )}
     </div>
   )
