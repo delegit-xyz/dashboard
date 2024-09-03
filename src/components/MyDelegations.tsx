@@ -69,12 +69,14 @@ export const MyDelegations = () => {
         {delegations === undefined ? (
           <Skeleton className="h-[116px] rounded-xl" />
         ) : noDelegations ? (
-          <Card className="mb-5 flex justify-center bg-gray-200 p-4">
-            <div className="flex h-full items-center justify-center">
-              <TreePalm className="h-12 w-12" />
-            </div>
-            <div className="mt-4 text-center">
-              No delegation yet, get started below!
+          <Card className="col-span-2 mb-5 bg-accent p-4">
+            <div className="flex w-full flex-col justify-center">
+              <div className="flex h-full items-center justify-center">
+                <TreePalm className="h-12 w-12" />
+              </div>
+              <div className="mt-4 text-center">
+                No delegation yet, get started below!
+              </div>
             </div>
           </Card>
         ) : (
