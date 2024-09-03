@@ -103,6 +103,7 @@ export const Delegate = () => {
   }
 
   const onSign = async () => {
+    console.log(selectedAccount)
     if (selectedAccount && amount) {
       const allTracks = await api.constants.Referenda.Tracks()
         .then((tracks) => {

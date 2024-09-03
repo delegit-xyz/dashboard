@@ -1,17 +1,26 @@
-import { Polkicon } from '@polkadot-ui/react'
+import {
+  Polkicon,
+  ConnectConfiguration,
+  SelectedAccountType,
+  Connect,
+} from '@polkadot-ui/react'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { routes } from '@/lib/utils'
-import { useWalletDisconnector } from '@reactive-dot/react'
-import { PanelLeft } from 'lucide-react'
+import { ArrowDownToDot, PanelLeft, Unplug } from 'lucide-react'
 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 // import {
 //   Menubar,
 //   MenubarContent,
@@ -21,9 +30,13 @@ import { PanelLeft } from 'lucide-react'
 //   MenubarShortcut,
 //   MenubarTrigger,
 // } from '@/components/ui/menubar'
+import { SupportedNetworkNames, useNetwork } from './contexts/NetworkContext'
+import { useState } from 'react'
 import { useAccounts } from './contexts/AccountsContext'
 import { useEffect } from 'react'
-import { SupportedNetworkNames, useNetwork } from './contexts/NetworkContext'
+import { InjectedPolkadotAccount } from 'polkadot-api/pjs-signer'
+import { Link } from 'react-router-dom'
+import { useTheme } from '@/components/theme-provider'
 
 interface NetworkDisplay {
   name: SupportedNetworkNames
@@ -44,15 +57,45 @@ if (import.meta.env.DEV) {
 }
 
 export const Header = () => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const { theme } = useTheme()
   const { network, setNetwork } = useNetwork()
-  const { accounts, selectAccount, selectedAccount } = useAccounts()
-  const [, disconnectAll] = useWalletDisconnector()
+  const { selectedAccount, setSelectedAccount } = useAccounts()
+
+  const [selAccount, setSelAccount] = useState(
+    selectedAccount as SelectedAccountType,
+  )
+
+  const [config, setConfig] = useState<ConnectConfiguration>({})
 
   useEffect(() => {
-    if (!selectedAccount?.address && accounts.length > 0) {
-      selectAccount(accounts[0])
+    const configObject = {
+      downloadIcon: <ArrowDownToDot width={'2rem'} />,
+      disconnectIcon: <Unplug width={'2rem'} />,
     }
-  }, [accounts, selectAccount, selectedAccount?.address])
+    setConfig(
+      Object.assign(
+        configObject,
+        theme === 'light'
+          ? {
+              bg: {
+                selected: '#D4D4D4',
+              },
+              hover: { bg: '#EAEAEA' },
+            }
+          : {
+              bg: {
+                selected: '#2B2B2B',
+              },
+              hover: { bg: '#3A3A3A' },
+            },
+      ),
+    )
+  }, [theme])
+
+  useEffect(() => {
+    setSelectedAccount(selAccount as InjectedPolkadotAccount)
+  }, [selAccount, setSelectedAccount])
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:sticky sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
@@ -66,14 +109,14 @@ export const Header = () => {
         <SheetContent side="left" className="sm:max-w-xs">
           <nav className="grid gap-6 text-lg font-medium">
             {routes.map((r) => (
-              <a
+              <Link
                 key={r.name}
-                href={`/${r.link || ''}`}
+                to={`/${r.link || ''}`}
                 className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
               >
                 <r.icon className="h-5 w-5" />
                 {r.name}
-              </a>
+              </Link>
             ))}
           </nav>
         </SheetContent>
@@ -116,12 +159,12 @@ export const Header = () => {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
-          {!accounts.length && (
-            <dc-connection-button>Connect</dc-connection-button>
-          )}
-          {!!accounts.length && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+
+          <Dialog>
+            <DialogTrigger asChild>
+              {!selectedAccount?.address ? (
+                <Button>Connect</Button>
+              ) : (
                 <Button
                   variant="outline"
                   size="default"
@@ -129,43 +172,24 @@ export const Header = () => {
                 >
                   <Polkicon
                     size={36}
-                    address={selectedAccount?.address || ''}
+                    address={selAccount?.address || ''}
                     className="mr-2"
                   />
-                  {selectedAccount?.name}
+                  {selAccount?.name}
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                {accounts.map((account, index) => (
-                  <>
-                    <DropdownMenuItem
-                      className="cursor-pointer"
-                      key={account.address}
-                      onClick={() => selectAccount(account)}
-                    >
-                      <Polkicon
-                        size={28}
-                        address={account.address || ''}
-                        className="mr-2"
-                      />
-                      {account.name}
-                    </DropdownMenuItem>
-                    {index !== accounts.length - 1 && <DropdownMenuSeparator />}
-                  </>
-                ))}
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  key={'logout'}
-                  onClick={() => {
-                    disconnectAll()
-                    selectAccount(undefined)
-                  }}
-                >
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+              )}
+            </DialogTrigger>
+            <DialogContent className="text-sm">
+              <DialogHeader>
+                <div className="font-bold">Wallet Connect</div>
+              </DialogHeader>
+              <Connect
+                setSelected={setSelAccount}
+                selected={selAccount}
+                config={config}
+              />
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </header>
