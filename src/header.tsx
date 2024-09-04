@@ -131,6 +131,7 @@ export const Header = () => {
                     size={36}
                     address={selectedAccount?.address || ''}
                     className="mr-2"
+                    outerColor="transparent"
                   />
                   {selectedAccount?.name}
                 </Button>
@@ -147,6 +148,7 @@ export const Header = () => {
                         size={28}
                         address={account.address || ''}
                         className="mr-2"
+                        outerColor="transparent"
                       />
                       {account.name}
                     </DropdownMenuItem>
