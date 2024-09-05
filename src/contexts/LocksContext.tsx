@@ -401,7 +401,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
   return (
     <LocksContext.Provider
       value={{
-        voteLocks: voteLocks,
+        voteLocks,
         delegations,
         getConvictionLockTimeDisplay,
         delegationLocks,

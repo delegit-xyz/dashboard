@@ -7,7 +7,6 @@ import type { NetworkType, RouterType, Vote } from './types'
 import { ApiType, NetworksFromConfig } from '@/contexts/NetworkContext'
 import { DEFAULT_TIME, lockPeriod, ONE_DAY, THRESHOLD } from './constants'
 import { bnMin } from './bnMin'
-// import { DelegationLock, LockType, VoteLock } from '@/contexts/LocksContext'
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs))
