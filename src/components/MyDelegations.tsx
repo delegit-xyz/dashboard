@@ -10,6 +10,7 @@ import { planckToUnit } from '@polkadot-ui/utils'
 import { AddressDisplay } from './ui/address-display'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
+import { ContentReveal } from './ui/content-reveal'
 import { useAccounts } from '@/contexts/AccountsContext'
 import { Transaction, TypedApi } from 'polkadot-api'
 import { dot } from '@polkadot-api/descriptors'
@@ -64,7 +65,7 @@ export const MyDelegations = () => {
 
   return (
     <>
-      <Title className="mb-4">My Delegations</Title>
+      <Title className="mt-4">My Delegations</Title>
       <div className="grid w-full grid-cols-1 gap-2 md:grid-cols-2">
         {delegations === undefined ? (
           <Skeleton className="h-[116px] rounded-xl" />
@@ -86,46 +87,54 @@ export const MyDelegations = () => {
 
               return (
                 <Card
-                  className="flex h-full flex-col border-2 bg-card p-2 px-4"
+                  className="flex h-full flex-col border bg-card p-2 px-4"
                   key={key}
                 >
                   <>
                     {delegate?.name ? (
-                      <div className="flex items-center">
+                      <div className="flex items-center gap-2">
                         <img
                           src={delegate.image}
                           className="mr-2 w-12 rounded-full"
                         />
-                        {delegate.name}
+                        <div className="py-2 text-xl font-semibold">
+                          {delegate.name}
+                        </div>
                       </div>
                     ) : (
                       <AddressDisplay address={key} size={'3rem'} />
                     )}
-                    {value.map(({ balance, trackId, conviction }) => {
-                      const { display, multiplier } =
-                        getConvictionLockTimeDisplay(conviction.type)
-                      return (
-                        <div
-                          key={trackId}
-                          className="mb-2 ml-12 border-l-2 pl-2"
-                        >
-                          <div className="capitalize">
-                            <Badge>{trackList[trackId]}</Badge> /{trackId}
+                    <div className="mb-4 ml-12 pl-2">
+                      <Title variant={'h4'}>Delegating on tracks:</Title>
+                    </div>
+                    <ContentReveal noMaxHeight={true}>
+                      {value.map(({ balance, trackId, conviction }) => {
+                        const { display, multiplier } =
+                          getConvictionLockTimeDisplay(conviction.type)
+                        return (
+                          <div
+                            key={trackId}
+                            className="mb-4 ml-12 border-l-2 pl-2"
+                          >
+                            <div className="capitalize">
+                              <Badge>{trackList[trackId]}</Badge>
+                              <span className="border-l-2 font-semibold ml-2 pl-2 text-slate-400 text-xs">{trackId}</span>
+                            </div>
+                            <div className="mt-1">
+                              <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
+                              {planckToUnit(
+                                balance,
+                                assetInfo.precision,
+                              ).toLocaleString('en')}{' '}
+                              {assetInfo.symbol}
+                            </div>
+                            <div>
+                              conviction: x{Number(multiplier)} | {display}
+                            </div>
                           </div>
-                          <div>
-                            <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
-                            {planckToUnit(
-                              balance,
-                              assetInfo.precision,
-                            ).toLocaleString('en')}{' '}
-                            {assetInfo.symbol}
-                          </div>
-                          <div>
-                            conviction: x{Number(multiplier)} | {display}
-                          </div>
-                        </div>
-                      )
-                    })}
+                        )
+                      })}
+                    </ContentReveal>
                     <Button
                       className="mb-2 mt-4 w-full"
                       variant={'outline'}
