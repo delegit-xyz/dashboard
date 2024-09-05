@@ -1,10 +1,5 @@
 import { useAccounts } from '@/contexts/AccountsContext'
-import {
-  DelegationLock,
-  LockType,
-  useLocks,
-  VoteLock,
-} from '@/contexts/LocksContext'
+import { useLocks } from '@/contexts/LocksContext'
 import { useNetwork } from '@/contexts/NetworkContext'
 import { dot, MultiAddress, VotingConviction } from '@polkadot-api/descriptors'
 import { TypedApi } from 'polkadot-api'
@@ -17,10 +12,10 @@ interface Params {
   conviction: VotingConviction
 }
 
-export const useGetDelegationTx = () => {
+export const useGetDelegateTx = () => {
   const { api } = useNetwork()
   const { selectedAccount } = useAccounts()
-  const { delegations, locks } = useLocks()
+  const { delegations, voteLocks: locks } = useLocks()
 
   const getDelegationTx = useCallback(
     ({ target, amount, tracks, conviction }: Params) => {
@@ -70,32 +65,5 @@ export const useGetDelegationTx = () => {
     [api, delegations, locks, selectedAccount],
   )
 
-  const getUnlockUnvoteTx = useCallback(
-    (freeLocks: Array<VoteLock | DelegationLock>) => {
-      if (!api || !selectedAccount) return
-
-      const tracks = new Set(freeLocks.map((lock) => lock.trackId))
-
-      const unVoteTxs = freeLocks
-        .filter((lock) => lock.type === LockType.Casting)
-        .map((lock) => {
-          return api.tx.ConvictionVoting.remove_vote({
-            index: lock.refId,
-            class: lock.trackId,
-          }).decodedCall
-        })
-
-      const unlockTxs = Array.from(tracks).map((trackId) => {
-        return api.tx.ConvictionVoting.unlock({
-          class: trackId,
-          target: MultiAddress.Id(selectedAccount.address),
-        }).decodedCall
-      })
-
-      return { unVoteTxs, unlockTxs }
-    },
-    [api, selectedAccount],
-  )
-
-  return { getDelegationTx, getUnlockUnvoteTx }
+  return getDelegationTx
 }

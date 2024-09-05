@@ -22,13 +22,13 @@ import {
   VoteLock,
 } from '@/contexts/LocksContext'
 import { Skeleton } from './ui/skeleton'
-import { useGetDelegationTx } from '@/hooks/useGetDelegationTx'
+import { useGetUnlockTx } from '@/hooks/useGetUnlockTx'
 
 export const LocksCard = () => {
   const [currentBlock, setCurrentBlock] = useState(0)
   const [expectedBlockTime, setExpectedBlockTime] = useState(0)
   const { api, trackList } = useNetwork()
-  const { locks, delegationLocks } = useLocks()
+  const { voteLocks: locks, delegationLocks } = useLocks()
   const { assetInfo } = useNetwork()
   const [ongoingVoteLocks, setOngoingVoteLocks] = useState<VoteLock[]>([])
   const [freeLocks, setFreeLocks] = useState<Array<VoteLock | DelegationLock>>(
@@ -41,7 +41,7 @@ export const LocksCard = () => {
   >([])
   const { selectedAccount } = useAccounts()
   const [isUnlockingLoading, setIsUnlockingLoading] = useState(false)
-  const { getUnlockUnvoteTx } = useGetDelegationTx()
+  const getUnlockTx = useGetUnlockTx()
 
   useEffect(() => {
     if (!currentBlock) return
@@ -103,11 +103,11 @@ export const LocksCard = () => {
     if (!api || !selectedAccount) return
 
     setIsUnlockingLoading(true)
-    const { unVoteTxs, unlockTxs } = getUnlockUnvoteTx(freeLocks) || {}
+    const { unVoteTxs, unlockTxs } = getUnlockTx(freeLocks) || {}
 
     if (!unVoteTxs || !unlockTxs) return
 
-    // We need thisto make TS happy for now
+    // We need this to make TS happy for now
     const dotApi = api as TypedApi<typeof dot>
 
     dotApi.tx.Utility.batch({ calls: [...unVoteTxs, ...unlockTxs] })
@@ -124,7 +124,7 @@ export const LocksCard = () => {
           setIsUnlockingLoading(false)
         },
       })
-  }, [api, freeLocks, getUnlockUnvoteTx, selectedAccount])
+  }, [api, freeLocks, getUnlockTx, selectedAccount])
 
   return (
     <div className="grid grid-cols-1 gap-2 md:grid-cols-3">

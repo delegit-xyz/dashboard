@@ -50,10 +50,20 @@ export interface DelegationLock {
   trackId: number
 }
 
+export type CastedVotes = Record<
+  number,
+  {
+    refInfo?: RefInfo
+    trackId: number
+    vote: ConvictionVotingVoteAccountVote
+  }
+>
+
 type RefInfo =
   | DotQueries['Referenda']['ReferendumInfoFor']['Value']
   | KsmQueries['Referenda']['ReferendumInfoFor']['Value']
-type RefRecap = Record<
+
+type StateOfRefs = Record<
   number,
   { refInfo?: RefInfo; vote: ConvictionVotingVoteAccountVote; trackId: number }
 >
@@ -68,7 +78,7 @@ export interface ConvictionDisplay {
 }
 
 export interface ILocksContext {
-  locks: VoteLock[]
+  voteLocks: VoteLock[]
   delegations?: Record<string, CurrentDelegation[]>
   delegationLocks: DelegationLock[]
   getConvictionLockTimeDisplay: (
@@ -85,14 +95,14 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
 
   const [forcerefresh, setForceRefresh] = useState(0)
   const [lockTracks, setLockTracks] = useState<number[]>([])
-  const [refRecap, setRefRecap] = useState<RefRecap>({})
+  const [stateOfRefs, setStateOfRefs] = useState<StateOfRefs>({})
   const [currentVoteLocks, setCurrentVoteLocks] = useState<
     {
       trackId: number
       vote: NonNullable<ConvictionVotingVoteVoting>
     }[]
   >([])
-  const [locks, setLocks] = useState<VoteLock[]>([])
+  const [voteLocks, setVoteLocks] = useState<VoteLock[]>([])
   const [convictionLocksMap, setConvictionLocksMap] = useState<
     Record<string, bigint>
   >({})
@@ -116,6 +126,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
 
     const sub = api.query.ConvictionVoting.ClassLocksFor.watchValue(
       selectedAccount.address,
+      'best',
     ).subscribe((value) => {
       const trackIdArray = value.map(([trackId]) => trackId)
       setLockTracks(trackIdArray)
@@ -134,39 +145,35 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
       return
     }
 
-    api.query.ConvictionVoting.VotingFor.getEntries(
-      selectedAccount.address,
-    ).then((res) => {
+    const controller = new AbortController()
+
+    api.query.ConvictionVoting.VotingFor.getEntries(selectedAccount.address, {
+      at: 'best',
+      signal: controller.signal,
+    }).then((res) => {
       const votes = res.map(({ keyArgs: [, trackId], value }) => ({
         trackId,
         vote: value,
       }))
       setCurrentVoteLocks(votes)
     })
+
+    return () => controller.abort()
   }, [api, lockTracks, lockTracks.length, selectedAccount, forcerefresh])
 
   // get the ref for which we have a vote casted directly
   // or for which we have delegated
-  const {
-    delegations,
-    castedVotes: refsVotedOn,
-    delegationLocks,
-  } = useMemo(() => {
+  const { delegations, castedVotes, delegationLocks } = useMemo(() => {
     if (!selectedAccount || !currentVoteLocks.length)
       return { castedVotes: {}, delegations: {}, delegationLocks: [] }
 
-    const castedVotes: Record<
-      number,
-      {
-        refInfo?: RefInfo
-        trackId: number
-        vote: ConvictionVotingVoteAccountVote
-      }
-    > = {}
+    const castedVotes: CastedVotes = {}
     const delegations: ILocksContext['delegations'] = {}
     const delegationLocks: ILocksContext['delegationLocks'] = []
 
     currentVoteLocks.forEach(({ trackId, vote: { type, value } }) => {
+      // when the account is currently delegating
+      // when it undelegated, this will have the type Casting
       if (type === 'Delegating') {
         const prev = delegations[value.target] || []
 
@@ -180,7 +187,8 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
         ]
       } else if (type === 'Casting') {
         // this is when the account has casted a vote directly
-        // votes is empty for delegations
+        // or it's undelegating in which `votes` is empty
+        // so here it's only for actually casted votes
         value.votes.forEach(([refId, vote]) => {
           castedVotes[refId] = {
             trackId,
@@ -188,8 +196,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
           }
         })
 
-        // this is when the account is delegating
-        // and has undelegated
+        // this is when the account is undelegating
         if (value.prior[1] > 0) {
           delegationLocks.push({
             type: LockType.Delegating,
@@ -208,41 +215,48 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
     if (
       !selectedAccount ||
       !api ||
-      !refsVotedOn ||
-      !Object.entries(refsVotedOn).length
+      !castedVotes ||
+      !Object.entries(castedVotes).length
     ) {
-      setRefRecap({})
+      setStateOfRefs({})
       return
     }
-    const refParams = Object.keys(refsVotedOn).map((id) => [Number(id)]) as [
+    const refParams = Object.keys(castedVotes).map((id) => [Number(id)]) as [
       number,
     ][]
 
-    const tempRefs = refsVotedOn as RefRecap
-    api.query.Referenda.ReferendumInfoFor.getValues(refParams)
+    const tempRefs: StateOfRefs = castedVotes
+    const controller = new AbortController()
+
+    api.query.Referenda.ReferendumInfoFor.getValues(refParams, {
+      at: 'best',
+      signal: controller.signal,
+    })
       .then((res) => {
         if (!res.values) return
 
         const definedRefInfo = res.filter((r) => !!r)
 
-        Object.keys(refsVotedOn).forEach((id, index) => {
+        Object.keys(castedVotes).forEach((id, index) => {
           if (!res[index]?.value) return
           tempRefs[Number(id)].refInfo = definedRefInfo[index]
         })
 
-        setRefRecap(tempRefs)
+        setStateOfRefs(tempRefs)
       })
       .catch(console.error)
-  }, [api, refsVotedOn, selectedAccount])
+
+    return () => controller.abort()
+  }, [api, castedVotes, selectedAccount])
 
   const getLocks = useCallback(async () => {
-    if (!api || !Object.entries(refRecap).length) return []
+    if (!api || !Object.entries(stateOfRefs).length) return []
 
     const locks: VoteLock[] = []
     const lockTimes = await getLockTimes(api)
     const blockTimeMs = await getExpectedBlockTimeMs(api)
 
-    Object.entries(refRecap).forEach(([id, { refInfo, vote, trackId }]) => {
+    Object.entries(stateOfRefs).forEach(([id, { refInfo, vote, trackId }]) => {
       if (vote.type === 'Standard') {
         const { balance, vote: currVote } = vote.value
         const voteConviction = getVoteFromNumber(currVote)
@@ -266,6 +280,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
           })
         }
 
+        // in case the lock period is 0
         if (
           refInfo?.type === 'Cancelled' ||
           refInfo?.type === 'TimedOut' ||
@@ -284,6 +299,8 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
           })
         }
 
+        // when killed the lock period is 0
+        // but the info is in value instead of value[0]
         if (refInfo?.type === 'Killed') {
           const refEndBlock = BigInt(refInfo.value)
 
@@ -309,40 +326,31 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
             trackId,
           })
         }
-      } else if (vote.type === 'Split') {
-        const { aye, nay } = vote.value
-        const refEndBlock =
-          refInfo?.type === 'Ongoing' || !refInfo
-            ? BigInt(Number.MAX_SAFE_INTEGER)
-            : BigInt(
-                refInfo.type === 'Killed' ? refInfo.value : refInfo.value[0],
-              )
+      } else if (vote.type === 'Split' || vote.type === 'SplitAbstain') {
+        let amount: bigint
+        if (vote.type === 'Split') {
+          amount = vote.value.aye + vote.value.nay
+        } else {
+          amount = vote.value.abstain + vote.value.aye + vote.value.nay
+        }
+
+        let refEndBlock: bigint
+
+        if (!refInfo || refInfo.type === 'Ongoing') {
+          refEndBlock = BigInt(Number.MAX_SAFE_INTEGER)
+        } else if (refInfo.type === 'Killed') {
+          refEndBlock = BigInt(refInfo.value)
+        } else {
+          // for Canceled, Timeout, Approved, Rejected
+          // the endblock time is in refInfo.value[0]
+          refEndBlock = BigInt(refInfo.value[0])
+        }
 
         locks.push({
           type: LockType.Casting,
           isOngoing: refInfo?.type === 'Ongoing',
           endBlock: refEndBlock,
-          amount: aye + nay,
-          refId: Number(id),
-          trackId,
-        })
-      } else if (vote.type === 'SplitAbstain') {
-        const { abstain, aye, nay } = vote.value
-
-        // type Ongoing and Killed are special
-        // the endblock is in refInfo.value
-        const refEndBlock =
-          refInfo?.type === 'Ongoing' || !refInfo
-            ? BigInt(Number.MAX_SAFE_INTEGER)
-            : BigInt(
-                refInfo.type === 'Killed' ? refInfo.value : refInfo.value[0],
-              )
-
-        locks.push({
-          type: LockType.Casting,
-          isOngoing: refInfo?.type === 'Ongoing',
-          endBlock: refEndBlock,
-          amount: aye + nay + abstain,
+          amount,
           refId: Number(id),
           trackId,
         })
@@ -350,10 +358,10 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
     })
 
     return locks
-  }, [api, refRecap])
+  }, [api, stateOfRefs])
 
   useEffect(() => {
-    getLocks().then(setLocks).catch(console.error)
+    getLocks().then(setVoteLocks).catch(console.error)
   }, [getLocks])
 
   /**
@@ -393,7 +401,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
   return (
     <LocksContext.Provider
       value={{
-        locks,
+        voteLocks: voteLocks,
         delegations,
         getConvictionLockTimeDisplay,
         delegationLocks,

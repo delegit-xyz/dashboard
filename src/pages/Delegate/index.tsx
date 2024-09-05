@@ -14,7 +14,7 @@ import { AlertCircle } from 'lucide-react'
 import { msgs } from '@/lib/constants'
 import { evalUnits, planckToUnit } from '@polkadot-ui/utils'
 import { useLocks } from '@/contexts/LocksContext'
-import { useGetDelegationTx } from '@/hooks/useGetDelegationTx'
+import { useGetDelegateTx } from '@/hooks/useGetDelegateTx'
 
 type AlertProps = {
   title: string
@@ -47,7 +47,7 @@ export const Delegate = () => {
   )
   const [convictionNo, setConvictionNo] = useState(0)
   const { selectedAccount } = useAccounts()
-  const { getDelegationTx } = useGetDelegationTx()
+  const getDelegateTx = useGetDelegateTx()
 
   const convictionDisplay = useMemo(() => {
     const { display, multiplier } = getConvictionLockTimeDisplay(convictionNo)
@@ -99,7 +99,7 @@ export const Delegate = () => {
         })
         .catch(console.error)
 
-      const tx = getDelegationTx({
+      const tx = getDelegateTx({
         target: delegate.address,
         conviction: conviction,
         amount,
