@@ -205,7 +205,7 @@ export const LocksCard = () => {
       ) : (
         <>
           <Card className="h-full border-2 p-2 px-4">
-            <Title variant="h4">Locked</Title>
+            <Title variant="h4">Unlocking</Title>
             <div className="text-5xl font-bold">
               {currentLocks.length + currentDelegationLocks.length}
               <Clock2 className="inline-block h-8 w-8 rotate-[10deg] text-gray-200" />
