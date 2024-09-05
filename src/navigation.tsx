@@ -6,7 +6,7 @@ import {
 } from '@/components/ui/tooltip'
 import { routes } from '@/lib/utils'
 import { useLocation } from 'react-router-dom'
-import PolkadotIcon from '@/assets/img/polkadotIcon.svg?react'
+import DelegitLogo from '@/assets/img/delegitLogo4_w.svg?react'
 import { TbLoaderQuarter } from 'react-icons/tb'
 import { FaCheckCircle } from 'react-icons/fa'
 
@@ -32,13 +32,14 @@ export const Navigation = () => {
   return (
     <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
       <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
-        <PolkadotIcon
+        <DelegitLogo
           style={{
             maxHeight: '100%',
             width: '4rem',
           }}
           width={'2.2rem'}
           height={'2.2rem'}
+          title="Delegit logo"
         />
         {routes.map((r) => {
           const link = '/' + (r.link || '')
