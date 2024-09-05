@@ -15,7 +15,6 @@ import { Badge } from './ui/badge'
 import { dot } from '@polkadot-api/descriptors'
 import { useAccounts } from '@/contexts/AccountsContext'
 import { TypedApi } from 'polkadot-api'
-
 import {
   DelegationLock,
   LockType,
@@ -158,13 +157,14 @@ export const LocksCard = () => {
                                 <span className="capitalize">
                                   <Badge>{trackList[trackId]}</Badge> /{trackId}
                                 </span>
-                                <br />
-                                <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
-                                {planckToUnit(
-                                  amount,
-                                  assetInfo.precision,
-                                ).toLocaleString('en')}{' '}
-                                {assetInfo.symbol}
+                                <div>
+                                  <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
+                                  {planckToUnit(
+                                    amount,
+                                    assetInfo.precision,
+                                  ).toLocaleString('en')}{' '}
+                                  {assetInfo.symbol}
+                                </div>
                               </div>
                             </li>
                           </ul>
@@ -178,13 +178,14 @@ export const LocksCard = () => {
                         <ul>
                           <li className="mb-2">
                             <Badge>#{refId}</Badge>
-                            <br />
-                            <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
-                            {planckToUnit(
-                              amount,
-                              assetInfo.precision,
-                            ).toLocaleString('en')}{' '}
-                            {assetInfo.symbol}
+                            <div>
+                              <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
+                              {planckToUnit(
+                                amount,
+                                assetInfo.precision,
+                              ).toLocaleString('en')}{' '}
+                              {assetInfo.symbol}
+                            </div>
                           </li>
                         </ul>
                       </div>
@@ -222,16 +223,18 @@ export const LocksCard = () => {
                       <ul>
                         <li>
                           <Badge>#{refId}</Badge>
-                          <br />
-                          <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
-                          {planckToUnit(
-                            amount,
-                            assetInfo.precision,
-                          ).toLocaleString('en')}{' '}
-                          {assetInfo.symbol}
-                          <br />
-                          <Clock2 className="inline-block h-4 w-4 text-gray-500" />{' '}
-                          {displayRemainingTime(remainingDisplay)}
+                          <div>
+                            <BadgeCent className="inline-block h-4 w-4 pt-2 text-gray-500" />{' '}
+                            {planckToUnit(
+                              amount,
+                              assetInfo.precision,
+                            ).toLocaleString('en')}{' '}
+                            {assetInfo.symbol}
+                          </div>
+                          <div>
+                            <Clock2 className="inline-block h-4 w-4 text-gray-500" />{' '}
+                            {displayRemainingTime(remainingDisplay)}
+                          </div>
                         </li>
                       </ul>
                     </div>
@@ -248,15 +251,18 @@ export const LocksCard = () => {
                           <div className="capitalize">
                             <Badge>{trackList[trackId]}</Badge> /{trackId}
                           </div>
-                          <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
-                          {planckToUnit(
-                            amount,
-                            assetInfo.precision,
-                          ).toLocaleString('en')}{' '}
-                          {assetInfo.symbol}
-                          <br />
-                          <Clock2 className="inline-block h-4 w-4 text-gray-500" />{' '}
-                          {displayRemainingTime(remainingDisplay)}
+                          <div>
+                            <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
+                            {planckToUnit(
+                              amount,
+                              assetInfo.precision,
+                            ).toLocaleString('en')}{' '}
+                            {assetInfo.symbol}
+                          </div>
+                          <div>
+                            <Clock2 className="inline-block h-4 w-4 text-gray-500" />{' '}
+                            {displayRemainingTime(remainingDisplay)}
+                          </div>
                         </li>
                       </ul>
                     </div>
@@ -279,13 +285,14 @@ export const LocksCard = () => {
                       <ul>
                         <li>
                           <Badge>#{refId}</Badge>
-                          <br />
-                          <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
-                          {planckToUnit(
-                            amount,
-                            assetInfo.precision,
-                          ).toLocaleString('en')}{' '}
-                          {assetInfo.symbol}
+                          <div>
+                            <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
+                            {planckToUnit(
+                              amount,
+                              assetInfo.precision,
+                            ).toLocaleString('en')}{' '}
+                            {assetInfo.symbol}
+                          </div>
                         </li>
                       </ul>
                     </div>
