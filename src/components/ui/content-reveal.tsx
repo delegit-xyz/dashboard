@@ -9,7 +9,12 @@ type Props = {
   noMaxHeight?: boolean
 }
 
-export const ContentReveal = ({ children, className, hidden, noMaxHeight }: Props) => {
+export const ContentReveal = ({
+  children,
+  className,
+  hidden,
+  noMaxHeight,
+}: Props) => {
   const maxHeight = noMaxHeight ? '' : 'max-h-96'
   const [isOpen, setIsOpen] = useState(false)
 

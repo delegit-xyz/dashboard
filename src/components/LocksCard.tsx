@@ -133,9 +133,9 @@ export const LocksCard = () => {
         <Card className="relative h-full border-2 p-2 px-4">
           <div className="relative z-10">
             <Title variant="h4">Unlockable</Title>
-            <div className="text-5xl font-unbounded font-bold">
+            <div className="font-unbounded text-5xl font-bold">
               {freeLocks.length}
-              <LockKeyholeOpen className="inline-block ml-1 h-8 w-8 rotate-[10deg] text-gray-200" />
+              <LockKeyholeOpen className="ml-1 inline-block h-8 w-8 rotate-[10deg] text-gray-200" />
             </div>
             {freeLocks.length > 0 && (
               <>
@@ -207,9 +207,9 @@ export const LocksCard = () => {
         <>
           <Card className="h-full border-2 p-2 px-4">
             <Title variant="h4">Locked</Title>
-            <div className="text-5xl font-unbounded font-bold">
+            <div className="font-unbounded text-5xl font-bold">
               {currentLocks.length + currentDelegationLocks.length}
-              <Clock2 className="inline-block ml-1 h-8 w-8 rotate-[10deg] text-gray-200" />
+              <Clock2 className="ml-1 inline-block h-8 w-8 rotate-[10deg] text-gray-200" />
             </div>
             <ContentReveal
               hidden={currentLocks.length + currentDelegationLocks.length === 0}
@@ -251,7 +251,9 @@ export const LocksCard = () => {
                         <li>
                           <div className="capitalize">
                             <Badge>{trackList[trackId]}</Badge>
-                            <span className="border-l-2 font-bold ml-2 pl-2 text-slate-400 text-xs">{trackId}</span>
+                            <span className="ml-2 border-l-2 pl-2 text-xs font-bold text-slate-400">
+                              {trackId}
+                            </span>
                           </div>
                           <div className="mt-0.5">
                             <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
@@ -275,9 +277,9 @@ export const LocksCard = () => {
           </Card>
           <Card className="h-full border-2 p-2 px-4">
             <Title variant="h4">Votes</Title>
-            <div className="text-5xl font-unbounded font-bold">
+            <div className="font-unbounded text-5xl font-bold">
               {ongoingVoteLocks.length}
-              <Vote className="inline-block ml-1 h-8 w-8 text-gray-200" />
+              <Vote className="ml-1 inline-block h-8 w-8 text-gray-200" />
             </div>
             {
               <ContentReveal hidden={!ongoingVoteLocks.length}>

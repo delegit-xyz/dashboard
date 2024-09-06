@@ -118,7 +118,9 @@ export const MyDelegations = () => {
                           >
                             <div className="capitalize">
                               <Badge>{trackList[trackId]}</Badge>
-                              <span className="border-l-2 font-semibold ml-2 pl-2 text-slate-400 text-xs">{trackId}</span>
+                              <span className="ml-2 border-l-2 pl-2 text-xs font-semibold text-slate-400">
+                                {trackId}
+                              </span>
                             </div>
                             <div className="mt-1">
                               <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}

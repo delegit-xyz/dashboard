@@ -116,7 +116,7 @@ export const Delegate = () => {
   }
 
   return (
-    <main className="mx-0 grid flex-1 items-start gap-4 p-4 sm:mx-[5%] sm:px-6 sm:py-0 gap-8 xl:mx-[20%]">
+    <main className="mx-0 grid flex-1 items-start gap-4 gap-8 p-4 sm:mx-[5%] sm:px-6 sm:py-0 xl:mx-[20%]">
       {!api && (
         <AlertNote
           title={msgs.api.title}
@@ -137,7 +137,7 @@ export const Delegate = () => {
       )}
 
       <Link to="/home" className="flex items-center gap-2 text-primary">
-        <ArrowLeft className="h-4 w-4"/>
+        <ArrowLeft className="h-4 w-4" />
         To all delegates
       </Link>
       <h1 className="flex-1 shrink-0 whitespace-nowrap font-unbounded text-xl font-semibold tracking-tight sm:grow-0">

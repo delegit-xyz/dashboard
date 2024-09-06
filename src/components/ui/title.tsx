@@ -15,7 +15,17 @@ export const Title = ({ children, variant = 'h1', className }: Props) => {
   if (variant === 'h3')
     return <h3 className={cn(baseClass, 'text-lg', className)}>{children}</h3>
   if (variant === 'h4')
-    return <h4 className={cn(baseClass, 'text-xs uppercase tracking-normal', className)}>{children}</h4>
+    return (
+      <h4
+        className={cn(
+          baseClass,
+          'text-xs uppercase tracking-normal',
+          className,
+        )}
+      >
+        {children}
+      </h4>
+    )
 
   return <h5 className={cn(baseClass, 'text-sm', className)}>{children}</h5>
 }
