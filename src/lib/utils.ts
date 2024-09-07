@@ -5,11 +5,8 @@ import networks from '@/assets/networks.json'
 import { twMerge } from 'tailwind-merge'
 import type { NetworkType, RouterType, Vote } from './types'
 import { ApiType, NetworksFromConfig } from '@/contexts/NetworkContext'
-import { MultiAddress } from '@polkadot-api/descriptors'
-import { InjectedPolkadotAccount } from 'polkadot-api/pjs-signer'
 import { DEFAULT_TIME, lockPeriod, ONE_DAY, THRESHOLD } from './constants'
 import { bnMin } from './bnMin'
-import { DelegationLock, LockType, VoteLock } from '@/contexts/LocksContext'
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs))
@@ -34,32 +31,6 @@ export const getVoteFromNumber = (input: number): Vote => ({
 
 export const getNumberFromVote = ({ aye, conviction }: Vote): number =>
   +aye * 0b1000_0000 + conviction
-
-export const getUnlockUnvoteTx = (
-  locks: Array<VoteLock | DelegationLock>,
-  api: ApiType,
-  account: InjectedPolkadotAccount,
-) => {
-  const tracks = new Set(locks.map((lock) => lock.trackId))
-
-  const unVoteTxs = locks
-    .filter((lock) => lock.type === LockType.Casting)
-    .map((lock) => {
-      return api.tx.ConvictionVoting.remove_vote({
-        index: lock.refId,
-        class: lock.trackId,
-      }).decodedCall
-    })
-
-  const unlockTxs = Array.from(tracks).map((trackId) => {
-    return api.tx.ConvictionVoting.unlock({
-      class: trackId,
-      target: MultiAddress.Id(account.address),
-    }).decodedCall
-  })
-
-  return { unVoteTxs, unlockTxs }
-}
 
 export const indexToConviction = (index: number) => {
   return Object.keys(lockPeriod)[index]
