@@ -6,7 +6,7 @@ import {
 } from '@/components/ui/tooltip'
 import { routes } from '@/lib/utils'
 import { useLocation } from 'react-router-dom'
-import DelegitLogo from '@/assets/img/delegitLogo4_w.svg?react'
+import DelegitLogo from '@/assets/img/delegitLogo3_w.svg?react'
 import { TbLoaderQuarter } from 'react-icons/tb'
 import { FaCheckCircle } from 'react-icons/fa'
 
