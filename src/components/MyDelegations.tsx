@@ -103,17 +103,19 @@ export const MyDelegations = () => {
 
               return (
                 <Card
-                  className="flex h-full flex-col border-2 bg-card p-2 px-4"
+                  className="flex h-full flex-col border bg-card p-2 px-4"
                   key={delegateAddress}
                 >
                   <>
                     {knownDelegate?.name ? (
-                      <div className="flex items-center">
+                      <div className="flex items-center gap-2">
                         <img
                           src={knownDelegate.image}
                           className="mr-2 w-12 rounded-full"
                         />
-                        {knownDelegate.name}
+                        <div className="py-2 text-xl font-semibold">
+                          {knownDelegate.name}
+                        </div>
                       </div>
                     ) : (
                       <AddressDisplay address={delegateAddress} size={'3rem'} />

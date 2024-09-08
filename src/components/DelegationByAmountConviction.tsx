@@ -17,7 +17,10 @@ const TrackDisplay = ({
   trackName: string
 }) => (
   <div className="capitalize" key={trackId}>
-    <Badge>{trackName}</Badge> /{trackId}
+    <Badge>{trackName}</Badge>
+    <span className="ml-2 border-l-2 pl-2 text-xs font-semibold text-slate-400">
+      {trackId}
+    </span>
   </div>
 )
 
@@ -68,13 +71,16 @@ export const DelegationByAmountConviction = ({
           </ContentReveal>
         )}
 
-        <div>
+        <div className="mt-1">
           <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
           {planckToUnit(balance, assetInfo.precision).toLocaleString('en')}{' '}
           {assetInfo.symbol}
         </div>
         <div>
-          conviction: x{Number(multiplier)} | {display}
+          conviction: x{Number(multiplier)}
+          <span className="ml-2 border-l-2 pl-2 text-xs font-semibold text-slate-400">
+            {display}
+          </span>
         </div>
       </div>
     )
