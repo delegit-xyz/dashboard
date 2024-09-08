@@ -1,14 +1,25 @@
 import { cn } from '@/lib/utils'
 import { ChevronDown } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 type Props = {
   children: React.ReactNode
   className?: string
   hidden?: boolean
+  noMaxHeight?: boolean
+  title?: string | React.ReactNode
+  buttonClassName?: string
 }
 
-export const ContentReveal = ({ children, className, hidden }: Props) => {
+export const ContentReveal = ({
+  children,
+  className,
+  hidden = false,
+  noMaxHeight = false,
+  title = '',
+  buttonClassName = '',
+}: Props) => {
+  const maxHeight = noMaxHeight ? '' : 'max-h-96'
   const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
@@ -17,18 +28,24 @@ export const ContentReveal = ({ children, className, hidden }: Props) => {
     }
   }, [hidden])
 
+  const toggle = useCallback(() => {
+    if (hidden) return
+
+    setIsOpen((prev) => !prev)
+  }, [hidden])
+
   return (
     <div className={cn('break-anywhere', className)}>
       <button
-        onClick={() => {
-          !hidden && setIsOpen(!isOpen)
-        }}
+        onClick={toggle}
         className={cn(
           `flex w-full items-center justify-center`,
           hidden && 'opacity-0',
+          buttonClassName,
         )}
         disabled={hidden}
       >
+        {title && <span className="mr-2">{title}</span>}
         <ChevronDown
           className={`transition-transform duration-300 ${
             isOpen ? 'rotate-180' : ''
@@ -37,7 +54,7 @@ export const ContentReveal = ({ children, className, hidden }: Props) => {
       </button>
       <div
         className={`overflow-auto transition-all duration-300 ${
-          isOpen ? 'max-h-96' : 'max-h-0'
+          isOpen ? maxHeight : 'max-h-0'
         }`}
       >
         {children}

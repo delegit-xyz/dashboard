@@ -5,16 +5,16 @@ import { useNetwork } from '@/contexts/NetworkContext'
 import { VotingConviction } from '@polkadot-api/descriptors'
 import { SetStateAction, useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { getDelegateTx } from '@/lib/currentVotesAndDelegations'
 import { useAccounts } from '@/contexts/AccountsContext'
 import { Slider } from '@/components/ui/slider'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { AlertCircle } from 'lucide-react'
+import { AlertCircle, ArrowLeft } from 'lucide-react'
 import { msgs } from '@/lib/constants'
 import { evalUnits, planckToUnit } from '@polkadot-ui/utils'
 import { useLocks } from '@/contexts/LocksContext'
+import { useGetDelegateTx } from '@/hooks/useGetDelegateTx'
 
 type AlertProps = {
   title: string
@@ -47,6 +47,7 @@ export const Delegate = () => {
   )
   const [convictionNo, setConvictionNo] = useState(0)
   const { selectedAccount } = useAccounts()
+  const getDelegateTx = useGetDelegateTx()
 
   const convictionDisplay = useMemo(() => {
     const { display, multiplier } = getConvictionLockTimeDisplay(convictionNo)
@@ -99,14 +100,13 @@ export const Delegate = () => {
         .catch(console.error)
 
       const tx = getDelegateTx({
-        from: selectedAccount?.address,
         target: delegate.address,
         conviction: conviction,
         amount,
         tracks: allTracks || [],
-        api,
       })
 
+      if (!tx) return
       ;(await tx)
         .signSubmitAndWatch(selectedAccount?.polkadotSigner)
         .forEach((value) => console.log('value', value))
@@ -116,7 +116,7 @@ export const Delegate = () => {
   }
 
   return (
-    <main className="mx-0 grid flex-1 items-start gap-4 p-4 sm:mx-[5%] sm:px-6 sm:py-0 md:gap-8 xl:mx-[20%]">
+    <main className="mx-0 grid flex-1 items-start gap-4 gap-8 p-4 sm:mx-[5%] sm:px-6 sm:py-0 xl:mx-[20%]">
       {!api && (
         <AlertNote
           title={msgs.api.title}
@@ -135,7 +135,12 @@ export const Delegate = () => {
           }
         />
       )}
-      <h1 className="flex-1 shrink-0 whitespace-nowrap font-unbounded text-xl font-semibold tracking-tight text-primary sm:grow-0">
+
+      <Link to="/home" className="flex items-center gap-2 text-primary">
+        <ArrowLeft className="h-4 w-4" />
+        To all delegates
+      </Link>
+      <h1 className="flex-1 shrink-0 whitespace-nowrap font-unbounded text-xl font-semibold tracking-tight sm:grow-0">
         Delegate to {delegate.name}
       </h1>
       <div>

@@ -15,7 +15,6 @@ import { Badge } from './ui/badge'
 import { dot } from '@polkadot-api/descriptors'
 import { useAccounts } from '@/contexts/AccountsContext'
 import { TypedApi } from 'polkadot-api'
-import { getUnlockUnvoteTx } from '@/lib/utils'
 import {
   DelegationLock,
   LockType,
@@ -23,12 +22,13 @@ import {
   VoteLock,
 } from '@/contexts/LocksContext'
 import { Skeleton } from './ui/skeleton'
+import { useGetUnlockTx } from '@/hooks/useGetUnlockTx'
 
 export const LocksCard = () => {
   const [currentBlock, setCurrentBlock] = useState(0)
   const [expectedBlockTime, setExpectedBlockTime] = useState(0)
   const { api, trackList } = useNetwork()
-  const { locks, delegationLocks } = useLocks()
+  const { voteLocks: locks, delegationLocks } = useLocks()
   const { assetInfo } = useNetwork()
   const [ongoingVoteLocks, setOngoingVoteLocks] = useState<VoteLock[]>([])
   const [freeLocks, setFreeLocks] = useState<Array<VoteLock | DelegationLock>>(
@@ -41,6 +41,7 @@ export const LocksCard = () => {
   >([])
   const { selectedAccount } = useAccounts()
   const [isUnlockingLoading, setIsUnlockingLoading] = useState(false)
+  const getUnlockTx = useGetUnlockTx()
 
   useEffect(() => {
     if (!currentBlock) return
@@ -102,13 +103,11 @@ export const LocksCard = () => {
     if (!api || !selectedAccount) return
 
     setIsUnlockingLoading(true)
-    const { unVoteTxs, unlockTxs } = getUnlockUnvoteTx(
-      freeLocks,
-      api,
-      selectedAccount,
-    )
+    const { unVoteTxs, unlockTxs } = getUnlockTx(freeLocks) || {}
 
-    // We need thisto make TS happy for now
+    if (!unVoteTxs || !unlockTxs) return
+
+    // We need this to make TS happy for now
     const dotApi = api as TypedApi<typeof dot>
 
     dotApi.tx.Utility.batch({ calls: [...unVoteTxs, ...unlockTxs] })
@@ -125,7 +124,7 @@ export const LocksCard = () => {
           setIsUnlockingLoading(false)
         },
       })
-  }, [api, freeLocks, selectedAccount])
+  }, [api, freeLocks, getUnlockTx, selectedAccount])
 
   return (
     <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
@@ -133,9 +132,9 @@ export const LocksCard = () => {
         <Card className="relative h-full border-2 p-2 px-4">
           <div className="relative z-10">
             <Title variant="h4">Unlockable</Title>
-            <div className="text-5xl font-bold">
+            <div className="font-unbounded text-5xl font-bold">
               {freeLocks.length}
-              <LockKeyholeOpen className="inline-block h-8 w-8 rotate-[10deg] text-gray-200" />
+              <LockKeyholeOpen className="ml-1 inline-block h-8 w-8 rotate-[10deg] text-gray-200" />
             </div>
             {freeLocks.length > 0 && (
               <>
@@ -146,7 +145,7 @@ export const LocksCard = () => {
                 >
                   Unlock
                 </Button>
-                <ContentReveal>
+                <ContentReveal hidden={false}>
                   {freeLocks.map((lock) => {
                     if (lock.type === LockType.Delegating) {
                       const { amount, trackId } = lock
@@ -206,10 +205,10 @@ export const LocksCard = () => {
       ) : (
         <>
           <Card className="h-full border-2 p-2 px-4">
-            <Title variant="h4">Locked</Title>
-            <div className="text-5xl font-bold">
+            <Title variant="h4">Unlocking</Title>
+            <div className="font-unbounded text-5xl font-bold">
               {currentLocks.length + currentDelegationLocks.length}
-              <Clock2 className="inline-block h-8 w-8 rotate-[10deg] text-gray-200" />
+              <Clock2 className="ml-1 inline-block h-8 w-8 rotate-[10deg] text-gray-200" />
             </div>
             <ContentReveal
               hidden={currentLocks.length + currentDelegationLocks.length === 0}
@@ -246,13 +245,16 @@ export const LocksCard = () => {
                     (Number(endBlock) - currentBlock) * expectedBlockTime
                   const remainingDisplay = convertMiliseconds(remainingTimeMs)
                   return (
-                    <div key={trackId}>
+                    <div key={trackId} className="mb-4 border-l-2 pl-2">
                       <ul>
                         <li>
                           <div className="capitalize">
-                            <Badge>{trackList[trackId]}</Badge> /{trackId}
+                            <Badge>{trackList[trackId]}</Badge>
+                            <span className="ml-2 border-l-2 pl-2 text-xs font-bold text-slate-400">
+                              {trackId}
+                            </span>
                           </div>
-                          <div>
+                          <div className="mt-0.5">
                             <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
                             {planckToUnit(
                               amount,
@@ -274,9 +276,9 @@ export const LocksCard = () => {
           </Card>
           <Card className="h-full border-2 p-2 px-4">
             <Title variant="h4">Votes</Title>
-            <div className="text-5xl font-bold">
+            <div className="font-unbounded text-5xl font-bold">
               {ongoingVoteLocks.length}
-              <Vote className="inline-block h-8 w-8 text-gray-200" />
+              <Vote className="ml-1 inline-block h-8 w-8 text-gray-200" />
             </div>
             {
               <ContentReveal hidden={!ongoingVoteLocks.length}>
