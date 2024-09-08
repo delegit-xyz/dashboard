@@ -1,4 +1,5 @@
-import { Polkicon } from '@polkadot-ui/react'
+import { Connect, ConnectConfiguration, Polkicon } from '@polkadot-ui/react'
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,10 +10,13 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { routes } from '@/lib/utils'
-import { useWalletDisconnector } from '@reactive-dot/react'
-import { ChevronDown, PanelLeft } from 'lucide-react'
-import { ConnectionDialog } from 'dot-connect/react.js'
-
+import { ChevronDown, Download, PanelLeft, Unplug } from 'lucide-react'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 // import {
 //   Menubar,
 //   MenubarContent,
@@ -25,6 +29,7 @@ import { ConnectionDialog } from 'dot-connect/react.js'
 import { useAccounts } from './contexts/AccountsContext'
 import { useEffect, useState } from 'react'
 import { SupportedNetworkNames, useNetwork } from './contexts/NetworkContext'
+import { InjectedPolkadotAccount } from 'polkadot-api/pjs-signer'
 
 interface NetworkDisplay {
   name: SupportedNetworkNames
@@ -46,15 +51,27 @@ if (import.meta.env.DEV) {
 
 export const Header = () => {
   const { network, setNetwork } = useNetwork()
+  const [sAccount, setSAccount] = useState<InjectedPolkadotAccount>(
+    {} as InjectedPolkadotAccount,
+  )
   const { accounts, selectAccount, selectedAccount } = useAccounts()
-  const [, disconnectAll] = useWalletDisconnector()
-  const [isConnectionDialiogOpen, setIsConnectionDialiogOpen] = useState(false)
+
+  useEffect(() => {
+    selectAccount(sAccount)
+  }, [sAccount, selectAccount])
 
   useEffect(() => {
     if (!selectedAccount?.address && accounts.length > 0) {
       selectAccount(accounts[0])
     }
   }, [accounts, selectAccount, selectedAccount?.address])
+
+  const [modalOpen, setModalOpen] = useState<boolean>(false)
+
+  const connectConfig: ConnectConfiguration = {
+    downloadIcon: <Download />,
+    disconnectIcon: <Unplug />,
+  }
 
   return (
     <>
@@ -124,10 +141,24 @@ export const Header = () => {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
+
             {!accounts.length && (
-              <Button onClick={() => setIsConnectionDialiogOpen(true)}>
-                Connect
-              </Button>
+              <Dialog onOpenChange={(v) => setModalOpen(v)} open={modalOpen}>
+                <DialogTrigger asChild>
+                  <Button>Connect</Button>
+                </DialogTrigger>
+                <DialogContent className="text-sm">
+                  <DialogHeader>
+                    <div className="font-bold">Connect</div>
+                  </DialogHeader>
+                  <Connect
+                    type="split"
+                    config={connectConfig}
+                    selected={selectedAccount}
+                    setSelected={setSAccount}
+                  />
+                </DialogContent>
+              </Dialog>
             )}
             {!!accounts.length && (
               <DropdownMenu>
@@ -168,26 +199,12 @@ export const Header = () => {
                       )}
                     </>
                   ))}
-                  <DropdownMenuItem
-                    className="cursor-pointer"
-                    key={'logout'}
-                    onClick={() => {
-                      disconnectAll()
-                      selectAccount(undefined)
-                    }}
-                  >
-                    Logout
-                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
           </div>
         </div>
       </header>
-      <ConnectionDialog
-        open={isConnectionDialiogOpen}
-        onClose={() => setIsConnectionDialiogOpen(false)}
-      />
     </>
   )
 }

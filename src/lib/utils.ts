@@ -10,6 +10,9 @@ import { InjectedPolkadotAccount } from 'polkadot-api/pjs-signer'
 import { DEFAULT_TIME, lockPeriod, ONE_DAY, THRESHOLD } from './constants'
 import { bnMin } from './bnMin'
 import { DelegationLock, LockType, VoteLock } from '@/contexts/LocksContext'
+import { useEffect, useRef } from 'react'
+import { Any } from '@polkadot-ui/react'
+import React from 'react'
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs))
@@ -106,4 +109,16 @@ export const getLockTimes = async (api: ApiType) => {
     },
     {} as Record<string, bigint>,
   )
+}
+
+export const usePrevious = <T>(value: T): T | null => {
+  const [current, setCurrent] = React.useState(value)
+  const [previous, setPrevious] = React.useState<T | null>(null)
+
+  if (value !== current) {
+    setPrevious(current)
+    setCurrent(value)
+  }
+
+  return previous
 }

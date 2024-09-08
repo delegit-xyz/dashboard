@@ -5,11 +5,12 @@ import React, {
   useContext,
   useCallback,
   useEffect,
+  Dispatch,
 } from 'react'
 import { InjectedPolkadotAccount } from 'polkadot-api/pjs-signer'
-import { useAccounts as useRedotAccounts } from '@reactive-dot/react'
 import { useLocalStorage } from 'usehooks-ts'
-import { SELECTED_ACCOUNT_KEY } from '@/lib/constants'
+
+import { localStorageKeyAccount, useConnect } from '@polkadot-ui/react'
 
 type AccountContextProps = {
   children: React.ReactNode | React.ReactNode[]
@@ -17,6 +18,7 @@ type AccountContextProps = {
 
 export interface IAccountContext {
   selectedAccount?: InjectedPolkadotAccount
+  setConnAccounts?: Dispatch<React.SetStateAction<InjectedPolkadotAccount[]>>
   accounts: InjectedPolkadotAccount[]
   selectAccount: (account: InjectedPolkadotAccount | undefined) => void
 }
@@ -24,15 +26,28 @@ export interface IAccountContext {
 const AccountContext = createContext<IAccountContext | undefined>(undefined)
 
 const AccountContextProvider = ({ children }: AccountContextProps) => {
-  const accounts = useRedotAccounts()
-  const [selectedAccount, setSelected] = useState<
-    InjectedPolkadotAccount | undefined
-  >()
   const [
     localStorageAccount,
     setLocalStorageAccount,
     removeLocalStorageAccount,
-  ] = useLocalStorage(SELECTED_ACCOUNT_KEY, '')
+  ] = useLocalStorage(localStorageKeyAccount, '')
+
+  const { connectedAccounts, connectedExtensions } = useConnect()
+
+  const [connAccounts, setConnAccounts] =
+    useState<InjectedPolkadotAccount[]>(connectedAccounts)
+
+  useEffect(() => {
+    const acc: InjectedPolkadotAccount[] = []
+    for (const [, value] of connectedExtensions) {
+      acc.push(...value.getAccounts())
+    }
+    setConnAccounts(acc)
+  }, [connectedExtensions])
+
+  const [selectedAccount, setSelected] = useState<
+    InjectedPolkadotAccount | undefined
+  >()
 
   const selectAccount = useCallback(
     (account: InjectedPolkadotAccount | undefined) => {
@@ -49,21 +64,22 @@ const AccountContextProvider = ({ children }: AccountContextProps) => {
 
   useEffect(() => {
     if (localStorageAccount) {
-      const account = accounts.find(
+      const account = connAccounts.find(
         (account) => account.address === localStorageAccount,
       )
       if (account) {
         selectAccount(account)
       }
     } else {
-      selectAccount(accounts[0])
+      // selectAccount(connAccounts[0])
     }
-  }, [accounts, localStorageAccount, selectAccount])
+  }, [connAccounts, localStorageAccount, selectAccount])
 
   return (
     <AccountContext.Provider
       value={{
-        accounts,
+        accounts: connAccounts,
+        setConnAccounts,
         selectedAccount,
         selectAccount,
       }}
