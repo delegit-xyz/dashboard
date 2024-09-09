@@ -10,7 +10,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { routes } from '@/lib/utils'
 import { useWalletDisconnector } from '@reactive-dot/react'
-import { ChevronDown, PanelLeft } from 'lucide-react'
+import { ChevronDown, Moon, PanelLeft, Sun } from 'lucide-react'
 import { ConnectionDialog } from 'dot-connect/react.js'
 
 // import {
@@ -25,6 +25,10 @@ import { ConnectionDialog } from 'dot-connect/react.js'
 import { useAccounts } from './contexts/AccountsContext'
 import { useEffect, useState } from 'react'
 import { SupportedNetworkNames, useNetwork } from './contexts/NetworkContext'
+import { useTheme } from './components/theme-provider'
+import { Link } from 'react-router-dom'
+import { FaCheckCircle, FaGithub } from 'react-icons/fa'
+import { TbLoaderQuarter } from 'react-icons/tb'
 
 interface NetworkDisplay {
   name: SupportedNetworkNames
@@ -45,10 +49,11 @@ if (import.meta.env.DEV) {
 }
 
 export const Header = () => {
-  const { network, setNetwork } = useNetwork()
+  const { network, setNetwork, lightClientLoaded, isLight } = useNetwork()
   const { accounts, selectAccount, selectedAccount } = useAccounts()
   const [, disconnectAll] = useWalletDisconnector()
   const [isConnectionDialiogOpen, setIsConnectionDialiogOpen] = useState(false)
+  const { theme, setTheme } = useTheme()
 
   useEffect(() => {
     if (!selectedAccount?.address && accounts.length > 0) {
@@ -69,15 +74,47 @@ export const Header = () => {
           <SheetContent side="left" className="sm:max-w-xs">
             <nav className="grid gap-6 text-lg font-medium">
               {routes.map((r) => (
-                <a
+                <Link
                   key={r.name}
-                  href={`/${r.link || ''}`}
+                  to={`/${r.link || ''}`}
                   className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                 >
                   <r.icon className="h-5 w-5" />
                   {r.name}
-                </a>
+                </Link>
               ))}
+            </nav>
+            <nav className="fixed bottom-48 flex flex-col gap-4">
+              {isLight && (
+                <a
+                  href="#"
+                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                >
+                  {!lightClientLoaded ? (
+                    <TbLoaderQuarter className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <FaCheckCircle className="text-[#00b300]" />
+                  )}
+                  Light Client {!lightClientLoaded ? `syncing` : `synced`}
+                </a>
+              )}
+              <a
+                href="https://github.com/polkadot-fellows"
+                target="_blank"
+                className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+              >
+                <FaGithub className="h-5 w-5" />
+                Github
+              </a>
+              <a
+                href="#"
+                className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+              >
+                <Sun className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <Moon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                Toggle theme
+              </a>
             </nav>
           </SheetContent>
         </Sheet>
