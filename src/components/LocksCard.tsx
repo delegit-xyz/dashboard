@@ -140,10 +140,9 @@ export const LocksCard = () => {
                 </TooltipTrigger>
                 <TooltipContent>
                   <p className="max-w-[15rem] text-sm">
-                    Elapsed locks for votes casted on referenda, or track
-                    delegation. Unlocking is possible, however, since governance
-                    locks can overlap, it doesn't necessarily mean the account's
-                    transferable balance will change.
+                    Elapsed locks for votes casted on referenda, or tracks
+                    delegation. Since locks can overlap, unlocking doesn't
+                    necessarily mean the transferable balance will change.
                   </p>
                 </TooltipContent>
               </Tooltip>
@@ -230,9 +229,9 @@ export const LocksCard = () => {
                 </TooltipTrigger>
                 <TooltipContent>
                   <p className="max-w-[15rem] text-sm">
-                    Funds that will be unlockable after a certain time. These
-                    results from either a vote with conviction casted on a
-                    refrendum, or after undelegating.
+                    Funds unlockable after a certain time. These locks result
+                    either from a vote with conviction casted on a refrendum, or
+                    from undelegating.
                   </p>
                 </TooltipContent>
               </Tooltip>
