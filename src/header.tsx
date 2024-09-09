@@ -100,7 +100,7 @@ export const Header = () => {
                 </a>
               )}
               <a
-                href="https://github.com/polkadot-fellows"
+                href="https://github.com/delegit-xyz/dashboard"
                 target="_blank"
                 className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
               >
