@@ -127,9 +127,9 @@ export const LocksCard = () => {
   }, [api, freeLocks, getUnlockTx, selectedAccount])
 
   return (
-    <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
+    <div className="gap-2 md:flex">
       {freeLocks.length > 0 && (
-        <Card className="relative h-full border-2 p-2 px-4">
+        <Card className="relative mb-2 h-full border-2 p-2 px-4 md:mb-0">
           <div className="relative z-10">
             <Title variant="h4">Unlockable</Title>
             <div className="font-unbounded text-5xl font-bold">
@@ -204,7 +204,7 @@ export const LocksCard = () => {
         </>
       ) : (
         <>
-          <Card className="h-full border-2 p-2 px-4">
+          <Card className="mb-2 h-full border-2 p-2 px-4 md:mb-0">
             <Title variant="h4">Unlocking</Title>
             <div className="font-unbounded text-5xl font-bold">
               {currentLocks.length + currentDelegationLocks.length}
@@ -274,7 +274,7 @@ export const LocksCard = () => {
               </>
             </ContentReveal>
           </Card>
-          <Card className="h-full border-2 p-2 px-4">
+          <Card className="mb-2 h-full border-2 p-2 px-4 md:mb-0">
             <Title variant="h4">Votes</Title>
             <div className="font-unbounded text-5xl font-bold">
               {ongoingVoteLocks.length}
