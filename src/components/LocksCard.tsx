@@ -23,6 +23,7 @@ import {
 } from '@/contexts/LocksContext'
 import { Skeleton } from './ui/skeleton'
 import { useGetUnlockTx } from '@/hooks/useGetUnlockTx'
+import { toast } from 'sonner'
 
 export const LocksCard = () => {
   const [currentBlock, setCurrentBlock] = useState(0)
@@ -115,12 +116,14 @@ export const LocksCard = () => {
       .subscribe({
         next: (event) => {
           console.log(event)
+          toast.info(`Event ${event.type} - TxHash: ${event.txHash}`)
           if (event.type === 'finalized') {
             setIsUnlockingLoading(false)
           }
         },
         error: (error) => {
           console.error(error)
+          toast.info(`Event Error: ${JSON.stringify(error)}`)
           setIsUnlockingLoading(false)
         },
       })

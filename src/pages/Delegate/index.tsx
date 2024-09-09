@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { useAccounts } from '@/contexts/AccountsContext'
 import { Slider } from '@/components/ui/slider'
 import { Link, useParams } from 'react-router-dom'
+import { toast } from 'sonner'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { AlertCircle, ArrowLeft } from 'lucide-react'
@@ -15,6 +16,7 @@ import { msgs } from '@/lib/constants'
 import { evalUnits, planckToUnit } from '@polkadot-ui/utils'
 import { useLocks } from '@/contexts/LocksContext'
 import { useGetDelegateTx } from '@/hooks/useGetDelegateTx'
+import { InvalidTxError } from 'polkadot-api'
 
 type AlertProps = {
   title: string
@@ -109,14 +111,35 @@ export const Delegate = () => {
       if (!tx) return
       ;(await tx)
         .signSubmitAndWatch(selectedAccount?.polkadotSigner)
-        .forEach((value) => console.log('value', value))
+        .forEach((value) => {
+          let msg: string
+          switch (value.type) {
+            case 'finalized':
+              msg = `Tx - Finalized. Block Number: ${value.block.number}. TxHash: ${value.txHash}`
+              break
+            case 'signed':
+              msg = `Tx - Signed. TxHash: ${value.txHash}`
+              break
+            case 'broadcasted':
+              msg = `Tx - Broadcasted. TxHash: ${value.txHash}`
+              break
+            case 'txBestBlocksState':
+              msg = `Tx - Best Block State. TxHash: ${value.txHash}`
+              break
+          }
+          console.log(value, msg)
+          toast.info(msg)
+        })
+        .catch(({ error }: InvalidTxError) => {
+          toast.error(`Tx Error: ${error.type}: ${JSON.stringify(error)}`)
+        })
     } else {
       return
     }
   }
 
   return (
-    <main className="mx-0 grid flex-1 items-start gap-4 gap-8 p-4 sm:mx-[5%] sm:px-6 sm:py-0 xl:mx-[20%]">
+    <main className="mx-0 grid flex-1 items-start gap-8 p-4 sm:mx-[5%] sm:px-6 sm:py-0 xl:mx-[20%]">
       {!api && (
         <AlertNote
           title={msgs.api.title}
