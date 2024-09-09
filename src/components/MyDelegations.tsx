@@ -82,7 +82,7 @@ export const MyDelegations = () => {
   return (
     <>
       <Title className="mb-4">My Delegations</Title>
-      <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+      <div className={`flex gap-2 md:grid-cols-2`}>
         {delegationsByDelegateConvictionAmount === undefined ? (
           <Skeleton className="h-[116px] rounded-xl" />
         ) : noDelegations ? (
