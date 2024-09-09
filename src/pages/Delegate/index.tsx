@@ -47,6 +47,7 @@ export const Delegate = () => {
   )
   const [convictionNo, setConvictionNo] = useState(0)
   const { selectedAccount } = useAccounts()
+  const [isTxInitiated, setIsTxInitiated] = useState(false)
   const getDelegateTx = useGetDelegateTx()
   const navigate = useNavigate()
 
@@ -109,6 +110,8 @@ export const Delegate = () => {
       })
 
       if (!tx) return
+
+      setIsTxInitiated(true)
       ;(await tx)
         .signSubmitAndWatch(selectedAccount?.polkadotSigner)
         .subscribe((event) => {
@@ -117,11 +120,13 @@ export const Delegate = () => {
           if (event.type === 'txBestBlocksState' && event.found) {
             if (event.dispatchError) {
               console.error('Tx error', event)
+              setIsTxInitiated(false)
             }
           }
 
           if (event.type === 'finalized') {
             navigate('/')
+            setIsTxInitiated(false)
           }
         })
     } else {
@@ -190,7 +195,7 @@ export const Delegate = () => {
       />
       <Button
         onClick={onSign}
-        disabled={amount === 0n || !api || !selectedAccount}
+        disabled={amount === 0n || !api || !selectedAccount || isTxInitiated}
       >
         Delegate{' '}
         {amount !== null &&
