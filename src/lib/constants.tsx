@@ -7,7 +7,7 @@ import type { MsgType } from './types'
 
 export const THEME_KEY = 'delegit.theme'
 export const SELECTED_ACCOUNT_KEY = 'delegit.selectedAccount'
-export const SELECTED_NETWORK = 'delegit.selectedNetwork'
+export const SELECTED_NETWORK_KEY = 'delegit.selectedNetwork'
 
 const THRESHOLD = BigInt(500)
 const DEFAULT_TIME = BigInt(6000)
