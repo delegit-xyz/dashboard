@@ -224,7 +224,6 @@ export const LocksCard = () => {
               <Title variant="h4">Unlocking</Title>
               <Tooltip>
                 <TooltipTrigger className="cursor-auto">
-                  {' '}
                   <Info className="h-3 w-3 text-gray-500" />
                 </TooltipTrigger>
                 <TooltipContent>
@@ -309,7 +308,6 @@ export const LocksCard = () => {
               <Title variant="h4">Votes</Title>
               <Tooltip>
                 <TooltipTrigger className="cursor-auto">
-                  {' '}
                   <Info className="h-3 w-3 text-gray-500" />
                 </TooltipTrigger>
                 <TooltipContent>
