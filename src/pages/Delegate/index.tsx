@@ -7,7 +7,7 @@ import { SetStateAction, useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { useAccounts } from '@/contexts/AccountsContext'
 import { Slider } from '@/components/ui/slider'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { AlertCircle, ArrowLeft } from 'lucide-react'
@@ -48,6 +48,7 @@ export const Delegate = () => {
   const [convictionNo, setConvictionNo] = useState(0)
   const { selectedAccount } = useAccounts()
   const getDelegateTx = useGetDelegateTx()
+  const navigate = useNavigate()
 
   const convictionDisplay = useMemo(() => {
     const { display, multiplier } = getConvictionLockTimeDisplay(convictionNo)
@@ -62,6 +63,7 @@ export const Delegate = () => {
 
     return ''
   }, [amountError, isAmountDirty])
+
   useEffect(() => {
     // API change denotes that the netowork changed. Due to the fact that
     // decimals of network may change as well we should convert the amount to 0n
@@ -109,7 +111,19 @@ export const Delegate = () => {
       if (!tx) return
       ;(await tx)
         .signSubmitAndWatch(selectedAccount?.polkadotSigner)
-        .forEach((value) => console.log('value', value))
+        .subscribe((event) => {
+          console.info(event)
+
+          if (event.type === 'txBestBlocksState' && event.found) {
+            if (event.dispatchError) {
+              console.error('Tx error', event)
+            }
+          }
+
+          if (event.type === 'finalized') {
+            navigate('/')
+          }
+        })
     } else {
       return
     }
