@@ -10,7 +10,7 @@ import { planckToUnit } from '@polkadot-ui/utils'
 import { Button } from './ui/button'
 import { Title } from './ui/title'
 import { ContentReveal } from './ui/content-reveal'
-import { BadgeCent, Clock2, LockKeyholeOpen, Vote } from 'lucide-react'
+import { BadgeCent, Clock2, Info, LockKeyholeOpen, Vote } from 'lucide-react'
 import { Badge } from './ui/badge'
 import { dot } from '@polkadot-api/descriptors'
 import { useAccounts } from '@/contexts/AccountsContext'
@@ -23,6 +23,7 @@ import {
 } from '@/contexts/LocksContext'
 import { Skeleton } from './ui/skeleton'
 import { useGetUnlockTx } from '@/hooks/useGetUnlockTx'
+import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
 
 export const LocksCard = () => {
   const [currentBlock, setCurrentBlock] = useState(0)
@@ -131,7 +132,22 @@ export const LocksCard = () => {
       {freeLocks.length > 0 && (
         <Card className="relative h-full border-2 p-2 px-4">
           <div className="relative z-10">
-            <Title variant="h4">Unlockable</Title>
+            <div className="flex gap-x-2">
+              <Title variant="h4">Unlockable</Title>
+              <Tooltip>
+                <TooltipTrigger className="cursor-auto">
+                  <Info className="h-3 w-3 text-gray-500" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="max-w-[15rem] text-sm">
+                    Elapsed locks for votes casted on referenda, or track
+                    delegation. Unlocking is possible, however, since governance
+                    locks can overlap, it doesn't necessarily mean the account's
+                    transferable balance will change.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
             <div className="font-unbounded text-5xl font-bold">
               {freeLocks.length}
               <LockKeyholeOpen className="ml-1 inline-block h-8 w-8 rotate-[10deg] text-gray-200" />
@@ -205,7 +221,22 @@ export const LocksCard = () => {
       ) : (
         <>
           <Card className="h-full border-2 p-2 px-4">
-            <Title variant="h4">Unlocking</Title>
+            <div className="flex gap-x-2">
+              <Title variant="h4">Unlocking</Title>
+              <Tooltip>
+                <TooltipTrigger className="cursor-auto">
+                  {' '}
+                  <Info className="h-3 w-3 text-gray-500" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="max-w-[15rem] text-sm">
+                    Funds that will be unlockable after a certain time. These
+                    results from either a vote with conviction casted on a
+                    refrendum, or after undelegating.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
             <div className="font-unbounded text-5xl font-bold">
               {currentLocks.length + currentDelegationLocks.length}
               <Clock2 className="ml-1 inline-block h-8 w-8 rotate-[10deg] text-gray-200" />
@@ -275,7 +306,21 @@ export const LocksCard = () => {
             </ContentReveal>
           </Card>
           <Card className="h-full border-2 p-2 px-4">
-            <Title variant="h4">Votes</Title>
+            <div className="flex gap-x-2">
+              <Title variant="h4">Votes</Title>
+              <Tooltip>
+                <TooltipTrigger className="cursor-auto">
+                  {' '}
+                  <Info className="h-3 w-3 text-gray-500" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="max-w-[15rem] text-sm">
+                    Votes casted on a referendum that is still in deciding
+                    phase.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
             <div className="font-unbounded text-5xl font-bold">
               {ongoingVoteLocks.length}
               <Vote className="ml-1 inline-block h-8 w-8 text-gray-200" />
