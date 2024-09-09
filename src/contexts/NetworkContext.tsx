@@ -16,6 +16,8 @@ import { startFromWorker } from 'polkadot-api/smoldot/from-worker'
 import { getChainInformation } from '@/lib/utils'
 import { AssetType } from '@/lib/types'
 import networks from '@/assets/networks.json'
+import { SELECTED_NETWORK_KEY } from '@/lib/constants'
+import { useLocalStorage } from 'usehooks-ts'
 
 type NetworkContextProps = {
   children: React.ReactNode | React.ReactNode[]
@@ -52,6 +54,11 @@ export interface INetworkContext {
 const NetworkContext = createContext<INetworkContext | undefined>(undefined)
 
 const NetworkContextProvider = ({ children }: NetworkContextProps) => {
+  const [localStorageNetwork, setLocalStorageNetwork] = useLocalStorage(
+    SELECTED_NETWORK_KEY,
+    '',
+  )
+
   const [lightClientLoaded, setLightClientLoaded] = useState<boolean>(false)
   const [isLight, setIsLight] = useState<boolean>(false)
   const [client, setClient] = useState<PolkadotClient>()
@@ -59,7 +66,13 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
   const [trackList, setTrackList] = useState<TrackList>({})
 
   const [assetInfo, setAssetInfo] = useState<AssetType>({} as AssetType)
-  const [network, setNetwork] = useState<SupportedNetworkNames>('polkadot')
+  const [network, setNetwork] = useState<SupportedNetworkNames>(
+    (localStorageNetwork as SupportedNetworkNames) || 'polkadot',
+  )
+
+  useEffect(() => {
+    setLocalStorageNetwork(network)
+  }, [network, setLocalStorageNetwork])
 
   useEffect(() => {
     let client: PolkadotClient

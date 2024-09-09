@@ -24,11 +24,12 @@ import {
 import { Skeleton } from './ui/skeleton'
 import { useGetUnlockTx } from '@/hooks/useGetUnlockTx'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
+import { TrackDisplay } from './TrackDisplay'
 
 export const LocksCard = () => {
   const [currentBlock, setCurrentBlock] = useState(0)
   const [expectedBlockTime, setExpectedBlockTime] = useState(0)
-  const { api, trackList } = useNetwork()
+  const { api } = useNetwork()
   const { voteLocks: locks, delegationLocks } = useLocks()
   const { assetInfo } = useNetwork()
   const [ongoingVoteLocks, setOngoingVoteLocks] = useState<VoteLock[]>([])
@@ -169,9 +170,7 @@ export const LocksCard = () => {
                           <ul>
                             <li className="mb-2">
                               <div className="capitalize">
-                                <span className="capitalize">
-                                  <Badge>{trackList[trackId]}</Badge> /{trackId}
-                                </span>
+                                <TrackDisplay trackId={trackId} />
                                 <div>
                                   <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
                                   {planckToUnit(
@@ -253,7 +252,7 @@ export const LocksCard = () => {
                         <li>
                           <Badge>#{refId}</Badge>
                           <div>
-                            <BadgeCent className="inline-block h-4 w-4 pt-2 text-gray-500" />{' '}
+                            <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
                             {planckToUnit(
                               amount,
                               assetInfo.precision,
@@ -277,12 +276,7 @@ export const LocksCard = () => {
                     <div key={trackId} className="mb-4 border-l-2 pl-2">
                       <ul>
                         <li>
-                          <div className="capitalize">
-                            <Badge>{trackList[trackId]}</Badge>
-                            <span className="ml-2 border-l-2 pl-2 text-xs font-bold text-slate-400">
-                              {trackId}
-                            </span>
-                          </div>
+                          <TrackDisplay trackId={trackId} />
                           <div className="mt-0.5">
                             <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
                             {planckToUnit(
