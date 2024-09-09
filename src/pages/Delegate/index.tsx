@@ -7,7 +7,7 @@ import { SetStateAction, useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { useAccounts } from '@/contexts/AccountsContext'
 import { Slider } from '@/components/ui/slider'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import { ArrowLeft } from 'lucide-react'
 import { msgs } from '@/lib/constants'
@@ -37,6 +37,7 @@ export const Delegate = () => {
   const [isTxInitiated, setIsTxInitiated] = useState(false)
   const getDelegateTx = useGetDelegateTx()
   const navigate = useNavigate()
+  const { search } = useLocation()
 
   const { display: convictionTimeDisplay, multiplier: convictionMultiplier } =
     getConvictionLockTimeDisplay(convictionNo)
@@ -122,7 +123,7 @@ export const Delegate = () => {
           }
 
           if (event.type === 'finalized') {
-            navigate('/')
+            navigate(`/${search}`)
             setIsTxInitiated(false)
           }
         })
@@ -148,7 +149,7 @@ export const Delegate = () => {
         />
       )}
 
-      <Link to="/home" className="flex items-center gap-2 text-primary">
+      <Link to={`/${search}`} className="flex items-center gap-2 text-primary">
         <ArrowLeft className="h-4 w-4" />
         To all delegates
       </Link>
