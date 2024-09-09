@@ -53,7 +53,8 @@ export const Header = () => {
   const { accounts, selectAccount, selectedAccount } = useAccounts()
   const [, disconnectAll] = useWalletDisconnector()
   const [isConnectionDialiogOpen, setIsConnectionDialiogOpen] = useState(false)
-  const { theme, setTheme } = useTheme()
+  // eslint-disable-next-line
+  const { theme = 'system' } = useTheme()
 
   useEffect(() => {
     if (!selectedAccount?.address && accounts.length > 0) {
