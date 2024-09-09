@@ -23,7 +23,7 @@ import {
 } from '@/contexts/LocksContext'
 import { Skeleton } from './ui/skeleton'
 import { useGetUnlockTx } from '@/hooks/useGetUnlockTx'
-import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 
 export const LocksCard = () => {
   const [currentBlock, setCurrentBlock] = useState(0)
@@ -134,18 +134,18 @@ export const LocksCard = () => {
           <div className="relative z-10">
             <div className="flex gap-x-2">
               <Title variant="h4">Unlockable</Title>
-              <Tooltip>
-                <TooltipTrigger className="cursor-auto">
+              <Popover>
+                <PopoverTrigger>
                   <Info className="h-3 w-3 text-gray-500" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="max-w-[15rem] text-sm">
+                </PopoverTrigger>
+                <PopoverContent>
+                  <p className="max-w-[15rem]">
                     Elapsed locks for votes casted on referenda, or tracks
                     delegation. Since locks can overlap, unlocking doesn't
                     necessarily mean the transferable balance will change.
                   </p>
-                </TooltipContent>
-              </Tooltip>
+                </PopoverContent>
+              </Popover>
             </div>
             <div className="font-unbounded text-5xl font-bold">
               {freeLocks.length}
@@ -222,18 +222,18 @@ export const LocksCard = () => {
           <Card className="h-full border-2 p-2 px-4">
             <div className="flex gap-x-2">
               <Title variant="h4">Unlocking</Title>
-              <Tooltip>
-                <TooltipTrigger className="cursor-auto">
+              <Popover>
+                <PopoverTrigger>
                   <Info className="h-3 w-3 text-gray-500" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="max-w-[15rem] text-sm">
+                </PopoverTrigger>
+                <PopoverContent>
+                  <p className="max-w-[15rem]">
                     Funds unlockable after a certain time. These locks result
                     either from a vote with conviction casted on a refrendum, or
                     from undelegating.
                   </p>
-                </TooltipContent>
-              </Tooltip>
+                </PopoverContent>
+              </Popover>
             </div>
             <div className="font-unbounded text-5xl font-bold">
               {currentLocks.length + currentDelegationLocks.length}
@@ -306,17 +306,17 @@ export const LocksCard = () => {
           <Card className="h-full border-2 p-2 px-4">
             <div className="flex gap-x-2">
               <Title variant="h4">Votes</Title>
-              <Tooltip>
-                <TooltipTrigger className="cursor-auto">
+              <Popover>
+                <PopoverTrigger>
                   <Info className="h-3 w-3 text-gray-500" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="max-w-[15rem] text-sm">
+                </PopoverTrigger>
+                <PopoverContent>
+                  <p className="max-w-[15rem]">
                     Votes casted on a referendum that is still in deciding
                     phase.
                   </p>
-                </TooltipContent>
-              </Tooltip>
+                </PopoverContent>
+              </Popover>
             </div>
             <div className="font-unbounded text-5xl font-bold">
               {ongoingVoteLocks.length}
