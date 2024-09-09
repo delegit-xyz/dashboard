@@ -8,9 +8,12 @@ import React, {
   Dispatch,
 } from 'react'
 import { InjectedPolkadotAccount } from 'polkadot-api/pjs-signer'
-import { useLocalStorage } from 'usehooks-ts'
 
-import { localStorageKeyAccount, useConnect } from '@polkadot-ui/react'
+import {
+  useConnectLocalStorage,
+  localStorageKeyAccount,
+  useConnect,
+} from '@polkadot-ui/react'
 
 type AccountContextProps = {
   children: React.ReactNode | React.ReactNode[]
@@ -30,9 +33,11 @@ const AccountContextProvider = ({ children }: AccountContextProps) => {
     localStorageAccount,
     setLocalStorageAccount,
     removeLocalStorageAccount,
-  ] = useLocalStorage(localStorageKeyAccount, '')
+  ] = useConnectLocalStorage(localStorageKeyAccount, '')
 
   const { connectedAccounts, connectedExtensions } = useConnect()
+
+  console.log('2', connectedAccounts, connectedExtensions)
 
   const [connAccounts, setConnAccounts] =
     useState<InjectedPolkadotAccount[]>(connectedAccounts)
@@ -44,6 +49,8 @@ const AccountContextProvider = ({ children }: AccountContextProps) => {
     }
     setConnAccounts(acc)
   }, [connectedExtensions])
+
+  console.log('3', connAccounts)
 
   const [selectedAccount, setSelected] = useState<
     InjectedPolkadotAccount | undefined
@@ -64,6 +71,7 @@ const AccountContextProvider = ({ children }: AccountContextProps) => {
 
   useEffect(() => {
     if (localStorageAccount) {
+      console.log('4', connAccounts)
       const account = connAccounts.find(
         (account) => account.address === localStorageAccount,
       )
@@ -71,7 +79,7 @@ const AccountContextProvider = ({ children }: AccountContextProps) => {
         selectAccount(account)
       }
     } else {
-      // selectAccount(connAccounts[0])
+      selectAccount(connAccounts[0])
     }
   }, [connAccounts, localStorageAccount, selectAccount])
 

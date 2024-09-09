@@ -51,14 +51,15 @@ if (import.meta.env.DEV) {
 
 export const Header = () => {
   const { network, setNetwork } = useNetwork()
-  const [sAccount, setSAccount] = useState<InjectedPolkadotAccount>(
-    {} as InjectedPolkadotAccount,
-  )
   const { accounts, selectAccount, selectedAccount } = useAccounts()
 
-  useEffect(() => {
-    selectAccount(sAccount)
-  }, [sAccount, selectAccount])
+  console.log('accounts', accounts)
+  console.log('--------------------')
+  console.log('selectedAccount', selectedAccount)
+
+  const [sAccount, setSAccount] = useState<InjectedPolkadotAccount>(
+    selectedAccount as InjectedPolkadotAccount,
+  )
 
   useEffect(() => {
     if (!selectedAccount?.address && accounts.length > 0) {
@@ -154,8 +155,11 @@ export const Header = () => {
                   <Connect
                     type="split"
                     config={connectConfig}
-                    selected={selectedAccount}
+                    selected={sAccount}
                     setSelected={setSAccount}
+                    onSelectExtensions={(ext) =>
+                      console.log('OnSelectExtensions', ext)
+                    }
                   />
                 </DialogContent>
               </Dialog>
@@ -170,7 +174,7 @@ export const Header = () => {
                   >
                     <Polkicon
                       size={36}
-                      address={selectedAccount?.address || ''}
+                      address={sAccount?.address || ''}
                       className="mr-2"
                       outerColor="transparent"
                     />
@@ -184,7 +188,7 @@ export const Header = () => {
                       <DropdownMenuItem
                         className="cursor-pointer"
                         key={account.address}
-                        onClick={() => selectAccount(account)}
+                        onClick={() => setSAccount(account)}
                       >
                         <Polkicon
                           size={28}
