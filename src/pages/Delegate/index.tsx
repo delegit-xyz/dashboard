@@ -7,7 +7,7 @@ import { SetStateAction, useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { useAccounts } from '@/contexts/AccountsContext'
 import { Slider } from '@/components/ui/slider'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { ArrowLeft } from 'lucide-react'
 import { msgs } from '@/lib/constants'
@@ -34,7 +34,9 @@ export const Delegate = () => {
   )
   const [convictionNo, setConvictionNo] = useState(1)
   const { selectedAccount } = useAccounts()
+  const [isTxInitiated, setIsTxInitiated] = useState(false)
   const getDelegateTx = useGetDelegateTx()
+  const navigate = useNavigate()
 
   const { display: convictionTimeDisplay, multiplier: convictionMultiplier } =
     getConvictionLockTimeDisplay(convictionNo)
@@ -59,6 +61,7 @@ export const Delegate = () => {
 
     return ''
   }, [amountError, isAmountDirty])
+
   useEffect(() => {
     // API change denotes that the netowork changed. Due to the fact that
     // decimals of network may change as well we should convert the amount to 0n
@@ -104,9 +107,25 @@ export const Delegate = () => {
       })
 
       if (!tx) return
+
+      setIsTxInitiated(true)
       ;(await tx)
         .signSubmitAndWatch(selectedAccount?.polkadotSigner)
-        .forEach((value) => console.log('value', value))
+        .subscribe((event) => {
+          console.info(event)
+
+          if (event.type === 'txBestBlocksState' && event.found) {
+            if (event.dispatchError) {
+              console.error('Tx error', event)
+              setIsTxInitiated(false)
+            }
+          }
+
+          if (event.type === 'finalized') {
+            navigate('/')
+            setIsTxInitiated(false)
+          }
+        })
     } else {
       return
     }
@@ -174,7 +193,7 @@ export const Delegate = () => {
       />
       <Button
         onClick={onSign}
-        disabled={amount === 0n || !api || !selectedAccount}
+        disabled={amount === 0n || !api || !selectedAccount || isTxInitiated}
       >
         Delegate with {voteAmount} {assetInfo.symbol} votes
       </Button>
