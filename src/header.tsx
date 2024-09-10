@@ -85,7 +85,7 @@ export const Header = () => {
                 </Link>
               ))}
             </nav>
-            <nav className="fixed bottom-48 flex flex-col gap-4">
+            <nav className="fixed bottom-8 flex flex-col gap-4">
               {isLight && (
                 <a
                   href="#"

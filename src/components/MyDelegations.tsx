@@ -12,7 +12,13 @@ import { useAccounts } from '@/contexts/AccountsContext'
 import { Transaction, TypedApi } from 'polkadot-api'
 import { dot } from '@polkadot-api/descriptors'
 import { DelegationByAmountConviction } from './DelegationByAmountConviction'
-
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel'
 export const MyDelegations = () => {
   const { api } = useNetwork()
   const { delegations, refreshLocks } = useLocks()
@@ -82,7 +88,7 @@ export const MyDelegations = () => {
   return (
     <>
       <Title className="mb-4">My Delegations</Title>
-      <div className={`flex gap-2 md:grid-cols-2`}>
+      <div className={`mx-10 flex gap-2 md:mx-0 md:grid-cols-2`}>
         {delegationsByDelegateConvictionAmount === undefined ? (
           <Skeleton className="h-[116px] rounded-xl" />
         ) : noDelegations ? (
@@ -97,45 +103,61 @@ export const MyDelegations = () => {
             </div>
           </Card>
         ) : (
-          Object.entries(delegationsByDelegateConvictionAmount).map(
-            ([delegateAddress, amountConvictionMap]) => {
-              const knownDelegate = getDelegateByAddress(delegateAddress)
+          <Carousel className="flex w-full flex-col justify-center">
+            <CarouselContent className="-ml-1">
+              {Object.entries(delegationsByDelegateConvictionAmount).map(
+                ([delegateAddress, amountConvictionMap], index) => {
+                  const knownDelegate = getDelegateByAddress(delegateAddress)
 
-              return (
-                <Card
-                  className="flex h-full flex-col border bg-card p-2 px-4"
-                  key={delegateAddress}
-                >
-                  <>
-                    {knownDelegate?.name ? (
-                      <div className="flex items-center gap-2">
-                        <img
-                          src={knownDelegate.image}
-                          className="mr-2 w-12 rounded-full"
-                        />
-                        <div className="py-2 text-xl font-semibold">
-                          {knownDelegate.name}
-                        </div>
-                      </div>
-                    ) : (
-                      <AddressDisplay address={delegateAddress} size={'3rem'} />
-                    )}
-                    <DelegationByAmountConviction
-                      amountConvictionMap={amountConvictionMap}
-                    />
-                    <Button
-                      className="mb-2 mt-4 w-full"
-                      variant={'outline'}
-                      onClick={() => onUndelegate(delegateAddress)}
-                      disabled={delegateLoading.includes(delegateAddress)}
+                  return (
+                    <CarouselItem
+                      key={index}
+                      className="md:basis-1/2 lg:basis-1/3 xl:basis-1/4 2xl:basis-1/5"
                     >
-                      Undelegate
-                    </Button>
-                  </>
-                </Card>
-              )
-            },
-          )
+                      <Card
+                        className="flex h-auto flex-col justify-between border bg-card p-2 px-4"
+                        key={delegateAddress}
+                      >
+                        <>
+                          <div className="flex flex-col">
+                            {knownDelegate?.name ? (
+                              <div className="flex items-center gap-2">
+                                <img
+                                  src={knownDelegate.image}
+                                  className="mr-2 w-12 rounded-full"
+                                />
+                                <div className="py-2 text-xl font-semibold">
+                                  {knownDelegate.name}
+                                </div>
+                              </div>
+                            ) : (
+                              <AddressDisplay
+                                address={delegateAddress}
+                                size={'3rem'}
+                              />
+                            )}
+                            <DelegationByAmountConviction
+                              amountConvictionMap={amountConvictionMap}
+                            />
+                          </div>
+                          <Button
+                            className="w-a bottom-0 mb-2 mt-4"
+                            variant={'outline'}
+                            onClick={() => onUndelegate(delegateAddress)}
+                            disabled={delegateLoading.includes(delegateAddress)}
+                          >
+                            Undelegate
+                          </Button>
+                        </>
+                      </Card>
+                    </CarouselItem>
+                  )
+                },
+              )}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
         )}
       </div>
     </>

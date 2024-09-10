@@ -29,9 +29,8 @@ import { TrackDisplay } from './TrackDisplay'
 export const LocksCard = () => {
   const [currentBlock, setCurrentBlock] = useState(0)
   const [expectedBlockTime, setExpectedBlockTime] = useState(0)
-  const { api } = useNetwork()
+  const { api, assetInfo, trackList } = useNetwork()
   const { voteLocks: locks, delegationLocks } = useLocks()
-  const { assetInfo } = useNetwork()
   const [ongoingVoteLocks, setOngoingVoteLocks] = useState<VoteLock[]>([])
   const [freeLocks, setFreeLocks] = useState<Array<VoteLock | DelegationLock>>(
     [],
@@ -130,87 +129,6 @@ export const LocksCard = () => {
 
   return (
     <div className="flex flex-col gap-2 md:grid-cols-3 md:flex-row">
-      {freeLocks.length > 0 && (
-        <Card className="relative h-full border-2 p-2 px-4">
-          <div className="relative z-10">
-            <div className="flex gap-x-2">
-              <Title variant="h4">Unlockable</Title>
-              <Popover>
-                <PopoverTrigger>
-                  <Info className="h-3 w-3 text-gray-500" />
-                </PopoverTrigger>
-                <PopoverContent>
-                  <p className="max-w-[15rem]">
-                    Elapsed locks for votes casted on referenda, or tracks
-                    delegation. Since locks can overlap, unlocking doesn't
-                    necessarily mean the transferable balance will change.
-                  </p>
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div className="font-unbounded text-5xl font-bold">
-              {freeLocks.length}
-              <LockKeyholeOpen className="ml-1 inline-block h-8 w-8 rotate-[10deg] text-gray-200" />
-            </div>
-            {freeLocks.length > 0 && (
-              <>
-                <Button
-                  className="mb-2 mt-4 w-full"
-                  onClick={onUnlockClick}
-                  disabled={isUnlockingLoading}
-                >
-                  Unlock
-                </Button>
-                <ContentReveal hidden={false}>
-                  {freeLocks.map((lock) => {
-                    if (lock.type === LockType.Delegating) {
-                      const { amount, trackId } = lock
-                      return (
-                        <div key={trackId}>
-                          <ul>
-                            <li className="mb-2">
-                              <div className="capitalize">
-                                <TrackDisplay trackId={trackId} />
-                                <div>
-                                  <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
-                                  {planckToUnit(
-                                    amount,
-                                    assetInfo.precision,
-                                  ).toLocaleString('en')}{' '}
-                                  {assetInfo.symbol}
-                                </div>
-                              </div>
-                            </li>
-                          </ul>
-                        </div>
-                      )
-                    }
-
-                    const { amount, refId } = lock
-                    return (
-                      <div key={refId}>
-                        <ul>
-                          <li className="mb-2">
-                            <Badge>#{refId}</Badge>
-                            <div>
-                              <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
-                              {planckToUnit(
-                                amount,
-                                assetInfo.precision,
-                              ).toLocaleString('en')}{' '}
-                              {assetInfo.symbol}
-                            </div>
-                          </li>
-                        </ul>
-                      </div>
-                    )
-                  })}
-                </ContentReveal>
-              </>
-            )}
-          </div>
-        </Card>
-      )}
       {!locksLoaded ? (
         <>
           <Skeleton className="h-[116px] rounded-xl" />
