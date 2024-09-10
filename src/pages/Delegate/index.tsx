@@ -101,7 +101,7 @@ export const Delegate = () => {
         .catch(console.error)
 
       const tx = getDelegateTx({
-        target: delegate.address,
+        delegateAddress: delegate.address,
         conviction: conviction,
         amount,
         tracks: allTracks || [],

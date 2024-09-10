@@ -1,12 +1,11 @@
 import { useAccounts } from '@/contexts/AccountsContext'
 import { useLocks } from '@/contexts/LocksContext'
 import { useNetwork } from '@/contexts/NetworkContext'
-import { dot, MultiAddress, VotingConviction } from '@polkadot-api/descriptors'
-import { TypedApi } from 'polkadot-api'
+import { MultiAddress, VotingConviction } from '@polkadot-api/descriptors'
 import { useCallback } from 'react'
 
 interface Params {
-  target: string
+  delegateAddress: string
   amount: bigint
   tracks: number[]
   conviction: VotingConviction
@@ -18,7 +17,7 @@ export const useGetDelegateTx = () => {
   const { delegations, voteLocks: locks } = useLocks()
 
   const getDelegationTx = useCallback(
-    ({ target, amount, tracks, conviction }: Params) => {
+    ({ delegateAddress, amount, tracks, conviction }: Params) => {
       if (!api || !selectedAccount) return
 
       const txs: Array<
@@ -52,13 +51,13 @@ export const useGetDelegateTx = () => {
           api.tx.ConvictionVoting.delegate({
             class: trackId,
             conviction,
-            to: MultiAddress.Id(target),
+            to: MultiAddress.Id(delegateAddress),
             balance: amount,
           }),
         )
       })
 
-      return (api as TypedApi<typeof dot>).tx.Utility.batch_all({
+      return api.tx.Utility.batch_all({
         calls: txs.map((tx) => tx.decodedCall),
       })
     },
