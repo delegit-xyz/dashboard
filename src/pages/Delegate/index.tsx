@@ -13,8 +13,10 @@ import { ArrowLeft } from 'lucide-react'
 import { msgs } from '@/lib/constants'
 import { evalUnits, planckToUnit } from '@polkadot-ui/utils'
 import { useLocks } from '@/contexts/LocksContext'
-import { useGetDelegateTx } from '@/hooks/useGetDelegateTx'
+import { DelegateTxs, useGetDelegateTx } from '@/hooks/useGetDelegateTx'
 import { AlertNote } from '@/components/Alert'
+import { useTestTx } from '@/hooks/useTestTx'
+import { MultiTransactionDialog } from './MultiTransactionDialog'
 
 export const Delegate = () => {
   const { api, assetInfo } = useNetwork()
@@ -38,6 +40,10 @@ export const Delegate = () => {
   const getDelegateTx = useGetDelegateTx()
   const navigate = useNavigate()
   const { search } = useLocation()
+  const { isExhaustsResources } = useTestTx()
+  const [isMultiTxDialogOpen, setIsMultiTxDialogOpen] = useState(false)
+  const [delegateTxs, setDelegateTxs] = useState<DelegateTxs>({} as DelegateTxs)
+  const { refreshLocks } = useLocks()
 
   const { display: convictionTimeDisplay, multiplier: convictionMultiplier } =
     getConvictionLockTimeDisplay(convictionNo)
@@ -92,44 +98,84 @@ export const Delegate = () => {
     setAmountVisible(e.target.value)
   }
 
-  const onSign = async () => {
-    if (selectedAccount && amount) {
-      const allTracks = await api.constants.Referenda.Tracks()
-        .then((tracks) => {
-          return tracks.map(([track]) => track)
-        })
-        .catch(console.error)
+  const onChangeSplitTransactionDialog = (isOpen: boolean) => {
+    setIsMultiTxDialogOpen(isOpen)
+    setIsTxInitiated(false)
+  }
 
-      const tx = getDelegateTx({
-        delegateAddress: delegate.address,
-        conviction: conviction,
-        amount,
-        tracks: allTracks || [],
+  const onProcessFinished = () => {
+    refreshLocks()
+    navigate(`/${search}`)
+    setIsTxInitiated(false)
+    onChangeSplitTransactionDialog(false)
+  }
+
+  const onSign = async () => {
+    if (!selectedAccount || !amount) return
+    setIsTxInitiated(true)
+
+    const allTracks = await api.constants.Referenda.Tracks()
+      .then((tracks) => {
+        return tracks.map(([track]) => track)
+      })
+      .catch((e) => {
+        console.error(e)
+        setIsTxInitiated(false)
       })
 
-      if (!tx) return
+    const {
+      delegationTxs = [],
+      removeDelegationsTxs = [],
+      removeVotesTxs = [],
+    } = getDelegateTx({
+      delegateAddress: delegate.address,
+      conviction: conviction,
+      amount,
+      tracks: allTracks || [],
+    })
 
-      setIsTxInitiated(true)
-      ;(await tx)
-        .signSubmitAndWatch(selectedAccount?.polkadotSigner)
-        .subscribe((event) => {
-          console.info(event)
+    setDelegateTxs({
+      removeVotesTxs,
+      removeDelegationsTxs,
+      delegationTxs,
+    })
 
-          if (event.type === 'txBestBlocksState' && event.found) {
-            if (event.dispatchError) {
-              console.error('Tx error', event)
-              setIsTxInitiated(false)
-            }
-          }
+    const allTxs = api.tx.Utility.batch_all({
+      calls: [...delegationTxs, ...removeDelegationsTxs, ...removeVotesTxs].map(
+        (tx) => tx.decodedCall,
+      ),
+    })
 
-          if (event.type === 'finalized') {
-            navigate(`/${search}`)
-            setIsTxInitiated(false)
-          }
-        })
-    } else {
+    if (!allTxs) {
+      setIsTxInitiated(false)
       return
     }
+
+    // check if we have an exhausted limit on the whole tx
+    const isExhaustsRessouces = await isExhaustsResources(allTxs)
+
+    // this is too big of a batch we need to split it up
+    if (isExhaustsRessouces) {
+      setIsMultiTxDialogOpen(true)
+      return
+    }
+
+    await allTxs
+      .signSubmitAndWatch(selectedAccount?.polkadotSigner)
+      .subscribe((event) => {
+        console.info(event)
+
+        if (event.type === 'txBestBlocksState' && event.found) {
+          if (event.dispatchError) {
+            console.error('Tx error', event)
+            setIsTxInitiated(false)
+          }
+        }
+
+        if (event.type === 'finalized') {
+          onProcessFinished()
+        }
+      })
   }
 
   return (
@@ -195,9 +241,16 @@ export const Delegate = () => {
       <Button
         onClick={onSign}
         disabled={amount === 0n || !api || !selectedAccount || isTxInitiated}
+        loading={isTxInitiated}
       >
         Delegate with {voteAmount} {assetInfo.symbol} votes
       </Button>
+      <MultiTransactionDialog
+        isOpen={isMultiTxDialogOpen}
+        onOpenChange={onChangeSplitTransactionDialog}
+        delegateTxs={delegateTxs}
+        onProcessFinished={onProcessFinished}
+      />
     </main>
   )
 }

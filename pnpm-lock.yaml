@@ -11,6 +11,12 @@ importers:
       '@polkadot-api/descriptors':
         specifier: file:.papi/descriptors
         version: file:.papi/descriptors(polkadot-api@1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1))
+      '@polkadot-labs/hdkd':
+        specifier: ^0.0.8
+        version: 0.0.8
+      '@polkadot-labs/hdkd-helpers':
+        specifier: ^0.0.8
+        version: 0.0.8
       '@polkadot-ui/react':
         specifier: 0.0.1-alpha.15
         version: 0.0.1-alpha.15(@noble/hashes@1.5.0)(@polkadot-api/substrate-bindings@0.7.0)(@polkadot-ui/assets@0.0.1-alpha.2)(@polkadot-ui/core@0.0.1-alpha.2)(@polkadot-ui/utils@0.0.1-alpha.5(@polkadot/keyring@13.0.2(@polkadot/util-crypto@13.0.2(@polkadot/util@13.0.2))(@polkadot/util@13.0.2))(@polkadot/util@13.0.2))(polkadot-api@1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -739,6 +745,15 @@ packages:
 
   '@polkadot-api/ws-provider@0.2.0':
     resolution: {integrity: sha512-R4B+tUR1H9j6AH2p4Dvv5+aV4/DC/TpKOqB1C5ON2Qvlc0TrH7x4HrZLn82Kq7iwUtnxkrU6esze2UgDGoVKPw==}
+
+  '@polkadot-labs/hdkd-helpers@0.0.8':
+    resolution: {integrity: sha512-nTJOinTKuINHwKsUXR+Q1Hld0DU+EYVxcfQqiJz9PH8L+48K3gPfpAHDApIuOW6Uq6yVb5/pgcDPNCaJS5nYsg==}
+
+  '@polkadot-labs/hdkd@0.0.8':
+    resolution: {integrity: sha512-gpcHtJ28FfugQ7uRj+EQzdhbtm1qchcW9hC1Gsf+IvMiB//Dx/K3tPS9uKtPDu7OoX4p/McpPcLm7IomdlYJbg==}
+
+  '@polkadot-labs/schnorrkel-wasm@0.0.5':
+    resolution: {integrity: sha512-oUKF4Qu+V1bPxEjq3kmzI3FZrMIr1kK/4cxntoHSBDTZn/Ymab9LXVhRNrbVend5JrwDANePcYqbK5Fdn9NGhQ==}
 
   '@polkadot-ui/assets@0.0.1-alpha.2':
     resolution: {integrity: sha512-E6RDLMP1SJs62YWRY4VJ8nPpYbjZGIgGQiZZO/rDfhRmm7qPPcmUfYXeI/4FQ21psjLVB6iBxbFS8FsqyFWp6w==}
@@ -3777,6 +3792,21 @@ snapshots:
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
+
+  '@polkadot-labs/hdkd-helpers@0.0.8':
+    dependencies:
+      '@noble/curves': 1.6.0
+      '@noble/hashes': 1.5.0
+      '@polkadot-labs/schnorrkel-wasm': 0.0.5
+      '@scure/base': 1.1.8
+      scale-ts: 1.6.0
+
+  '@polkadot-labs/hdkd@0.0.8':
+    dependencies:
+      '@polkadot-labs/hdkd-helpers': 0.0.8
+      '@polkadot-labs/schnorrkel-wasm': 0.0.5
+
+  '@polkadot-labs/schnorrkel-wasm@0.0.5': {}
 
   '@polkadot-ui/assets@0.0.1-alpha.2': {}
 
