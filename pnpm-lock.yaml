@@ -71,9 +71,6 @@ importers:
       dot-connect:
         specifier: ^0.6.0
         version: 0.6.0(@reactive-dot/core@0.10.0(polkadot-api@1.1.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1)))(@types/react@18.3.5)(react@18.3.1)
-      embla-carousel-react:
-        specifier: ^8.2.1
-        version: 8.2.1(react@18.3.1)
       lucide-react:
         specifier: ^0.437.0
         version: 0.437.0(react@18.3.1)
@@ -1861,19 +1858,6 @@ packages:
 
   email-addresses@5.0.0:
     resolution: {integrity: sha512-4OIPYlA6JXqtVn8zpHpGiI7vE6EQOAg16aGnDMIAlZVinnoZ8208tW1hAbjWydgN/4PLTT9q+O1K6AH/vALJGw==}
-
-  embla-carousel-react@8.2.1:
-    resolution: {integrity: sha512-YKtARk101mp00Zb6UAFkkvK+5XRo92LAtO9xLFeDnQ/XU9DqFhKnRy1CedRRj0/RSk6MTFDx3MqOQue3gJj9DA==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.1 || ^18.0.0
-
-  embla-carousel-reactive-utils@8.2.1:
-    resolution: {integrity: sha512-LXMVOOyv09ZKRxRQXYMX1FpVGcypsuxdcidNcNlBQUN2mK7hkmjVFQwwhfnnY39KMi88XYnYPBgMxfTe0vxSrA==}
-    peerDependencies:
-      embla-carousel: 8.2.1
-
-  embla-carousel@8.2.1:
-    resolution: {integrity: sha512-9mTDtyMZJhFuuW5pixhTT4iLiJB1l3dH3IpXUKCsgLlRlHCiySf/wLKy5xIAzmxIsokcQ50xea8wi7BCt0+Rxg==}
 
   emoji-regex@10.4.0:
     resolution: {integrity: sha512-EC+0oUMY1Rqm4O6LLrgjtYDvcVYTy7chDnM4Q7030tP4Kwj3u/pR6gP9ygnp2CJMK5Gq+9Q2oqmrFJAz01DXjw==}
@@ -4882,18 +4866,6 @@ snapshots:
   electron-to-chromium@1.5.13: {}
 
   email-addresses@5.0.0: {}
-
-  embla-carousel-react@8.2.1(react@18.3.1):
-    dependencies:
-      embla-carousel: 8.2.1
-      embla-carousel-reactive-utils: 8.2.1(embla-carousel@8.2.1)
-      react: 18.3.1
-
-  embla-carousel-reactive-utils@8.2.1(embla-carousel@8.2.1):
-    dependencies:
-      embla-carousel: 8.2.1
-
-  embla-carousel@8.2.1: {}
 
   emoji-regex@10.4.0: {}
 
