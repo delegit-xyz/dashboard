@@ -20,8 +20,9 @@ export const TooLargeDialog = ({ isOpen, onOpenChange, callData }: Props) => {
           <DialogTitle>Tx too large</DialogTitle>
           <DialogDescription>
             <div className="max-w-inherit m-4">
-              We encountered an error, the tx you want to submit is too large.
-              Please get in touch with the Delegit team to get help{' '}
+              We encountered an error, the tx you want to submit is too large
+              for the blockchain to accept it. Please get in touch with the
+              Delegit team to get help{' '}
               <a
                 href="https://github.com/delegit-xyz/dashboard/issues/new"
                 target="_blank"
@@ -30,7 +31,7 @@ export const TooLargeDialog = ({ isOpen, onOpenChange, callData }: Props) => {
               >
                 on GitHub.
               </a>{' '}
-              Sharing the transaction information bellow can help us:
+              Sharing the transaction information bellow would help us:
               <pre className="white-space-nowrap word-wrap-anywhere break-anywhere mt-4 whitespace-break-spaces">
                 {callData}
               </pre>
