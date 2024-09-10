@@ -101,22 +101,14 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
 
   useEffect(() => {
     if (!network) {
-      const networkParam = searchParams.get('network')
+      const queryStringNetwork = searchParams.get('network')
 
-      // connect to the network set in the query string
-      if (networkParam) {
-        selectNetwork(networkParam)
-        return
-      }
+      // in this order we prefer the network in query string
+      // or the local storage or the default
+      const selected =
+        queryStringNetwork || localStorageNetwork || DEFAULT_NETWORK
 
-      // connect to the previously selected network
-      // if anything is in local storage
-      if (localStorageNetwork) {
-        selectNetwork(localStorageNetwork as SupportedNetworkNames)
-        return
-      }
-
-      selectNetwork(DEFAULT_NETWORK)
+      selectNetwork(selected)
     }
   }, [localStorageNetwork, network, searchParams, selectNetwork])
 
