@@ -120,7 +120,7 @@ export const Delegate = () => {
               msg = `Tx - Finalized. Block Number: ${event.block.number}. TxHash: ${event.txHash}`
               break
             case 'signed':
-              msg = 'Tx - Signed'
+              msg = 'Tx signed.'
               break
             case 'broadcasted':
               msg = `Tx - Broadcasted. TxHash: ${event.txHash}`
