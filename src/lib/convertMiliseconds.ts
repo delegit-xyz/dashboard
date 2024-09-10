@@ -34,14 +34,24 @@ export const displayRemainingTime = ({
   s,
 }: DaysHoursMinutesSeconds) => {
   if (d > 0) {
+    if (h === 0) {
+      return `${d} days`
+    }
     return `${d} days ${h}h`
   }
 
   if (d === 0 && h > 0) {
+    if (m === 0) {
+      return `${h}h`
+    }
+
     return `${h}h ${m}min`
   }
 
   if (d === 0 && h === 0 && m > 0) {
+    if (s === 0) {
+      return `${m}min`
+    }
     return `${m}min ${s}s`
   }
 

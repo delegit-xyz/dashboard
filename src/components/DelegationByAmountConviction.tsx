@@ -4,30 +4,16 @@ import { planckToUnit } from '@polkadot-ui/utils'
 import { BadgeCent } from 'lucide-react'
 import { Badge } from './ui/badge'
 import { ContentReveal } from './ui/content-reveal'
+import { TrackDisplay } from './TrackDisplay'
 
 interface Props {
   amountConvictionMap: Record<string, CurrentDelegation[]>
 }
 
-const TrackDisplay = ({
-  trackId,
-  trackName,
-}: {
-  trackId: number
-  trackName: string
-}) => (
-  <div className="capitalize" key={trackId}>
-    <Badge>{trackName}</Badge>
-    <span className="ml-2 border-l-2 pl-2 text-xs font-semibold text-slate-400">
-      {trackId}
-    </span>
-  </div>
-)
-
 export const DelegationByAmountConviction = ({
   amountConvictionMap,
 }: Props) => {
-  const { trackList, assetInfo } = useNetwork()
+  const { assetInfo } = useNetwork()
   const { getConvictionLockTimeDisplay } = useLocks()
 
   return Object.values(amountConvictionMap).map((sameAcountConvictionArray) => {
@@ -49,24 +35,15 @@ export const DelegationByAmountConviction = ({
       >
         {trackIds.length === 1 ? (
           trackIds.map((trackId) => (
-            <TrackDisplay
-              key={trackId}
-              trackId={trackId}
-              trackName={trackList[trackId]}
-            />
+            <TrackDisplay key={trackId} trackId={trackId} />
           ))
         ) : (
-          // TODO check the classes here
           <ContentReveal
             title={<Badge>{trackIds.length} tracks</Badge>}
-            buttonClassName="w-auto items-beginning"
+            buttonClassName="w-auto"
           >
             {trackIds.sort().map((trackId) => (
-              <TrackDisplay
-                key={trackId}
-                trackId={trackId}
-                trackName={trackList[trackId]}
-              />
+              <TrackDisplay key={trackId} trackId={trackId} />
             ))}
           </ContentReveal>
         )}

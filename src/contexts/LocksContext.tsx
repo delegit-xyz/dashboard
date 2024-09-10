@@ -21,7 +21,10 @@ import {
   KsmQueries,
   VotingConviction,
 } from '@polkadot-api/descriptors'
-import { convertMiliseconds } from '@/lib/convertMiliseconds'
+import {
+  convertMiliseconds,
+  displayRemainingTime,
+} from '@/lib/convertMiliseconds'
 
 // eslint-disable-next-line react-refresh/only-export-components
 export enum LockType {
@@ -382,7 +385,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
 
         return {
           multiplier: Number(conviction.replace('Locked', '').replace('x', '')),
-          display: `${convertMiliseconds(Number(convictionLocksMap[conviction])).d} days lock`,
+          display: `${displayRemainingTime(convertMiliseconds(Number(convictionLocksMap[conviction])))} lock`,
         }
       } else {
         if (conviction === 0) {
@@ -391,7 +394,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
         const key = `Locked${conviction}x`
         return {
           multiplier: conviction,
-          display: `${convertMiliseconds(Number(convictionLocksMap[key])).d} days lock`,
+          display: `${displayRemainingTime(convertMiliseconds(Number(convictionLocksMap[key])))} lock`,
         }
       }
     },
