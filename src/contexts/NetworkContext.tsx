@@ -1,5 +1,11 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useEffect, useState } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 import { dot, fastWestend, ksm, westend } from '@polkadot-api/descriptors'
 import {
   ChainDefinition,
@@ -16,8 +22,9 @@ import { startFromWorker } from 'polkadot-api/smoldot/from-worker'
 import { getChainInformation } from '@/lib/utils'
 import { AssetType } from '@/lib/types'
 import networks from '@/assets/networks.json'
-import { SELECTED_NETWORK_KEY } from '@/lib/constants'
+import { DEFAULT_NETWORK, SELECTED_NETWORK_KEY } from '@/lib/constants'
 import { useLocalStorage } from 'usehooks-ts'
+import { useSearchParams } from 'react-router-dom'
 
 type NetworkContextProps = {
   children: React.ReactNode | React.ReactNode[]
@@ -43,13 +50,18 @@ export type TrackList = Record<number, string>
 export interface INetworkContext {
   lightClientLoaded: boolean
   isLight: boolean
-  setNetwork: React.Dispatch<React.SetStateAction<SupportedNetworkNames>>
+  selectNetwork: (network: string, shouldResetAccountAddress?: boolean) => void
   client: PolkadotClient | undefined
   api: TypedApi<typeof dot | typeof ksm> | undefined
-  network: SupportedNetworkNames
+  network?: SupportedNetworkNames
   assetInfo: AssetType
   trackList: TrackList
 }
+
+const isSupportedNetwork = (
+  network: string,
+): network is SupportedNetworkNames =>
+  !!descriptorName[network as SupportedNetworkNames]
 
 const NetworkContext = createContext<INetworkContext | undefined>(undefined)
 
@@ -66,15 +78,43 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
   const [trackList, setTrackList] = useState<TrackList>({})
 
   const [assetInfo, setAssetInfo] = useState<AssetType>({} as AssetType)
-  const [network, setNetwork] = useState<SupportedNetworkNames>(
-    (localStorageNetwork as SupportedNetworkNames) || 'polkadot',
+  const [network, setNetwork] = useState<SupportedNetworkNames | undefined>()
+  const [searchParams, setSearchParams] = useSearchParams({ network: '' })
+
+  const selectNetwork = useCallback(
+    (network: string) => {
+      if (!isSupportedNetwork(network)) {
+        console.error('This network is not supported', network)
+        selectNetwork(DEFAULT_NETWORK)
+        return
+      }
+
+      setNetwork(network)
+      setSearchParams((prev) => {
+        prev.set('network', network)
+        return prev
+      })
+      setLocalStorageNetwork(network)
+    },
+    [setLocalStorageNetwork, setSearchParams],
   )
 
   useEffect(() => {
-    setLocalStorageNetwork(network)
-  }, [network, setLocalStorageNetwork])
+    if (!network) {
+      const queryStringNetwork = searchParams.get('network')
+
+      // in this order we prefer the network in query string
+      // or the local storage or the default
+      const selected =
+        queryStringNetwork || localStorageNetwork || DEFAULT_NETWORK
+
+      selectNetwork(selected)
+    }
+  }, [localStorageNetwork, network, searchParams, selectNetwork])
 
   useEffect(() => {
+    if (!network) return
+
     let client: PolkadotClient
 
     if (network === 'polkadot-lc' || network === 'kusama-lc') {
@@ -142,7 +182,7 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
         lightClientLoaded,
         isLight,
         network,
-        setNetwork,
+        selectNetwork,
         client,
         api,
         assetInfo,

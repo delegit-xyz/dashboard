@@ -9,6 +9,8 @@ export const THEME_KEY = 'delegit.theme'
 export const SELECTED_ACCOUNT_KEY = 'delegit.selectedAccount'
 export const SELECTED_NETWORK_KEY = 'delegit.selectedNetwork'
 
+export const DEFAULT_NETWORK = 'polkadot'
+
 const THRESHOLD = BigInt(500)
 const DEFAULT_TIME = BigInt(6000)
 const ONE_DAY = BigInt(24 * 60 * 60 * 1000)
@@ -23,16 +25,10 @@ const lockPeriod: Record<string, number> = {
   Locked6x: 32,
 }
 
-const AppVersion = '0.1.1'
-const DappName = 'Delegit'
-const SiteUrl = 'https://delegit.xyz'
-
-const DelegeeListPolkadot =
+const DelegateListPolkadot =
   'https://raw.githubusercontent.com/novasamatech/opengov-delegate-registry/master/registry/polkadot.json'
-const DelegeeListKusama =
+const DelegateListKusama =
   'https://raw.githubusercontent.com/novasamatech/opengov-delegate-registry/master/registry/kusama.json'
-
-const GithubOwner = 'delegit-xyz'
 
 const msgs: Record<string, MsgType> = {
   api: {
@@ -55,12 +51,8 @@ export {
   DEFAULT_TIME,
   ONE_DAY,
   lockPeriod,
-  AppVersion,
-  DappName,
-  SiteUrl,
-  DelegeeListPolkadot,
-  DelegeeListKusama,
-  GithubOwner,
+  DelegateListPolkadot,
+  DelegateListKusama,
   // Alert messsages
   msgs,
 }

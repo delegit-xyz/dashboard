@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { Delegate } from '@/contexts/DelegatesContext'
 import { ContentReveal } from './ui/content-reveal'
@@ -11,6 +11,7 @@ interface Props {
 export const DelegateCard = ({ delegate: d }: Props) => {
   const [copied, setCopied] = useState<boolean>(false)
   const navigate = useNavigate()
+  const { search } = useLocation()
 
   useEffect(() => {
     if (copied) {
@@ -19,7 +20,7 @@ export const DelegateCard = ({ delegate: d }: Props) => {
   }, [copied])
 
   const onDelegate = () => {
-    navigate(`/delegate/${d.address}`)
+    navigate(`/delegate/${d.address}${search}`)
   }
 
   return (

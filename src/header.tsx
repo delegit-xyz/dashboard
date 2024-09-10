@@ -26,7 +26,7 @@ import { useAccounts } from './contexts/AccountsContext'
 import { useEffect, useState } from 'react'
 import { SupportedNetworkNames, useNetwork } from './contexts/NetworkContext'
 import { useTheme } from './components/theme-provider'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { FaCheckCircle, FaGithub } from 'react-icons/fa'
 import { TbLoaderQuarter } from 'react-icons/tb'
 
@@ -49,12 +49,13 @@ if (import.meta.env.DEV) {
 }
 
 export const Header = () => {
-  const { network, setNetwork, lightClientLoaded, isLight } = useNetwork()
+  const { network, selectNetwork, lightClientLoaded, isLight } = useNetwork()
   const { accounts, selectAccount, selectedAccount } = useAccounts()
   const [, disconnectAll] = useWalletDisconnector()
   const [isConnectionDialiogOpen, setIsConnectionDialiogOpen] = useState(false)
   // eslint-disable-next-line
   const { theme, setTheme } = useTheme()
+  const { search } = useLocation()
 
   useEffect(() => {
     if (!selectedAccount?.address && accounts.length > 0) {
@@ -77,7 +78,7 @@ export const Header = () => {
               {routes.map((r) => (
                 <Link
                   key={r.name}
-                  to={`/${r.link || ''}`}
+                  to={`/${r.link || ''}${search}`}
                   className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                 >
                   <r.icon className="h-5 w-5" />
@@ -155,7 +156,7 @@ export const Header = () => {
                   <DropdownMenuItem
                     className="cursor-pointer"
                     key={name}
-                    onClick={() => setNetwork(name)}
+                    onClick={() => selectNetwork(name)}
                   >
                     {display}
                   </DropdownMenuItem>

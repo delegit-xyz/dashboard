@@ -26,7 +26,7 @@ const linkStyle = (pathname: string, link: string) => {
 
 export const Navigation = () => {
   const { lightClientLoaded, isLight } = useNetwork()
-  const { pathname } = useLocation()
+  const { pathname, search } = useLocation()
   const { theme, setTheme } = useTheme()
 
   return (
@@ -46,7 +46,10 @@ export const Navigation = () => {
           return (
             <Tooltip key={r.name}>
               <TooltipTrigger asChild>
-                <Link to={link} className={linkStyle(pathname, link)}>
+                <Link
+                  to={`${link}${search}`}
+                  className={linkStyle(pathname, link)}
+                >
                   <r.icon className="h-5 w-5" />
                   <span className="sr-only">{r.name}</span>
                 </Link>
