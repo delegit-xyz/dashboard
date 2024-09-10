@@ -1,8 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState } from 'react'
 import { useNetwork } from './NetworkContext'
-import { DelegeeListKusama, DelegeeListPolkadot } from '@/lib/constants'
-// import { dotApi } from '@/clients'
+import { DelegateListKusama, DelegateListPolkadot } from '@/lib/constants'
 
 type DelegatesContextProps = {
   children: React.ReactNode | React.ReactNode[]
@@ -33,8 +32,8 @@ const DelegateContextProvider = ({ children }: DelegatesContextProps) => {
       const response = await (
         await fetch(
           network === 'polkadot' || network === 'polkadot-lc'
-            ? DelegeeListPolkadot
-            : DelegeeListKusama,
+            ? DelegateListPolkadot
+            : DelegateListKusama,
         )!
       ).json()
       setDelegates(response)

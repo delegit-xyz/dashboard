@@ -7,29 +7,15 @@ import { SetStateAction, useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { useAccounts } from '@/contexts/AccountsContext'
 import { Slider } from '@/components/ui/slider'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { AlertCircle, ArrowLeft } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { msgs } from '@/lib/constants'
 import { evalUnits, planckToUnit } from '@polkadot-ui/utils'
 import { useLocks } from '@/contexts/LocksContext'
 import { useGetDelegateTx } from '@/hooks/useGetDelegateTx'
-import { InvalidTxError } from 'polkadot-api'
-
-type AlertProps = {
-  title: string
-  message: string
-  variant?: 'default' | 'destructive' | null | undefined
-}
-const AlertNote = ({ title, message, variant = 'default' }: AlertProps) => (
-  <Alert variant={variant}>
-    <AlertCircle className="h-4 w-4" />
-    <AlertTitle>{title}</AlertTitle>
-    <AlertDescription>{message}</AlertDescription>
-  </Alert>
-)
+import { AlertNote } from '@/components/Alert'
 
 export const Delegate = () => {
   const { api, assetInfo } = useNetwork()
@@ -47,15 +33,28 @@ export const Delegate = () => {
   const [conviction, setConviction] = useState<VotingConviction>(
     VotingConviction.None,
   )
-  const [convictionNo, setConvictionNo] = useState(0)
+  const [convictionNo, setConvictionNo] = useState(1)
   const { selectedAccount } = useAccounts()
+  const [isTxInitiated, setIsTxInitiated] = useState(false)
   const getDelegateTx = useGetDelegateTx()
+  const navigate = useNavigate()
+  const { search } = useLocation()
+
+  const { display: convictionTimeDisplay, multiplier: convictionMultiplier } =
+    getConvictionLockTimeDisplay(convictionNo)
+
+  const voteAmount = useMemo(() => {
+    const bnAmount =
+      convictionMultiplier === 0.1
+        ? amount / 10n
+        : amount * BigInt(convictionMultiplier)
+
+    return planckToUnit(bnAmount, assetInfo.precision).toLocaleString('en')
+  }, [amount, assetInfo.precision, convictionMultiplier])
 
   const convictionDisplay = useMemo(() => {
-    const { display, multiplier } = getConvictionLockTimeDisplay(convictionNo)
-
-    return `x${Number(multiplier)} | ${display}`
-  }, [convictionNo, getConvictionLockTimeDisplay])
+    return `x${Number(convictionMultiplier)} | ${convictionTimeDisplay}`
+  }, [convictionTimeDisplay, convictionMultiplier])
 
   const amountErrorDisplay = useMemo(() => {
     if (!isAmountDirty) return ''
@@ -64,6 +63,7 @@ export const Delegate = () => {
 
     return ''
   }, [amountError, isAmountDirty])
+
   useEffect(() => {
     // API change denotes that the netowork changed. Due to the fact that
     // decimals of network may change as well we should convert the amount to 0n
@@ -109,29 +109,41 @@ export const Delegate = () => {
       })
 
       if (!tx) return
+
+      setIsTxInitiated(true)
       ;(await tx)
         .signSubmitAndWatch(selectedAccount?.polkadotSigner)
-        .forEach((value) => {
+        .subscribe((event) => {
           let msg: string
-          switch (value.type) {
+          switch (event.type) {
             case 'finalized':
-              msg = `Tx - Finalized. Block Number: ${value.block.number}. TxHash: ${value.txHash}`
+              msg = `Tx - Finalized. Block Number: ${event.block.number}. TxHash: ${event.txHash}`
               break
             case 'signed':
-              msg = `Tx - Signed. TxHash: ${value.txHash}`
+              msg = 'Tx - Signed'
               break
             case 'broadcasted':
-              msg = `Tx - Broadcasted. TxHash: ${value.txHash}`
+              msg = `Tx - Broadcasted. TxHash: ${event.txHash}`
               break
             case 'txBestBlocksState':
-              msg = `Tx - Best Block State. TxHash: ${value.txHash}`
+              msg = `Tx - Best Block State. TxHash: ${event.txHash}`
               break
           }
-          console.log(value, msg)
+          console.log(event, msg)
           toast.info(msg)
-        })
-        .catch(({ error }: InvalidTxError) => {
-          toast.error(`Tx Error: ${error.type}: ${JSON.stringify(error)}`)
+
+          if (event.type === 'txBestBlocksState' && event.found) {
+            if (event.dispatchError) {
+              console.error('Tx error', event)
+              toast.error(`Tx Error: ${JSON.stringify(event)}`)
+              setIsTxInitiated(false)
+            }
+          }
+
+          if (event.type === 'finalized') {
+            navigate(`/${search}`)
+            setIsTxInitiated(false)
+          }
         })
     } else {
       return
@@ -144,22 +156,18 @@ export const Delegate = () => {
         <AlertNote
           title={msgs.api.title}
           message={msgs.api.message}
-          variant={
-            msgs.api.variant as 'default' | 'destructive' | null | undefined
-          }
+          variant={msgs.api.variant}
         />
       )}
       {!selectedAccount && (
         <AlertNote
           title={msgs.account.title}
           message={msgs.account.message}
-          variant={
-            msgs.account.variant as 'default' | 'destructive' | null | undefined
-          }
+          variant={msgs.account.variant}
         />
       )}
 
-      <Link to="/home" className="flex items-center gap-2 text-primary">
+      <Link to={`/${search}`} className="flex items-center gap-2 text-primary">
         <ArrowLeft className="h-4 w-4" />
         To all delegates
       </Link>
@@ -197,15 +205,16 @@ export const Delegate = () => {
           )
         }}
       />
+      <AlertNote
+        title={'Note'}
+        message={`The ${convictionTimeDisplay} will start when you undelegate`}
+        variant={'default'}
+      />
       <Button
         onClick={onSign}
-        disabled={amount === 0n || !api || !selectedAccount}
+        disabled={amount === 0n || !api || !selectedAccount || isTxInitiated}
       >
-        Delegate{' '}
-        {amount !== null &&
-          planckToUnit(amount, assetInfo.precision).toLocaleString('en')}{' '}
-        {assetInfo.symbol} with {convictionNo == 0 ? 0.1 : convictionNo}x
-        conviction
+        Delegate with {voteAmount} {assetInfo.symbol} votes
       </Button>
     </main>
   )

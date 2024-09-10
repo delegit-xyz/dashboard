@@ -10,7 +10,7 @@ import { planckToUnit } from '@polkadot-ui/utils'
 import { Button } from './ui/button'
 import { Title } from './ui/title'
 import { ContentReveal } from './ui/content-reveal'
-import { BadgeCent, Clock2, LockKeyholeOpen, Vote } from 'lucide-react'
+import { BadgeCent, Clock2, Info, LockKeyholeOpen, Vote } from 'lucide-react'
 import { Badge } from './ui/badge'
 import { dot } from '@polkadot-api/descriptors'
 import { useAccounts } from '@/contexts/AccountsContext'
@@ -24,11 +24,13 @@ import {
 import { Skeleton } from './ui/skeleton'
 import { useGetUnlockTx } from '@/hooks/useGetUnlockTx'
 import { toast } from 'sonner'
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
+import { TrackDisplay } from './TrackDisplay'
 
 export const LocksCard = () => {
   const [currentBlock, setCurrentBlock] = useState(0)
   const [expectedBlockTime, setExpectedBlockTime] = useState(0)
-  const { api, trackList } = useNetwork()
+  const { api } = useNetwork()
   const { voteLocks: locks, delegationLocks } = useLocks()
   const { assetInfo } = useNetwork()
   const [ongoingVoteLocks, setOngoingVoteLocks] = useState<VoteLock[]>([])
@@ -134,7 +136,21 @@ export const LocksCard = () => {
       {freeLocks.length > 0 && (
         <Card className="relative h-full border-2 p-2 px-4">
           <div className="relative z-10">
-            <Title variant="h4">Unlockable</Title>
+            <div className="flex gap-x-2">
+              <Title variant="h4">Unlockable</Title>
+              <Popover>
+                <PopoverTrigger>
+                  <Info className="h-3 w-3 text-gray-500" />
+                </PopoverTrigger>
+                <PopoverContent>
+                  <p className="max-w-[15rem]">
+                    Elapsed locks for votes casted on referenda, or tracks
+                    delegation. Since locks can overlap, unlocking doesn't
+                    necessarily mean the transferable balance will change.
+                  </p>
+                </PopoverContent>
+              </Popover>
+            </div>
             <div className="font-unbounded text-5xl font-bold">
               {freeLocks.length}
               <LockKeyholeOpen className="ml-1 inline-block h-8 w-8 rotate-[10deg] text-gray-200" />
@@ -157,9 +173,7 @@ export const LocksCard = () => {
                           <ul>
                             <li className="mb-2">
                               <div className="capitalize">
-                                <span className="capitalize">
-                                  <Badge>{trackList[trackId]}</Badge> /{trackId}
-                                </span>
+                                <TrackDisplay trackId={trackId} />
                                 <div>
                                   <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
                                   {planckToUnit(
@@ -208,7 +222,21 @@ export const LocksCard = () => {
       ) : (
         <>
           <Card className="h-full border-2 p-2 px-4">
-            <Title variant="h4">Unlocking</Title>
+            <div className="flex gap-x-2">
+              <Title variant="h4">Unlocking</Title>
+              <Popover>
+                <PopoverTrigger>
+                  <Info className="h-3 w-3 text-gray-500" />
+                </PopoverTrigger>
+                <PopoverContent>
+                  <p className="max-w-[15rem]">
+                    Funds unlockable after a certain time. These locks result
+                    either from a vote with conviction casted on a refrendum, or
+                    from undelegating.
+                  </p>
+                </PopoverContent>
+              </Popover>
+            </div>
             <div className="font-unbounded text-5xl font-bold">
               {currentLocks.length + currentDelegationLocks.length}
               <Clock2 className="ml-1 inline-block h-8 w-8 rotate-[10deg] text-gray-200" />
@@ -227,7 +255,7 @@ export const LocksCard = () => {
                         <li>
                           <Badge>#{refId}</Badge>
                           <div>
-                            <BadgeCent className="inline-block h-4 w-4 pt-2 text-gray-500" />{' '}
+                            <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
                             {planckToUnit(
                               amount,
                               assetInfo.precision,
@@ -251,12 +279,7 @@ export const LocksCard = () => {
                     <div key={trackId} className="mb-4 border-l-2 pl-2">
                       <ul>
                         <li>
-                          <div className="capitalize">
-                            <Badge>{trackList[trackId]}</Badge>
-                            <span className="ml-2 border-l-2 pl-2 text-xs font-bold text-slate-400">
-                              {trackId}
-                            </span>
-                          </div>
+                          <TrackDisplay trackId={trackId} />
                           <div className="mt-0.5">
                             <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
                             {planckToUnit(
@@ -278,7 +301,20 @@ export const LocksCard = () => {
             </ContentReveal>
           </Card>
           <Card className="h-full border-2 p-2 px-4">
-            <Title variant="h4">Votes</Title>
+            <div className="flex gap-x-2">
+              <Title variant="h4">Votes</Title>
+              <Popover>
+                <PopoverTrigger>
+                  <Info className="h-3 w-3 text-gray-500" />
+                </PopoverTrigger>
+                <PopoverContent>
+                  <p className="max-w-[15rem]">
+                    Votes casted on a referendum that is still in deciding
+                    phase.
+                  </p>
+                </PopoverContent>
+              </Popover>
+            </div>
             <div className="font-unbounded text-5xl font-bold">
               {ongoingVoteLocks.length}
               <Vote className="ml-1 inline-block h-8 w-8 text-gray-200" />
