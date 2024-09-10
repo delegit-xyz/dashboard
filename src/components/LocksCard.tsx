@@ -128,7 +128,76 @@ export const LocksCard = () => {
   }, [api, freeLocks, getUnlockTx, selectedAccount])
 
   return (
-    <div className="flex flex-col gap-2 md:grid-cols-3 md:flex-row">
+    <div className="flex flex-col gap-2 md:grid md:grid-cols-3 md:flex-row">
+      {freeLocks.length > 0 && (
+        <Card className="relative mb-2 h-full flex-grow border-2 p-2 px-4 md:mb-0">
+          <div className="relative z-10">
+            <Title variant="h4">Unlockable</Title>
+            <div className="font-unbounded text-5xl font-bold">
+              {freeLocks.length}
+              <LockKeyholeOpen className="ml-1 inline-block h-8 w-8 rotate-[10deg] text-gray-200" />
+            </div>
+            {freeLocks.length > 0 && (
+              <>
+                <Button
+                  className="mb-2 mt-4 w-full"
+                  onClick={onUnlockClick}
+                  disabled={isUnlockingLoading}
+                >
+                  Unlock
+                </Button>
+                <ContentReveal hidden={false}>
+                  {freeLocks.map((lock) => {
+                    if (lock.type === LockType.Delegating) {
+                      const { amount, trackId } = lock
+                      return (
+                        <div key={trackId}>
+                          <ul>
+                            <li className="mb-2">
+                              <div className="capitalize">
+                                <span className="capitalize">
+                                  <Badge>{trackList[trackId]}</Badge> /{trackId}
+                                </span>
+                                <div>
+                                  <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
+                                  {planckToUnit(
+                                    amount,
+                                    assetInfo.precision,
+                                  ).toLocaleString('en')}{' '}
+                                  {assetInfo.symbol}
+                                </div>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                      )
+                    }
+
+                    const { amount, refId } = lock
+                    return (
+                      <div key={refId}>
+                        <ul>
+                          <li className="mb-2">
+                            <Badge>#{refId}</Badge>
+                            <div>
+                              <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
+                              {planckToUnit(
+                                amount,
+                                assetInfo.precision,
+                              ).toLocaleString('en')}{' '}
+                              {assetInfo.symbol}
+                            </div>
+                          </li>
+                        </ul>
+                      </div>
+                    )
+                  })}
+                </ContentReveal>
+              </>
+            )}
+          </div>
+        </Card>
+      )}
       {!locksLoaded ? (
         <>
           <Skeleton className="h-[116px] rounded-xl" />
@@ -136,7 +205,7 @@ export const LocksCard = () => {
         </>
       ) : (
         <>
-          <Card className="h-full border-2 p-2 px-4">
+          <Card className="h-max border-2 p-2 px-4 md:col-span-1 md:col-start-1">
             <div className="flex gap-x-2">
               <Title variant="h4">Unlocking</Title>
               <Popover>
@@ -215,7 +284,7 @@ export const LocksCard = () => {
               </>
             </ContentReveal>
           </Card>
-          <Card className="h-full border-2 p-2 px-4">
+          <Card className="h-max border-2 p-2 px-4 md:col-span-1 md:col-start-2">
             <div className="flex gap-x-2">
               <Title variant="h4">Votes</Title>
               <Popover>
@@ -260,78 +329,6 @@ export const LocksCard = () => {
           </Card>
         </>
       )}
-
-      <Card
-        className={`relative mb-2 h-full flex-grow border-2 p-2 px-4 md:mb-0 ${freeLocks.length > 0 ? 'opacity-100' : `opacity-0`}`}
-      >
-        {freeLocks.length > 0 && (
-          <div className="relative z-10">
-            <Title variant="h4">Unlockable</Title>
-            <div className="font-unbounded text-5xl font-bold">
-              {freeLocks.length}
-              <LockKeyholeOpen className="ml-1 inline-block h-8 w-8 rotate-[10deg] text-gray-200" />
-            </div>
-            {freeLocks.length > 0 && (
-              <>
-                <Button
-                  className="mb-2 mt-4 w-full"
-                  onClick={onUnlockClick}
-                  disabled={isUnlockingLoading}
-                >
-                  Unlock
-                </Button>
-                <ContentReveal hidden={false}>
-                  {freeLocks.map((lock) => {
-                    if (lock.type === LockType.Delegating) {
-                      const { amount, trackId } = lock
-                      return (
-                        <div key={trackId}>
-                          <ul>
-                            <li className="mb-2">
-                              <div className="capitalize">
-                                <span className="capitalize">
-                                  <Badge>{trackList[trackId]}</Badge> /{trackId}
-                                </span>
-                                <div>
-                                  <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
-                                  {planckToUnit(
-                                    amount,
-                                    assetInfo.precision,
-                                  ).toLocaleString('en')}{' '}
-                                  {assetInfo.symbol}
-                                </div>
-                              </div>
-                            </li>
-                          </ul>
-                        </div>
-                      )
-                    }
-
-                    const { amount, refId } = lock
-                    return (
-                      <div key={refId}>
-                        <ul>
-                          <li className="mb-2">
-                            <Badge>#{refId}</Badge>
-                            <div>
-                              <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
-                              {planckToUnit(
-                                amount,
-                                assetInfo.precision,
-                              ).toLocaleString('en')}{' '}
-                              {assetInfo.symbol}
-                            </div>
-                          </li>
-                        </ul>
-                      </div>
-                    )
-                  })}
-                </ContentReveal>
-              </>
-            )}
-          </div>
-        )}
-      </Card>
     </div>
   )
 }
