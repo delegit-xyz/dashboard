@@ -17,6 +17,18 @@
     "westend": {
       "chain": "westend2",
       "metadata": ".papi/metadata/westend.scale"
+    },
+    "dotPeople": {
+      "chain": "polkadot_people",
+      "metadata": ".papi/metadata/dotPeople.scale"
+    },
+    "ksmPeople": {
+      "chain": "ksmcc3_people",
+      "metadata": ".papi/metadata/ksmPeople.scale"
+    },
+    "westendPeople": {
+      "chain": "westend2_people",
+      "metadata": ".papi/metadata/westendPeople.scale"
     }
   }
 }

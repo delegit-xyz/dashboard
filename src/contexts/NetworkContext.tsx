@@ -6,7 +6,15 @@ import {
   useEffect,
   useState,
 } from 'react'
-import { dot, fastWestend, ksm, westend } from '@polkadot-api/descriptors'
+import {
+  dot,
+  dotPeople,
+  fastWestend,
+  ksm,
+  ksmPeople,
+  westend,
+  westendPeople,
+} from '@polkadot-api/descriptors'
 import {
   ChainDefinition,
   PolkadotClient,
@@ -30,11 +38,18 @@ type NetworkContextProps = {
   children: React.ReactNode | React.ReactNode[]
 }
 export type NetworksFromConfig = keyof typeof networks
+export type SupportedPeopleNetworkNames =
+  | 'people-polkadot'
+  | 'people-kusama'
+  | 'people-westend'
+  | 'people-fast-westend'
+
 export type SupportedNetworkNames =
   | 'polkadot-lc'
   | 'kusama-lc'
   | NetworksFromConfig
 export type ApiType = TypedApi<typeof dot | typeof ksm>
+export type PeopleApiType = TypedApi<typeof dotPeople | typeof ksmPeople>
 
 export const descriptorName: Record<SupportedNetworkNames, ChainDefinition> = {
   polkadot: dot,
@@ -43,6 +58,15 @@ export const descriptorName: Record<SupportedNetworkNames, ChainDefinition> = {
   'kusama-lc': ksm,
   westend: westend,
   'fast-westend': fastWestend,
+}
+export const descriptorPeopleName: Record<
+  SupportedPeopleNetworkNames,
+  ChainDefinition
+> = {
+  'people-polkadot': dotPeople,
+  'people-kusama': ksmPeople,
+  'people-westend': westendPeople,
+  'people-fast-westend': westendPeople,
 }
 
 export type TrackList = Record<number, string>
@@ -53,7 +77,12 @@ export interface INetworkContext {
   selectNetwork: (network: string, shouldResetAccountAddress?: boolean) => void
   client: PolkadotClient | undefined
   api: TypedApi<typeof dot | typeof ksm> | undefined
+  peopleApi:
+    | TypedApi<typeof dotPeople | typeof ksmPeople | typeof westendPeople>
+    | undefined
+  peopleClient: PolkadotClient | undefined
   network?: SupportedNetworkNames
+  peopleNetwork?: SupportedPeopleNetworkNames
   assetInfo: AssetType
   trackList: TrackList
 }
@@ -74,22 +103,38 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
   const [lightClientLoaded, setLightClientLoaded] = useState<boolean>(false)
   const [isLight, setIsLight] = useState<boolean>(false)
   const [client, setClient] = useState<PolkadotClient>()
+  const [peopleClient, setPeopleClient] = useState<PolkadotClient>()
   const [api, setApi] = useState<ApiType>()
+  const [peopleApi, setPeopleApi] = useState<PeopleApiType>()
   const [trackList, setTrackList] = useState<TrackList>({})
 
   const [assetInfo, setAssetInfo] = useState<AssetType>({} as AssetType)
   const [network, setNetwork] = useState<SupportedNetworkNames | undefined>()
+  const [peopleNetwork, setPeopleNetwork] = useState<
+    SupportedPeopleNetworkNames | undefined
+  >()
   const [searchParams, setSearchParams] = useSearchParams({ network: '' })
+
+  const selectPeopleNetork = (network: string) => {
+    setPeopleNetwork(
+      'people-'.concat(
+        network.replace('-lc', ''),
+      ) as SupportedPeopleNetworkNames,
+    )
+  }
 
   const selectNetwork = useCallback(
     (network: string) => {
       if (!isSupportedNetwork(network)) {
         console.error('This network is not supported', network)
         selectNetwork(DEFAULT_NETWORK)
+        selectPeopleNetork(DEFAULT_NETWORK)
         return
       }
 
       setNetwork(network)
+      selectPeopleNetork(network)
+
       setSearchParams((prev) => {
         prev.set('network', network)
         return prev
@@ -109,6 +154,7 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
         queryStringNetwork || localStorageNetwork || DEFAULT_NETWORK
 
       selectNetwork(selected)
+      selectPeopleNetork(selected)
     }
   }, [localStorageNetwork, network, searchParams, selectNetwork])
 
@@ -116,6 +162,7 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
     if (!network) return
 
     let client: PolkadotClient
+    let peopleClient: PolkadotClient
 
     if (network === 'polkadot-lc' || network === 'kusama-lc') {
       const relay = network === 'polkadot-lc' ? 'polkadot' : 'kusama'
@@ -125,31 +172,56 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
       setIsLight(true)
       const smoldot = startFromWorker(new SmWorker())
       let relayChain: Promise<Chain>
+      let peopleChain: Promise<Chain>
       if (relay === 'polkadot') {
         relayChain = import('polkadot-api/chains/polkadot').then(
           ({ chainSpec }) => smoldot.addChain({ chainSpec }),
+        )
+
+        peopleChain = Promise.all([
+          relayChain,
+          import('polkadot-api/chains/polkadot_people'),
+        ]).then(([relayChain, { chainSpec }]) =>
+          smoldot.addChain({ chainSpec, potentialRelayChains: [relayChain] }),
         )
       } else {
         relayChain = import('polkadot-api/chains/ksmcc3').then(
           ({ chainSpec }) => smoldot.addChain({ chainSpec }),
         )
+
+        peopleChain = Promise.all([
+          relayChain,
+          import('polkadot-api/chains/ksmcc3_people'),
+        ]).then(([relayChain, { chainSpec }]) =>
+          smoldot.addChain({ chainSpec, potentialRelayChains: [relayChain] }),
+        )
       }
 
       client = createClient(getSmProvider(relayChain))
+      peopleClient = createClient(getSmProvider(peopleChain))
     } else {
       const { assetInfo, wsEndpoint } = getChainInformation(network)
       setAssetInfo(assetInfo)
       setIsLight(false)
 
       client = createClient(getWsProvider(wsEndpoint))
+      // TODO: Fix the RPCs
+      peopleClient = createClient(
+        getWsProvider('wss://rpc-people-polkadot.luckyfriday.io'),
+      )
     }
 
     const descriptor = descriptorName[network]
     const typedApi = client.getTypedApi(descriptor)
 
+    const descriptorPeople = descriptorPeopleName[peopleNetwork!]
+    const typedPeopleApi = client.getTypedApi(descriptorPeople)
+
     setClient(client)
+    setPeopleClient(peopleClient)
     setApi(typedApi)
-  }, [network])
+    setPeopleApi(typedPeopleApi)
+  }, [network, peopleNetwork])
 
   useEffect(() => {
     if (isLight) {
@@ -185,6 +257,8 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
         selectNetwork,
         client,
         api,
+        peopleClient,
+        peopleApi,
         assetInfo,
         trackList,
       }}
