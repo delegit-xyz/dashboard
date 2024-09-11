@@ -215,7 +215,7 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
     const typedApi = client.getTypedApi(descriptor)
 
     const descriptorPeople = descriptorPeopleName[peopleNetwork!]
-    const typedPeopleApi = client.getTypedApi(descriptorPeople)
+    const typedPeopleApi = peopleClient.getTypedApi(descriptorPeople)
 
     setClient(client)
     setPeopleClient(peopleClient)
