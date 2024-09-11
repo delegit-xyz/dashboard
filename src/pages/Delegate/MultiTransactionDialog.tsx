@@ -57,7 +57,7 @@ export const MultiTransactionDialog = ({
     const isExhaustsRessouces = await isExhaustsResources(step1Txs)
 
     // this is too big of a batch we need to split it up more
-    if (!isExhaustsRessouces) {
+    if (isExhaustsRessouces) {
       const callData = await step1Txs.getEncodedData()
       setPromptForHelpCallData(callData.asHex())
       return
