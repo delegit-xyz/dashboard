@@ -44,6 +44,8 @@ export const Delegate = () => {
     getConvictionLockTimeDisplay(convictionNo)
 
   const voteAmount = useMemo(() => {
+    if (!convictionMultiplier) return
+
     const bnAmount =
       convictionMultiplier === 0.1
         ? amount / 10n
@@ -53,6 +55,8 @@ export const Delegate = () => {
   }, [amount, assetInfo.precision, convictionMultiplier])
 
   const convictionDisplay = useMemo(() => {
+    if (!convictionMultiplier) return
+
     return `x${Number(convictionMultiplier)} | ${convictionTimeDisplay}`
   }, [convictionTimeDisplay, convictionMultiplier])
 

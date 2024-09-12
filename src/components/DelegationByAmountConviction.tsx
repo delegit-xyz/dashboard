@@ -31,7 +31,7 @@ export const DelegationByAmountConviction = ({
     return (
       <div
         key={`${conviction}-${balance.toString()}`}
-        className="mb-2 ml-12 border-l-2 pl-2"
+        className="mb-2 ml-12 overflow-auto border-l-2 pl-2"
       >
         {trackIds.length === 1 ? (
           trackIds.map((trackId) => (
@@ -54,10 +54,14 @@ export const DelegationByAmountConviction = ({
           {assetInfo.symbol}
         </div>
         <div>
-          conviction: x{Number(multiplier)}
-          <span className="ml-2 border-l-2 pl-2 text-xs font-semibold text-slate-400">
-            {display}
-          </span>
+          {!!multiplier && !!display && (
+            <>
+              conviction: x{Number(multiplier)}
+              <span className="ml-2 border-l-2 pl-2 text-xs font-semibold text-slate-400">
+                {display}
+              </span>
+            </>
+          )}
         </div>
       </div>
     )
