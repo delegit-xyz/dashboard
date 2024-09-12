@@ -133,7 +133,7 @@ export const Delegate = () => {
   }
 
   return (
-    <>
+    <main className="mx-0 grid flex-1 items-start gap-4 gap-8 p-4 sm:mx-[5%] sm:px-6 sm:py-0 xl:mx-[20%]">
       {!api && (
         <AlertNote
           title={msgs.api.title}
@@ -198,6 +198,6 @@ export const Delegate = () => {
       >
         Delegate with {voteAmount} {assetInfo.symbol} votes
       </Button>
-    </>
+    </main>
   )
 }
