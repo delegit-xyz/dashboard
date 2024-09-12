@@ -76,8 +76,8 @@ type LocksContextProps = {
 }
 
 export interface ConvictionDisplay {
-  multiplier: number
-  display: string
+  multiplier?: number
+  display?: string
 }
 
 export interface ILocksContext {
@@ -375,6 +375,10 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
    */
   const getConvictionLockTimeDisplay = useCallback(
     (conviction: number | string): ConvictionDisplay => {
+      if (Object.entries(convictionLocksMap).length === 0) {
+        return {}
+      }
+
       if (typeof conviction === 'string') {
         if (conviction === 'None') {
           return {
