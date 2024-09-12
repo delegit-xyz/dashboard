@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { useAccounts } from '@/contexts/AccountsContext'
 import { Slider } from '@/components/ui/slider'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { toast } from 'sonner'
 
 import { ArrowLeft } from 'lucide-react'
 import { msgs } from '@/lib/constants'
@@ -167,23 +168,36 @@ export const Delegate = () => {
     await allTxs
       .signSubmitAndWatch(selectedAccount?.polkadotSigner)
       .subscribe((event) => {
-        console.info(event)
+        let msg: string
+        switch (event.type) {
+          case 'signed':
+            msg = 'Tx signed.'
+            break
+          case 'broadcasted':
+            msg = `Tx broadcasted.`
+            break
+          case 'txBestBlocksState':
+            msg = `Tx in block.`
+            break
+          case 'finalized':
+            msg = `Tx finalized in block: ${event.block.number}`
+            onProcessFinished()
+            break
+        }
+        toast.info(msg)
 
         if (event.type === 'txBestBlocksState' && event.found) {
           if (event.dispatchError) {
             console.error('Tx error', event)
+            toast.error(`Tx error: ${JSON.stringify(event)}`)
             setIsTxInitiated(false)
           }
-        }
-
-        if (event.type === 'finalized') {
-          onProcessFinished()
         }
       })
   }
 
   return (
-    <main className="mx-0 grid flex-1 items-start gap-4 gap-8 p-4 sm:mx-[5%] sm:px-6 sm:py-0 xl:mx-[20%]">
+    <main className="mx-0 grid flex-1 items-start gap-8 p-4 sm:mx-[5%] sm:px-6 sm:py-0 xl:mx-[20%]">
       {!api && (
         <AlertNote
           title={msgs.api.title}

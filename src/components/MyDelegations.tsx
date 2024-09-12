@@ -11,6 +11,7 @@ import { Button } from './ui/button'
 import { useAccounts } from '@/contexts/AccountsContext'
 import { Transaction } from 'polkadot-api'
 import { DelegationByAmountConviction } from './DelegationByAmountConviction'
+import { toast } from 'sonner'
 
 export const MyDelegations = () => {
   const { api } = useNetwork()
@@ -64,6 +65,7 @@ export const MyDelegations = () => {
       tx.signSubmitAndWatch(selectedAccount.polkadotSigner).subscribe({
         next: (event) => {
           console.log(event)
+          toast.info(`Event ${event.type}`)
           if (event.type === 'finalized') {
             setDelegatesLoading((prev) => prev.filter((id) => id !== delegate))
             refreshLocks()
@@ -71,6 +73,7 @@ export const MyDelegations = () => {
         },
         error: (error) => {
           console.error(error)
+          toast.info(`Event Error: ${JSON.stringify(error)}`)
           setDelegatesLoading((prev) => prev.filter((id) => id !== delegate))
         },
       })

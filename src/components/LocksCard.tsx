@@ -21,6 +21,7 @@ import {
 } from '@/contexts/LocksContext'
 import { Skeleton } from './ui/skeleton'
 import { useGetUnlockTx } from '@/hooks/useGetUnlockTx'
+import { toast } from 'sonner'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 import { TrackDisplay } from './TrackDisplay'
 
@@ -111,12 +112,14 @@ export const LocksCard = () => {
       .subscribe({
         next: (event) => {
           console.log(event)
+          toast.info(`Event ${event.type}`)
           if (event.type === 'finalized') {
             setIsUnlockingLoading(false)
           }
         },
         error: (error) => {
           console.error(error)
+          toast.info(`Event Error: ${JSON.stringify(error)}`)
           setIsUnlockingLoading(false)
         },
       })
