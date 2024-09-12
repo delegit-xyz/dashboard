@@ -29,7 +29,7 @@ import { TrackDisplay } from './TrackDisplay'
 export const LocksCard = () => {
   const [currentBlock, setCurrentBlock] = useState(0)
   const [expectedBlockTime, setExpectedBlockTime] = useState(0)
-  const { api, assetInfo, trackList } = useNetwork()
+  const { api, assetInfo } = useNetwork()
   const { voteLocks: locks, delegationLocks } = useLocks()
   const [ongoingVoteLocks, setOngoingVoteLocks] = useState<VoteLock[]>([])
   const [freeLocks, setFreeLocks] = useState<Array<VoteLock | DelegationLock>>(
