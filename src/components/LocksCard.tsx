@@ -165,7 +165,7 @@ export const LocksCard = () => {
                       <li className="mb-2">
                         <div className="capitalize">
                           <span className="capitalize">
-                            <Badge>{trackList[trackId]}</Badge> /{trackId}
+                            <TrackDisplay trackId={trackId} />
                           </span>
                           <div>
                             <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
