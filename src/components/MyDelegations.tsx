@@ -9,8 +9,7 @@ import { useNetwork } from '@/contexts/NetworkContext'
 import { AddressDisplay } from './ui/address-display'
 import { Button } from './ui/button'
 import { useAccounts } from '@/contexts/AccountsContext'
-import { Transaction, TypedApi } from 'polkadot-api'
-import { dot } from '@polkadot-api/descriptors'
+import { Transaction } from 'polkadot-api'
 import { DelegationByAmountConviction } from './DelegationByAmountConviction'
 
 export const MyDelegations = () => {
@@ -59,7 +58,7 @@ export const MyDelegations = () => {
         const batchTx = tracks.map(
           (t) => api.tx.ConvictionVoting.undelegate({ class: t }).decodedCall,
         )
-        tx = (api as TypedApi<typeof dot>).tx.Utility.batch({ calls: batchTx })
+        tx = api.tx.Utility.batch({ calls: batchTx })
       }
 
       tx.signSubmitAndWatch(selectedAccount.polkadotSigner).subscribe({
