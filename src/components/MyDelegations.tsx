@@ -81,8 +81,8 @@ export const MyDelegations = () => {
 
   return (
     <>
-      <Title className="mb-4">My Delegations</Title>
-      <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+      <Title className="mt-4">My Delegations</Title>
+      <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
         {delegationsByDelegateConvictionAmount === undefined ? (
           <Skeleton className="h-[116px] rounded-xl" />
         ) : noDelegations ? (
@@ -103,28 +103,33 @@ export const MyDelegations = () => {
 
               return (
                 <Card
-                  className="flex h-full flex-col border bg-card p-2 px-4"
+                  className="flex h-max flex-col justify-between border bg-card p-2 px-4"
                   key={delegateAddress}
                 >
                   <>
-                    {knownDelegate?.name ? (
-                      <div className="flex items-center gap-2">
-                        <img
-                          src={knownDelegate.image}
-                          className="mr-2 w-12 rounded-full"
-                        />
-                        <div className="py-2 text-xl font-semibold">
-                          {knownDelegate.name}
+                    <div className="flex flex-col justify-between">
+                      {knownDelegate?.name ? (
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={knownDelegate.image}
+                            className="mr-2 w-12 rounded-full"
+                          />
+                          <div className="py-2 text-xl font-semibold">
+                            {knownDelegate.name}
+                          </div>
                         </div>
-                      </div>
-                    ) : (
-                      <AddressDisplay address={delegateAddress} size={'3rem'} />
-                    )}
-                    <DelegationByAmountConviction
-                      amountConvictionMap={amountConvictionMap}
-                    />
+                      ) : (
+                        <AddressDisplay
+                          address={delegateAddress}
+                          size={'3rem'}
+                        />
+                      )}
+                      <DelegationByAmountConviction
+                        amountConvictionMap={amountConvictionMap}
+                      />
+                    </div>
                     <Button
-                      className="mb-2 mt-4 w-full"
+                      className="w-a bottom-0 mb-2 mt-4"
                       variant={'outline'}
                       onClick={() => onUndelegate(delegateAddress)}
                       disabled={delegateLoading.includes(delegateAddress)}

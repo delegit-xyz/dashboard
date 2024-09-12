@@ -31,7 +31,7 @@ export const DelegationByAmountConviction = ({
     return (
       <div
         key={`${conviction}-${balance.toString()}`}
-        className="mb-2 ml-12 border-l-2 pl-2"
+        className="mb-2 ml-12 overflow-auto border-l-2 pl-2"
       >
         {trackIds.length === 1 ? (
           trackIds.map((trackId) => (
