@@ -66,7 +66,7 @@ export const MyDelegations = () => {
       tx.signSubmitAndWatch(selectedAccount.polkadotSigner).subscribe({
         next: (event) => {
           console.log(event)
-          toast.info(`Event ${event.type} - TxHash: ${event.txHash}`)
+          toast.info(`Event ${event.type}`)
           if (event.type === 'finalized') {
             setDelegatesLoading((prev) => prev.filter((id) => id !== delegate))
             refreshLocks()

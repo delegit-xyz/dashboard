@@ -121,19 +121,18 @@ export const Delegate = () => {
           let msg: string
           switch (event.type) {
             case 'finalized':
-              msg = `Tx - Finalized. Block Number: ${event.block.number}. TxHash: ${event.txHash}`
+              msg = `Tx - Finalized in block: ${event.block.number}`
               break
             case 'signed':
               msg = 'Tx signed.'
               break
             case 'broadcasted':
-              msg = `Tx - Broadcasted. TxHash: ${event.txHash}`
+              msg = `Tx broadcasted.`
               break
             case 'txBestBlocksState':
-              msg = `Tx - Best Block State. TxHash: ${event.txHash}`
+              msg = `Tx in block.`
               break
           }
-          console.log(event, msg)
           toast.info(msg)
 
           if (event.type === 'txBestBlocksState' && event.found) {

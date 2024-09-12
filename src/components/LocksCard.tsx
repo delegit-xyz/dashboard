@@ -117,7 +117,7 @@ export const LocksCard = () => {
       .subscribe({
         next: (event) => {
           console.log(event)
-          toast.info(`Event ${event.type} - TxHash: ${event.txHash}`)
+          toast.info(`Event ${event.type}`)
           if (event.type === 'finalized') {
             setIsUnlockingLoading(false)
           }
