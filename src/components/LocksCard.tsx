@@ -220,7 +220,7 @@ export const LocksCard = () => {
                 </PopoverTrigger>
                 <PopoverContent>
                   <p className="max-w-[15rem]">
-                    Funds unlock after a certain time. These locks result either
+                    Funds unlockable after a certain time. These locks result either
                     from a vote with conviction casted on a refrendum, or from
                     undelegating.
                   </p>
