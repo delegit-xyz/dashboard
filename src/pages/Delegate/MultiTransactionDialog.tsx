@@ -12,6 +12,7 @@ import { DelegateTxs } from '@/hooks/useGetDelegateTx'
 import { useTestTx } from '@/hooks/useTestTx'
 import { useState } from 'react'
 import { TooLargeDialog } from './TooLargeDialog'
+import { useGetSigningCallback } from '@/hooks/useGetSigningCallback'
 
 interface Props {
   isOpen: boolean
@@ -35,6 +36,7 @@ export const MultiTransactionDialog = ({
   const { selectedAccount } = useAccounts()
   const [waitingForFinalization, setWaitingForFinalization] = useState(false)
   const [promptForHelpCallData, setPromptForHelpCallData] = useState('')
+  const getSubscriptionCallBack = useGetSigningCallback()
 
   const onSign = () => {
     step === 1 && onSignStep1()
@@ -43,6 +45,7 @@ export const MultiTransactionDialog = ({
 
   const onSignStep1 = async () => {
     if (!api || !selectedAccount) return
+    setIsTxInitiated(true)
 
     const step1Txs = api.tx.Utility.batch_all({
       calls: [
@@ -63,24 +66,17 @@ export const MultiTransactionDialog = ({
       return
     }
 
-    setIsTxInitiated(true)
+    const subscriptionCallBack1 = getSubscriptionCallBack({
+      onError: () => setIsTxInitiated(false),
+      onFinalized: () => {
+        setStep(2)
+        setIsTxInitiated(false)
+      },
+    })
+
     ;(await step1Txs)
       .signSubmitAndWatch(selectedAccount?.polkadotSigner)
-      .subscribe((event) => {
-        console.info(event)
-
-        if (event.type === 'txBestBlocksState' && event.found) {
-          if (event.dispatchError) {
-            console.error('Tx error', event)
-            setIsTxInitiated(false)
-
-            return
-          }
-
-          setStep(2)
-          setIsTxInitiated(false)
-        }
-      })
+      .subscribe(subscriptionCallBack1)
   }
 
   const onSignStep2 = async () => {
@@ -106,25 +102,22 @@ export const MultiTransactionDialog = ({
       return
     }
 
+    const subscriptionCallBack2 = getSubscriptionCallBack({
+      onError: () => {
+        setIsTxInitiated(false)
+        setWaitingForFinalization(true)
+      },
+      onInBlock: () => setWaitingForFinalization(true),
+      onFinalized: () => {
+        onProcessFinished()
+        setIsTxInitiated(false)
+        setWaitingForFinalization(false)
+      },
+    })
+
     await step2Txs
       .signSubmitAndWatch(selectedAccount?.polkadotSigner, { at: 'best' })
-      .subscribe((event) => {
-        console.info(event)
-
-        if (event.type === 'txBestBlocksState' && event.found) {
-          if (event.dispatchError) {
-            console.error('Tx error', event)
-            setIsTxInitiated(false)
-          }
-          setWaitingForFinalization(true)
-        }
-
-        if (event.type === 'finalized') {
-          onProcessFinished()
-          setIsTxInitiated(false)
-          setWaitingForFinalization(false)
-        }
-      })
+      .subscribe(subscriptionCallBack2)
   }
 
   if (promptForHelpCallData)
