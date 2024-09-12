@@ -12,9 +12,7 @@ import { Title } from './ui/title'
 import { ContentReveal } from './ui/content-reveal'
 import { BadgeCent, Clock2, Info, LockKeyholeOpen, Vote } from 'lucide-react'
 import { Badge } from './ui/badge'
-import { dot } from '@polkadot-api/descriptors'
 import { useAccounts } from '@/contexts/AccountsContext'
-import { TypedApi } from 'polkadot-api'
 import {
   DelegationLock,
   LockType,
@@ -109,10 +107,7 @@ export const LocksCard = () => {
 
     if (!unVoteTxs || !unlockTxs) return
 
-    // We need this to make TS happy for now
-    const dotApi = api as TypedApi<typeof dot>
-
-    dotApi.tx.Utility.batch({ calls: [...unVoteTxs, ...unlockTxs] })
+    api.tx.Utility.batch({ calls: [...unVoteTxs, ...unlockTxs] })
       .signSubmitAndWatch(selectedAccount.polkadotSigner)
       .subscribe({
         next: (event) => {
