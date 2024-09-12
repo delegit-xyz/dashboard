@@ -54,10 +54,14 @@ export const DelegationByAmountConviction = ({
           {assetInfo.symbol}
         </div>
         <div>
-          conviction: x{Number(multiplier)}
-          <span className="ml-2 border-l-2 pl-2 text-xs font-semibold text-slate-400">
-            {display}
-          </span>
+          {!!multiplier && !!display && (
+            <>
+              conviction: x{Number(multiplier)}
+              <span className="ml-2 border-l-2 pl-2 text-xs font-semibold text-slate-400">
+                {display}
+              </span>
+            </>
+          )}
         </div>
       </div>
     )
