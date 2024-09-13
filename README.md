@@ -1,15 +1,12 @@
-
-![banner](https://github.com/user-attachments/assets/0c19a57b-2256-47ed-8bb7-bc900ca5afe8)
+![Delegit banner](https://github.com/user-attachments/assets/0c19a57b-2256-47ed-8bb7-bc900ca5afe8)
 
 # Delegit
 
-The easiest way to delegate on Polkadot
-
-## Delegation made simple
+## Polkadot delegation made easy
 
 - 2 click flow to delegate, even with complex setup
 - See your current governance locks
-- Delegates can link to their page direction
+- Delegates can link to their page directly
 
 ### Why
 
