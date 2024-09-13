@@ -50,8 +50,7 @@ export const DelegationByAmountConviction = ({
 
         <div className="mt-1">
           <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
-          {planckToUnit(balance, assetInfo.precision).toLocaleString('en')}{' '}
-          {assetInfo.symbol}
+          {planckToUnit(balance, assetInfo.precision)} {assetInfo.symbol}
         </div>
         <div>
           {!!multiplier && !!display && (

@@ -18,11 +18,11 @@ importers:
         specifier: ^0.0.8
         version: 0.0.8
       '@polkadot-ui/react':
-        specifier: 0.0.1-alpha.15
-        version: 0.0.1-alpha.15(@noble/hashes@1.5.0)(@polkadot-api/substrate-bindings@0.7.0)(@polkadot-ui/assets@0.0.1-alpha.2)(@polkadot-ui/core@0.0.1-alpha.2)(@polkadot-ui/utils@0.0.1-alpha.5(@polkadot/keyring@13.0.2(@polkadot/util-crypto@13.0.2(@polkadot/util@13.0.2))(@polkadot/util@13.0.2))(@polkadot/util@13.0.2))(polkadot-api@1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: 0.0.1-alpha.31
+        version: 0.0.1-alpha.31(@noble/hashes@1.5.0)(@polkadot-api/substrate-bindings@0.7.0)(@polkadot-ui/assets@0.0.1-alpha.2)(@polkadot-ui/core@0.0.1-alpha.2)(@polkadot-ui/utils@0.0.3(@polkadot/keyring@13.0.2(@polkadot/util-crypto@13.0.2(@polkadot/util@13.0.2))(@polkadot/util@13.0.2))(@polkadot/util@13.0.2))(polkadot-api@1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@polkadot-ui/utils':
-        specifier: 0.0.1-alpha.5
-        version: 0.0.1-alpha.5(@polkadot/keyring@13.0.2(@polkadot/util-crypto@13.0.2(@polkadot/util@13.0.2))(@polkadot/util@13.0.2))(@polkadot/util@13.0.2)
+        specifier: 0.0.3
+        version: 0.0.3(@polkadot/keyring@13.0.2(@polkadot/util-crypto@13.0.2(@polkadot/util@13.0.2))(@polkadot/util@13.0.2))(@polkadot/util@13.0.2)
       '@radix-ui/react-dialog':
         specifier: ^1.1.1
         version: 1.1.1(@types/react-dom@18.3.0)(@types/react@18.3.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -761,20 +761,20 @@ packages:
   '@polkadot-ui/core@0.0.1-alpha.2':
     resolution: {integrity: sha512-gXEgPwN/fD+pSJVmgvFUE6PJWcp2I+v3Kp2kbRn78bLUwYIuc0pfURcuINK1rE/URyTjvKSmMqyfsERNAdp1iQ==}
 
-  '@polkadot-ui/react@0.0.1-alpha.15':
-    resolution: {integrity: sha512-QRaCFsS1ii6s4Ww9E4W0iHEValwoutR78xtvFO8TiOFZt3WtqT5M9g6SEThqcL9GGWdg+GictoQw/1QQna/7iw==}
+  '@polkadot-ui/react@0.0.1-alpha.31':
+    resolution: {integrity: sha512-dAZMYu2tF84f/NzOV9FoubqRcYwlKrca9+0vkrAH3VjG/Jw7swgnDymg3uewnXLPJfll3Tp1tOfqUdhJH4ziyA==}
     peerDependencies:
       '@noble/hashes': ^1.4.0
       '@polkadot-api/substrate-bindings': ^0.6.0
       '@polkadot-ui/assets': 0.0.1-alpha.2
       '@polkadot-ui/core': ^0.0.1-alpha.2
       '@polkadot-ui/utils': ^0.0.1-alpha.5
-      polkadot-api: ^0.12.0
+      polkadot-api: ^1.1.0
       react: ^18.2.0
       react-dom: ^18.2.0
 
-  '@polkadot-ui/utils@0.0.1-alpha.5':
-    resolution: {integrity: sha512-TEspLAZ3MafYYonySUOyFGob+hu6KmDIYXiVojjEe3kKQjQQ+Nl933xk1oo6wd+m1IbO74LXxx8Qze70FsOOvQ==}
+  '@polkadot-ui/utils@0.0.3':
+    resolution: {integrity: sha512-oc4NzbQv3YeB5r9vjnhVvFxcTNPKGcimk5hWRPBcy20pEH/9UR+IX6VuOsZBY0mKQazr/14q8PM+3pLQ6Aj/qA==}
     peerDependencies:
       '@polkadot/keyring': ^12.6.2
       '@polkadot/util': ^12.6.2
@@ -3812,18 +3812,18 @@ snapshots:
 
   '@polkadot-ui/core@0.0.1-alpha.2': {}
 
-  '@polkadot-ui/react@0.0.1-alpha.15(@noble/hashes@1.5.0)(@polkadot-api/substrate-bindings@0.7.0)(@polkadot-ui/assets@0.0.1-alpha.2)(@polkadot-ui/core@0.0.1-alpha.2)(@polkadot-ui/utils@0.0.1-alpha.5(@polkadot/keyring@13.0.2(@polkadot/util-crypto@13.0.2(@polkadot/util@13.0.2))(@polkadot/util@13.0.2))(@polkadot/util@13.0.2))(polkadot-api@1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@polkadot-ui/react@0.0.1-alpha.31(@noble/hashes@1.5.0)(@polkadot-api/substrate-bindings@0.7.0)(@polkadot-ui/assets@0.0.1-alpha.2)(@polkadot-ui/core@0.0.1-alpha.2)(@polkadot-ui/utils@0.0.3(@polkadot/keyring@13.0.2(@polkadot/util-crypto@13.0.2(@polkadot/util@13.0.2))(@polkadot/util@13.0.2))(@polkadot/util@13.0.2))(polkadot-api@1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@noble/hashes': 1.5.0
       '@polkadot-api/substrate-bindings': 0.7.0
       '@polkadot-ui/assets': 0.0.1-alpha.2
       '@polkadot-ui/core': 0.0.1-alpha.2
-      '@polkadot-ui/utils': 0.0.1-alpha.5(@polkadot/keyring@13.0.2(@polkadot/util-crypto@13.0.2(@polkadot/util@13.0.2))(@polkadot/util@13.0.2))(@polkadot/util@13.0.2)
+      '@polkadot-ui/utils': 0.0.3(@polkadot/keyring@13.0.2(@polkadot/util-crypto@13.0.2(@polkadot/util@13.0.2))(@polkadot/util@13.0.2))(@polkadot/util@13.0.2)
       polkadot-api: 1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  '@polkadot-ui/utils@0.0.1-alpha.5(@polkadot/keyring@13.0.2(@polkadot/util-crypto@13.0.2(@polkadot/util@13.0.2))(@polkadot/util@13.0.2))(@polkadot/util@13.0.2)':
+  '@polkadot-ui/utils@0.0.3(@polkadot/keyring@13.0.2(@polkadot/util-crypto@13.0.2(@polkadot/util@13.0.2))(@polkadot/util@13.0.2))(@polkadot/util@13.0.2)':
     dependencies:
       '@polkadot/keyring': 13.0.2(@polkadot/util-crypto@13.0.2(@polkadot/util@13.0.2))(@polkadot/util@13.0.2)
       '@polkadot/util': 13.0.2
