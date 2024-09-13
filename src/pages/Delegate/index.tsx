@@ -8,8 +8,6 @@ import { Button } from '@/components/ui/button'
 import { useAccounts } from '@/contexts/AccountsContext'
 import { Slider } from '@/components/ui/slider'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
-import { toast } from 'sonner'
-
 import { ArrowLeft } from 'lucide-react'
 import { msgs } from '@/lib/constants'
 import { evalUnits, planckToUnit } from '@polkadot-ui/utils'
@@ -18,6 +16,7 @@ import { DelegateTxs, useGetDelegateTx } from '@/hooks/useGetDelegateTx'
 import { AlertNote } from '@/components/Alert'
 import { useTestTx } from '@/hooks/useTestTx'
 import { MultiTransactionDialog } from './MultiTransactionDialog'
+import { useGetSigningCallback } from '@/hooks/useGetSigningCallback'
 
 export const Delegate = () => {
   const { api, assetInfo } = useNetwork()
@@ -45,6 +44,7 @@ export const Delegate = () => {
   const [isMultiTxDialogOpen, setIsMultiTxDialogOpen] = useState(false)
   const [delegateTxs, setDelegateTxs] = useState<DelegateTxs>({} as DelegateTxs)
   const { refreshLocks } = useLocks()
+  const getSubscriptionCallBack = useGetSigningCallback()
 
   const { display: convictionTimeDisplay, multiplier: convictionMultiplier } =
     getConvictionLockTimeDisplay(convictionNo)
@@ -165,35 +165,14 @@ export const Delegate = () => {
       return
     }
 
+    const subscriptionCallBack = getSubscriptionCallBack({
+      onError: () => setIsTxInitiated(false),
+      onFinalized: () => onProcessFinished(),
+    })
+
     await allTxs
       .signSubmitAndWatch(selectedAccount?.polkadotSigner)
-      .subscribe((event) => {
-        let msg: string
-        switch (event.type) {
-          case 'signed':
-            msg = 'Tx signed.'
-            break
-          case 'broadcasted':
-            msg = `Tx broadcasted.`
-            break
-          case 'txBestBlocksState':
-            msg = `Tx in block.`
-            break
-          case 'finalized':
-            msg = `Tx finalized in block: ${event.block.number}`
-            onProcessFinished()
-            break
-        }
-        toast.info(msg)
-
-        if (event.type === 'txBestBlocksState' && event.found) {
-          if (event.dispatchError) {
-            console.error('Tx error', event)
-            toast.error(`Tx error: ${JSON.stringify(event)}`)
-            setIsTxInitiated(false)
-          }
-        }
-      })
+      .subscribe(subscriptionCallBack)
   }
 
   return (

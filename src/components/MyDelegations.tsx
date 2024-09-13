@@ -11,7 +11,7 @@ import { Button } from './ui/button'
 import { useAccounts } from '@/contexts/AccountsContext'
 import { Transaction } from 'polkadot-api'
 import { DelegationByAmountConviction } from './DelegationByAmountConviction'
-import { toast } from 'sonner'
+import { useGetSigningCallback } from '@/hooks/useGetSigningCallback'
 
 export const MyDelegations = () => {
   const { api } = useNetwork()
@@ -42,6 +42,7 @@ export const MyDelegations = () => {
     return result
   }, [delegations])
 
+  const getSubscriptionCallback = useGetSigningCallback()
   const onUndelegate = useCallback(
     (delegate: string) => {
       if (!api || !selectedAccount || !delegations) return
@@ -62,23 +63,20 @@ export const MyDelegations = () => {
         tx = api.tx.Utility.batch({ calls: batchTx })
       }
 
-      tx.signSubmitAndWatch(selectedAccount.polkadotSigner).subscribe({
-        next: (event) => {
-          console.log(event)
-          toast.info(`Event ${event.type}`)
-          if (event.type === 'finalized') {
-            setDelegatesLoading((prev) => prev.filter((id) => id !== delegate))
-            refreshLocks()
-          }
-        },
-        error: (error) => {
-          console.error(error)
-          toast.info(`Event Error: ${JSON.stringify(error)}`)
+      const subscriptionCallback = getSubscriptionCallback({
+        onError: () => {
           setDelegatesLoading((prev) => prev.filter((id) => id !== delegate))
         },
+        onFinalized: () => {
+          setDelegatesLoading((prev) => prev.filter((id) => id !== delegate))
+          refreshLocks()
+        },
       })
+      tx.signSubmitAndWatch(selectedAccount.polkadotSigner).subscribe(
+        subscriptionCallback,
+      )
     },
-    [api, delegations, refreshLocks, selectedAccount],
+    [api, delegations, getSubscriptionCallback, refreshLocks, selectedAccount],
   )
 
   return (
