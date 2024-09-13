@@ -21,15 +21,15 @@ import {
 } from '@/contexts/LocksContext'
 import { Skeleton } from './ui/skeleton'
 import { useGetUnlockTx } from '@/hooks/useGetUnlockTx'
-import { toast } from 'sonner'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 import { TrackDisplay } from './TrackDisplay'
+import { useGetSigningCallback } from '@/hooks/useGetSigningCallback'
 
 export const LocksCard = () => {
   const [currentBlock, setCurrentBlock] = useState(0)
   const [expectedBlockTime, setExpectedBlockTime] = useState(0)
   const { api, assetInfo } = useNetwork()
-  const { voteLocks: locks, delegationLocks } = useLocks()
+  const { voteLocks, delegationLocks } = useLocks()
   const [ongoingVoteLocks, setOngoingVoteLocks] = useState<VoteLock[]>([])
   const [freeLocks, setFreeLocks] = useState<Array<VoteLock | DelegationLock>>(
     [],
@@ -42,6 +42,7 @@ export const LocksCard = () => {
   const { selectedAccount } = useAccounts()
   const [isUnlockingLoading, setIsUnlockingLoading] = useState(false)
   const getUnlockTx = useGetUnlockTx()
+  const getSubscriptionCallBack = useGetSigningCallback()
 
   useEffect(() => {
     if (!currentBlock) return
@@ -50,13 +51,13 @@ export const LocksCard = () => {
     const tempFree: Array<VoteLock | DelegationLock> = []
     const tempCurrent: VoteLock[] = []
 
-    locks.forEach((lock) => {
-      if (lock.isOngoing) {
-        tempOngoingLocks.push(lock)
-      } else if (lock.endBlock <= currentBlock) {
-        tempFree.push(lock)
+    voteLocks.forEach((voteLocks) => {
+      if (voteLocks.isOngoing) {
+        tempOngoingLocks.push(voteLocks)
+      } else if (voteLocks.endBlock <= currentBlock) {
+        tempFree.push(voteLocks)
       } else {
-        tempCurrent.push(lock)
+        tempCurrent.push(voteLocks)
       }
     })
 
@@ -78,7 +79,7 @@ export const LocksCard = () => {
     setCurrentLocks(tempCurrent)
     setCurrentDelegationLocks(tempDelegationLocks)
     setLocksLoaded(true)
-  }, [currentBlock, delegationLocks, locks])
+  }, [currentBlock, delegationLocks, voteLocks])
 
   useEffect(() => {
     if (!api) return
@@ -107,23 +108,15 @@ export const LocksCard = () => {
 
     if (!unVoteTxs || !unlockTxs) return
 
+    const subscriptionCallback = getSubscriptionCallBack({
+      onFinalized: () => setIsUnlockingLoading(false),
+      onError: () => setIsUnlockingLoading(false),
+    })
+
     api.tx.Utility.batch({ calls: [...unVoteTxs, ...unlockTxs] })
       .signSubmitAndWatch(selectedAccount.polkadotSigner)
-      .subscribe({
-        next: (event) => {
-          console.log(event)
-          toast.info(`Event ${event.type}`)
-          if (event.type === 'finalized') {
-            setIsUnlockingLoading(false)
-          }
-        },
-        error: (error) => {
-          console.error(error)
-          toast.info(`Event Error: ${JSON.stringify(error)}`)
-          setIsUnlockingLoading(false)
-        },
-      })
-  }, [api, freeLocks, getUnlockTx, selectedAccount])
+      .subscribe(subscriptionCallback)
+  }, [api, freeLocks, getSubscriptionCallBack, getUnlockTx, selectedAccount])
 
   return (
     <div className="flex flex-col gap-2 md:grid md:grid-cols-3 md:flex-row">
@@ -233,7 +226,7 @@ export const LocksCard = () => {
               hidden={currentLocks.length + currentDelegationLocks.length === 0}
             >
               <>
-                {currentLocks.map(({ amount, endBlock, refId }) => {
+                {currentLocks.map(({ amount, endBlock, refId, trackId }) => {
                   const remainingTimeMs =
                     (Number(endBlock) - currentBlock) * expectedBlockTime
                   const remainingDisplay = convertMiliseconds(remainingTimeMs)
@@ -242,6 +235,9 @@ export const LocksCard = () => {
                       <ul>
                         <li>
                           <Badge>#{refId}</Badge>
+                          <span className="ml-2 border-l-2 pl-2 text-xs font-semibold text-slate-400">
+                            {trackId}
+                          </span>
                           <div>
                             <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
                             {planckToUnit(
@@ -309,12 +305,15 @@ export const LocksCard = () => {
             </div>
             {
               <ContentReveal hidden={!ongoingVoteLocks.length}>
-                {ongoingVoteLocks.map(({ amount, refId }) => {
+                {ongoingVoteLocks.map(({ amount, refId, trackId }) => {
                   return (
                     <div key={refId}>
                       <ul>
                         <li>
-                          <Badge>#{refId}</Badge>
+                          <Badge>#{refId}</Badge>{' '}
+                          <span className="ml-2 border-l-2 pl-2 text-xs font-semibold text-slate-400">
+                            {trackId}
+                          </span>
                           <div>
                             <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
                             {planckToUnit(
