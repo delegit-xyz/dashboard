@@ -5,15 +5,10 @@ import React, {
   useContext,
   useCallback,
   useEffect,
-  Dispatch,
 } from 'react'
 import { InjectedPolkadotAccount } from 'polkadot-api/pjs-signer'
 
-import {
-  useConnectLocalStorage,
-  localStorageKeyAccount,
-  useConnect,
-} from '@polkadot-ui/react'
+import { useAccountLocalStorage, useConnect } from '@polkadot-ui/react'
 
 type AccountContextProps = {
   children: React.ReactNode | React.ReactNode[]
@@ -21,7 +16,7 @@ type AccountContextProps = {
 
 export interface IAccountContext {
   selectedAccount?: InjectedPolkadotAccount
-  setConnAccounts?: Dispatch<React.SetStateAction<InjectedPolkadotAccount[]>>
+  connectAccounts?: (accounts: InjectedPolkadotAccount[]) => void
   accounts: InjectedPolkadotAccount[]
   selectAccount: (account: InjectedPolkadotAccount | undefined) => void
 }
@@ -29,15 +24,9 @@ export interface IAccountContext {
 const AccountContext = createContext<IAccountContext | undefined>(undefined)
 
 const AccountContextProvider = ({ children }: AccountContextProps) => {
-  const [
-    localStorageAccount,
-    setLocalStorageAccount,
-    removeLocalStorageAccount,
-  ] = useConnectLocalStorage(localStorageKeyAccount, '')
+  const [localStorageAccount, setLocalStorageAccount] = useAccountLocalStorage()
 
   const { connectedAccounts, connectedExtensions } = useConnect()
-
-  console.log('2', connectedAccounts, connectedExtensions)
 
   const [connAccounts, setConnAccounts] =
     useState<InjectedPolkadotAccount[]>(connectedAccounts)
@@ -50,32 +39,35 @@ const AccountContextProvider = ({ children }: AccountContextProps) => {
     setConnAccounts(acc)
   }, [connectedExtensions])
 
-  console.log('3', connAccounts)
-
   const [selectedAccount, setSelected] = useState<
     InjectedPolkadotAccount | undefined
   >()
 
+  const connectAccounts = useCallback((accounts: InjectedPolkadotAccount[]) => {
+    setConnAccounts(accounts)
+  }, [])
+
   const selectAccount = useCallback(
     (account: InjectedPolkadotAccount | undefined) => {
       if (!account) {
-        removeLocalStorageAccount()
+        setLocalStorageAccount('')
       }
 
-      if (account?.address) setLocalStorageAccount(account.address)
+      if (account?.address) setLocalStorageAccount(account)
 
       setSelected(account)
     },
-    [removeLocalStorageAccount, setLocalStorageAccount],
+    [setLocalStorageAccount],
   )
 
   useEffect(() => {
-    if (localStorageAccount) {
-      console.log('4', connAccounts)
+    if (localStorageAccount?.address) {
       const account = connAccounts.find(
-        (account) => account.address === localStorageAccount,
+        (account) => account.address === localStorageAccount?.address,
       )
-      if (account) {
+      console.log('- account -', account, localStorageAccount)
+
+      if (account?.address) {
         selectAccount(account)
       }
     } else {
@@ -87,7 +79,7 @@ const AccountContextProvider = ({ children }: AccountContextProps) => {
     <AccountContext.Provider
       value={{
         accounts: connAccounts,
-        setConnAccounts,
+        connectAccounts,
         selectedAccount,
         selectAccount,
       }}

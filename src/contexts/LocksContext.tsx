@@ -21,7 +21,10 @@ import {
   KsmQueries,
   VotingConviction,
 } from '@polkadot-api/descriptors'
-import { convertMiliseconds } from '@/lib/convertMiliseconds'
+import {
+  convertMiliseconds,
+  displayRemainingTime,
+} from '@/lib/convertMiliseconds'
 
 // eslint-disable-next-line react-refresh/only-export-components
 export enum LockType {
@@ -73,8 +76,8 @@ type LocksContextProps = {
 }
 
 export interface ConvictionDisplay {
-  multiplier: number
-  display: string
+  multiplier?: number
+  display?: string
 }
 
 export interface ILocksContext {
@@ -372,6 +375,10 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
    */
   const getConvictionLockTimeDisplay = useCallback(
     (conviction: number | string): ConvictionDisplay => {
+      if (Object.entries(convictionLocksMap).length === 0) {
+        return {}
+      }
+
       if (typeof conviction === 'string') {
         if (conviction === 'None') {
           return {
@@ -382,7 +389,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
 
         return {
           multiplier: Number(conviction.replace('Locked', '').replace('x', '')),
-          display: `${convertMiliseconds(Number(convictionLocksMap[conviction])).d} days lock`,
+          display: `${displayRemainingTime(convertMiliseconds(Number(convictionLocksMap[conviction])))} lock`,
         }
       } else {
         if (conviction === 0) {
@@ -391,7 +398,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
         const key = `Locked${conviction}x`
         return {
           multiplier: conviction,
-          display: `${convertMiliseconds(Number(convictionLocksMap[key])).d} days lock`,
+          display: `${displayRemainingTime(convertMiliseconds(Number(convictionLocksMap[key])))} lock`,
         }
       }
     },
