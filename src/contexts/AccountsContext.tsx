@@ -16,9 +16,9 @@ type AccountContextProps = {
 
 export interface IAccountContext {
   selectedAccount?: InjectedPolkadotAccount
-  connectAccounts?: (accounts: InjectedPolkadotAccount[]) => void
   accounts: InjectedPolkadotAccount[]
   selectAccount: (account: InjectedPolkadotAccount | undefined) => void
+  setConnectedAccounts: (accounts: InjectedPolkadotAccount[]) => void
 }
 
 const AccountContext = createContext<IAccountContext | undefined>(undefined)
@@ -43,9 +43,12 @@ const AccountContextProvider = ({ children }: AccountContextProps) => {
     InjectedPolkadotAccount | undefined
   >()
 
-  const connectAccounts = useCallback((accounts: InjectedPolkadotAccount[]) => {
-    setConnAccounts(accounts)
-  }, [])
+  const setConnectedAccounts = useCallback(
+    (accounts: InjectedPolkadotAccount[]) => {
+      setConnAccounts(accounts)
+    },
+    [],
+  )
 
   const selectAccount = useCallback(
     (account: InjectedPolkadotAccount | undefined) => {
@@ -61,27 +64,32 @@ const AccountContextProvider = ({ children }: AccountContextProps) => {
   )
 
   useEffect(() => {
-    if (localStorageAccount?.address) {
+    if (localStorageAccount?.address && connAccounts?.length !== 0) {
       const account = connAccounts.find(
         (account) => account.address === localStorageAccount?.address,
       )
-      console.log('- account -', account, localStorageAccount)
 
       if (account?.address) {
         selectAccount(account)
       }
     } else {
-      selectAccount(connAccounts[0])
+      if (connAccounts?.length === 0) {
+        setLocalStorageAccount('')
+        setSelected(undefined)
+        selectAccount(undefined)
+      } else {
+        selectAccount(connAccounts[0])
+      }
     }
-  }, [connAccounts, localStorageAccount, selectAccount])
+  }, [connAccounts, localStorageAccount, selectAccount, setLocalStorageAccount])
 
   return (
     <AccountContext.Provider
       value={{
         accounts: connAccounts,
-        connectAccounts,
         selectedAccount,
         selectAccount,
+        setConnectedAccounts,
       }}
     >
       {children}

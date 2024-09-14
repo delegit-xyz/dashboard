@@ -39,6 +39,7 @@ import { useTheme } from './components/theme-provider'
 import { Link, useLocation } from 'react-router-dom'
 import { FaCheckCircle, FaGithub } from 'react-icons/fa'
 import { TbLoaderQuarter } from 'react-icons/tb'
+import { useMediaQuery } from 'usehooks-ts'
 
 interface NetworkDisplay {
   name: SupportedNetworkNames
@@ -60,17 +61,30 @@ if (import.meta.env.DEV) {
 
 export const Header = () => {
   const { network, selectNetwork, lightClientLoaded, isLight } = useNetwork()
-  const { accounts, selectAccount, selectedAccount, connectAccounts } =
+  const { accounts, selectAccount, selectedAccount, setConnectedAccounts } =
     useAccounts()
   // eslint-disable-next-line
   const { theme, setTheme } = useTheme()
   const { search } = useLocation()
 
   const [modalOpen, setModalOpen] = useState<boolean>(false)
+  const isDesktop = useMediaQuery('(min-width: 768px)')
 
   const connectConfig: ConnectConfiguration = {
     downloadIcon: <Download />,
     disconnectIcon: <Unplug />,
+    modal: {
+      width: isDesktop ? '50vw' : '100%',
+      top: isDesktop ? '' : '20%',
+      bgColor: theme === 'light' ? '#fff' : '#171c17',
+      titleColor: theme === 'light' ? '#000' : '#fff',
+    },
+    bg: {
+      selected: theme === 'light' ? '#ccc' : '#000',
+    },
+    hover: {
+      bg: theme === 'light' ? '#ccc' : '#000',
+    },
   }
 
   return (
@@ -173,22 +187,7 @@ export const Header = () => {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-
-            <ConnectModal
-              type="extensions"
-              config={connectConfig}
-              selected={selectedAccount}
-              setSelected={selectAccount}
-              getConnectedAccounts={(acc) => {
-                connectAccounts!(acc.length ? acc : [])
-              }}
-              title={'Connect'}
-              show={modalOpen}
-              onClose={(): void => {
-                setModalOpen(false)
-              }}
-            />
-            {!!accounts.length || selectedAccount?.address ? (
+            {selectedAccount?.address ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -227,8 +226,10 @@ export const Header = () => {
                       )}
                     </>
                   ))}
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem>
                     <div
+                      className="cursor-pointer"
                       onClick={() => {
                         setModalOpen(true)
                       }}
@@ -242,6 +243,22 @@ export const Header = () => {
               <Button onClick={() => setModalOpen(true)}>Connect</Button>
             )}
           </div>
+        </div>
+        <div style={{ fontSize: '1rem' }}>
+          <ConnectModal
+            type="extensions"
+            config={connectConfig}
+            selected={selectedAccount}
+            setSelected={selectAccount}
+            getConnectedAccounts={(acc) => {
+              setConnectedAccounts(acc)
+            }}
+            title={'Connect'}
+            show={modalOpen}
+            onClose={(): void => {
+              setModalOpen(false)
+            }}
+          />
         </div>
       </header>
     </>
