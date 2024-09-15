@@ -7,7 +7,7 @@ interface Props {
 }
 export const Title = ({ children, variant = 'h1', className }: Props) => {
   const baseClass =
-    'flex-1 shrink-0 whitespace-nowrap font-unbounded font-semibold tracking-tight text-slate-600 sm:grow-0'
+    'flex-1 shrink-0 whitespace-nowrap font-unbounded font-semibold tracking-tight text-accent-foreground sm:grow-0'
   if (variant === 'h1')
     return <h1 className={cn(baseClass, 'text-2xl mt-10 mb-5', className)}>{children}</h1>
   if (variant === 'h2')

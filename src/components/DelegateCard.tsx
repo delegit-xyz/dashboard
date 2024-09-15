@@ -17,7 +17,7 @@ export const DelegateInfo = ({ delegate: d }: Props) => {
       </div>
       <div className="w-full p-2">
         <div className="py-2 text-xl font-semibold">{d.name}</div>
-        <div className="text-slate-600">
+        <div className="text-accent-foreground">
           <div className="break-words text-lg">{d.shortDescription}</div>
           <ContentReveal
             hidden={d.shortDescription === d.longDescription || !d.longDescription}
