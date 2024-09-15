@@ -8,10 +8,10 @@ export const Home = () => {
   const { delegates } = useDelegates()
 
   return (
-    <main className="mx-0 flex-1 items-start gap-4 p-4 sm:mx-[5%] sm:px-6 sm:py-0 md:gap-8">
+    <main className="p-4 sm:px-6 sm:py-0 md:gap-8 max-w-4xl w-full m-auto">
       <LocksCard />
       <MyDelegations />
-      <Title className="mt-4">Delegates</Title>
+      <Title>Delegates</Title>
       <div className="sm:grid sm:grid-cols-1">
         {delegates?.map((d) => <DelegateCard key={d.address} delegate={d} />)}
       </div>
