@@ -1,6 +1,10 @@
 import { Button } from "./ui/button";
 
-const ShareUrlButton: React.FC = () => {
+interface Props {
+  children: string
+}
+
+export const ShareUrlButton = ({ children }: Props) => {
     const copyToClipboard = () => {
       if (navigator.clipboard) {
         navigator.clipboard.writeText(window.location.href)
@@ -28,8 +32,6 @@ const ShareUrlButton: React.FC = () => {
     };
   
     return (
-      <Button onClick={copyToClipboard} variant="ghost" className="mt-4 text-slate-400 font-unbounded">Share URL</Button>
+      <Button onClick={copyToClipboard} variant="ghost" className="mt-4 text-slate-400 font-unbounded">{children}</Button>
     );
   };
-  
-  export default ShareUrlButton;

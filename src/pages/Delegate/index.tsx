@@ -19,7 +19,7 @@ import { MultiTransactionDialog } from './MultiTransactionDialog'
 import { useGetSigningCallback } from '@/hooks/useGetSigningCallback'
 import { Title } from '@/components/ui/title'
 import { DelegateInfo } from '@/components/DelegateCard'
-import ShareUrlButton from '@/components/ShareUrlButton'
+import { ShareUrlButton } from '@/components/ShareUrlButton'
 
 export const Delegate = () => {
   const { api, assetInfo } = useNetwork()
@@ -254,7 +254,7 @@ export const Delegate = () => {
         delegateTxs={delegateTxs}
         onProcessFinished={onProcessFinished}
       />
-      <ShareUrlButton/>
+      <ShareUrlButton> Share delegate Url</ShareUrlButton>
     </main>
   )
 }
