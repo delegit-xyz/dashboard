@@ -20,7 +20,9 @@ export const DelegateInfo = ({ delegate: d }: Props) => {
         <div className="text-accent-foreground">
           <div className="break-words text-lg">{d.shortDescription}</div>
           <ContentReveal
-            hidden={d.shortDescription === d.longDescription || !d.longDescription}
+            hidden={
+              d.shortDescription === d.longDescription || !d.longDescription
+            }
           >
             {d.longDescription}
           </ContentReveal>
@@ -48,7 +50,7 @@ export const DelegateCard = ({ delegate: d }: Props) => {
   return (
     <Card className="mb-5 flex flex-col border p-4">
       <div className="flex columns-3">
-        <DelegateInfo delegate={d}/>
+        <DelegateInfo delegate={d} />
         <Button variant="default" onClick={onDelegate} className="">
           Delegate
         </Button>

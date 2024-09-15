@@ -8,7 +8,7 @@ export const Home = () => {
   const { delegates } = useDelegates()
 
   return (
-    <main className="p-4 sm:px-6 sm:py-0 md:gap-8 max-w-4xl w-full m-auto">
+    <main className="m-auto w-full max-w-4xl p-4 sm:px-6 sm:py-0 md:gap-8">
       <LocksCard />
       <MyDelegations />
       <Title>Delegates</Title>

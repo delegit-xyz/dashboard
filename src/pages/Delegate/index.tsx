@@ -179,7 +179,7 @@ export const Delegate = () => {
   }
 
   return (
-    <main className="grid gap-8 p-4 sm:px-6 sm:py-0 m-auto max-w-4xl w-full m-auto">
+    <main className="m-auto grid w-full max-w-4xl gap-8 p-4 sm:px-6 sm:py-0">
       {!api && (
         <AlertNote
           title={msgs.api.title}
@@ -203,7 +203,7 @@ export const Delegate = () => {
       <div className="flex columns-3">
         <DelegateInfo key={delegate.address} delegate={delegate} />
       </div>
-      <div className="bg-card gap-8 grid p-6 rounded-xl shadow-xl">
+      <div className="grid gap-8 rounded-xl bg-card p-6 shadow-xl">
         <div>
           <Label>Amount</Label>
           <Input
