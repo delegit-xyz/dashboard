@@ -79,16 +79,34 @@ export const getLockTimes = async (api: ApiType) => {
   )
 }
 
-export const sanitizeString = (value: string) => {
-  // remove all emojis
-  return (
-    value
-      .replace(
-        /([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g,
-        '',
-      )
-      // replace all strange characters to underscores
-      .replace(/[\W_]+/g, '_')
-      .toLowerCase()
-  )
+export const sanitizeString = (value: string) =>
+  value
+    // remove all emojis
+    .replace(
+      /([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g,
+      '',
+    )
+    // replace all strange characters to underscores
+    .replace(/[\W_]+/g, '_')
+    .toLowerCase()
+
+// thanks to https://stackoverflow.com/a/2450976/3086912
+export const shuffleArray = (arrayToShuffle: unknown[]) => {
+  const array = [...arrayToShuffle]
+  let currentIndex = array.length
+
+  // While there remain elements to shuffle...
+  while (currentIndex != 0) {
+    // Pick a remaining element...
+    const randomIndex = Math.floor(Math.random() * currentIndex)
+    currentIndex--
+
+    // And swap it with the current element.
+    ;[array[currentIndex], array[randomIndex]] = [
+      array[randomIndex],
+      array[currentIndex],
+    ]
+  }
+
+  return array
 }

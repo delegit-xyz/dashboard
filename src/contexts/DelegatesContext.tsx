@@ -2,7 +2,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { useNetwork } from './NetworkContext'
 import { DelegateListKusama, DelegateListPolkadot } from '@/lib/constants'
-import { sanitizeString } from '@/lib/utils'
+import { sanitizeString, shuffleArray } from '@/lib/utils'
 
 type DelegatesContextProps = {
   children: React.ReactNode | React.ReactNode[]
@@ -38,7 +38,9 @@ const DelegateContextProvider = ({ children }: DelegatesContextProps) => {
             : DelegateListKusama,
         )!
       ).json()
-      setDelegates(response)
+
+      const randomized = shuffleArray(response) as Delegate[]
+      setDelegates(randomized)
     }
     fetchOpenPRs()
   }, [network])
