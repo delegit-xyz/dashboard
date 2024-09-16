@@ -2,6 +2,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { useNetwork } from './NetworkContext'
 import { DelegateListKusama, DelegateListPolkadot } from '@/lib/constants'
+import { sanitizeString } from '@/lib/utils'
 
 type DelegatesContextProps = {
   children: React.ReactNode | React.ReactNode[]
@@ -19,6 +20,7 @@ export type Delegate = {
 export interface IDelegatesContext {
   delegates: Delegate[]
   getDelegateByAddress: (address: string) => Delegate | undefined
+  getDelegateByName: (name: string) => Delegate | undefined
 }
 
 const DelegatesContext = createContext<IDelegatesContext | undefined>(undefined)
@@ -44,6 +46,9 @@ const DelegateContextProvider = ({ children }: DelegatesContextProps) => {
   const getDelegateByAddress = (address: string) =>
     delegates.find((d) => d.address === address)
 
+  const getDelegateByName = (name: string) =>
+    delegates.find((d) => sanitizeString(d.name) == name.toLowerCase())
+
   // Votes thingy - pause for now
   // useEffect(() => {
   //   const a = async (delegates: any[]) => {
@@ -58,7 +63,9 @@ const DelegateContextProvider = ({ children }: DelegatesContextProps) => {
   // }, [delegates])
 
   return (
-    <DelegatesContext.Provider value={{ delegates, getDelegateByAddress }}>
+    <DelegatesContext.Provider
+      value={{ delegates, getDelegateByAddress, getDelegateByName }}
+    >
       {children}
     </DelegatesContext.Provider>
   )

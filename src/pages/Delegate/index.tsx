@@ -10,23 +10,63 @@ import { Slider } from '@/components/ui/slider'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { msgs } from '@/lib/constants'
-import { evalUnits, planckToUnit } from '@polkadot-ui/utils'
+import { evalUnits, isValidAddress, planckToUnit } from '@polkadot-ui/utils'
 import { useLocks } from '@/contexts/LocksContext'
 import { DelegateTxs, useGetDelegateTx } from '@/hooks/useGetDelegateTx'
 import { AlertNote } from '@/components/Alert'
 import { useTestTx } from '@/hooks/useTestTx'
 import { MultiTransactionDialog } from './MultiTransactionDialog'
 import { useGetSigningCallback } from '@/hooks/useGetSigningCallback'
+import { Link as LinkIcon } from 'lucide-react'
+import { sanitizeString } from '@/lib/utils'
 
 export const Delegate = () => {
-  const { api, assetInfo } = useNetwork()
-  const { address } = useParams()
-  const { getConvictionLockTimeDisplay } = useLocks()
+  const { api, assetInfo, network, selectNetwork } = useNetwork()
+  const { address, incomingNetwork } = useParams()
+  const { selectedAccount } = useAccounts()
+  const getDelegateTx = useGetDelegateTx()
+  const { getConvictionLockTimeDisplay, refreshLocks } = useLocks()
+  const getSubscriptionCallBack = useGetSigningCallback()
+  const navigate = useNavigate()
+  const { search } = useLocation()
+  const [newAddress, setNewAddress] = useState<string>()
 
-  const { getDelegateByAddress } = useDelegates()
-  const [delegate, setDelegate] = useState(
-    address && getDelegateByAddress(address),
-  )
+  const { getDelegateByAddress, getDelegateByName } = useDelegates()
+
+  useEffect(() => {
+    if (isValidAddress(address!)) {
+      setNewAddress(address)
+    } else {
+      const delegate = getDelegateByName(address!)
+      delegate?.address && setNewAddress(delegate?.address)
+    }
+  }, [address, getDelegateByName])
+
+  useEffect(() => {
+    if (incomingNetwork && address && newAddress) {
+      selectNetwork(incomingNetwork)
+      return navigate(`/delegate/${newAddress}?network=${incomingNetwork}`)
+    }
+  }, [
+    address,
+    getDelegateByName,
+    incomingNetwork,
+    navigate,
+    newAddress,
+    selectNetwork,
+  ])
+
+  const [delegate, setDelegate] = useState(getDelegateByAddress(newAddress!))
+
+  const [copyLink, setCopyLink] = useState<string>()
+
+  useEffect(() => {
+    delegate?.name &&
+      setCopyLink(
+        `${window.location.host}/${network}/${sanitizeString(delegate.name)}`,
+      )
+  }, [delegate?.name, network])
+
   const [isAmountDirty, setIsAmountDirty] = useState(false)
   const [amount, setAmount] = useState<bigint>(0n)
   const [amountVisible, setAmountVisible] = useState<string>('0')
@@ -35,16 +75,10 @@ export const Delegate = () => {
     VotingConviction.None,
   )
   const [convictionNo, setConvictionNo] = useState(1)
-  const { selectedAccount } = useAccounts()
   const [isTxInitiated, setIsTxInitiated] = useState(false)
-  const getDelegateTx = useGetDelegateTx()
-  const navigate = useNavigate()
-  const { search } = useLocation()
   const { isExhaustsResources } = useTestTx()
   const [isMultiTxDialogOpen, setIsMultiTxDialogOpen] = useState(false)
   const [delegateTxs, setDelegateTxs] = useState<DelegateTxs>({} as DelegateTxs)
-  const { refreshLocks } = useLocks()
-  const getSubscriptionCallBack = useGetSigningCallback()
 
   const { display: convictionTimeDisplay, multiplier: convictionMultiplier } =
     getConvictionLockTimeDisplay(convictionNo)
@@ -83,11 +117,11 @@ export const Delegate = () => {
   }, [api])
 
   useEffect(() => {
-    if (!address || delegate) return
+    if (!newAddress || delegate) return
 
-    const res = getDelegateByAddress(address)
+    const res = getDelegateByAddress(newAddress)
     setDelegate(res)
-  }, [address, delegate, getDelegateByAddress])
+  }, [newAddress, delegate, getDelegateByAddress])
 
   if (!delegate || !api) return <div>No delegate found</div>
 
@@ -196,8 +230,12 @@ export const Delegate = () => {
         <ArrowLeft className="h-4 w-4" />
         To all delegates
       </Link>
-      <h1 className="flex-1 shrink-0 whitespace-nowrap font-unbounded text-xl font-semibold tracking-tight sm:grow-0">
-        Delegate to {delegate.name}
+      <h1 className="row flex-1 shrink-0 whitespace-nowrap font-unbounded text-xl font-semibold tracking-tight sm:grow-0">
+        <LinkIcon
+          className="mr-2 w-4 cursor-pointer"
+          onClick={() => navigator.clipboard.writeText(copyLink!)}
+        />
+        Delegate to {delegate?.name}
       </h1>
       <div>
         <Label>Amount</Label>

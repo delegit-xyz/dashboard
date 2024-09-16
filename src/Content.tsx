@@ -18,6 +18,10 @@ const pages = [
     path: '/delegate/:address',
     element: <Delegate />,
   },
+  {
+    path: '/:incomingNetwork/:address',
+    element: <Delegate />,
+  },
 ]
 
 export const Content = () => {
