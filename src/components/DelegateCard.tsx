@@ -25,11 +25,11 @@ export const DelegateCard = ({ delegate: d }: Props) => {
 
   return (
     <Card className="mb-5 flex flex-col border p-2">
-      <div className="flex columns-3">
+      <div className="flex flex-col md:flex-row">
         <div className="vertical center p-2">
           <img className="rounded-full" width="100" src={d.image} />
         </div>
-        <div className="w-[85%] p-2">
+        <div className="p-2 md:w-[85%]">
           <div className="py-2 text-xl font-semibold">{d.name}</div>
           <div className="text-slate-600">
             <div className="break-words">{d.shortDescription}</div>
