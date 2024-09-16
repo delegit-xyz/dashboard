@@ -79,6 +79,7 @@ export const getLockTimes = async (api: ApiType) => {
   )
 }
 
+// thanks to https://stackoverflow.com/a/2450976/3086912
 export const shuffleArray = (arrayToShuffle: unknown[]) => {
   const array = [...arrayToShuffle]
   let currentIndex = array.length
