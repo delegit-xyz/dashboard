@@ -34,7 +34,9 @@ export const Delegate = () => {
   const { getDelegateByAddress, getDelegateByName } = useDelegates()
 
   useEffect(() => {
-    if (isValidAddress(address!)) {
+  if(!address) return
+
+    if (isValidAddress(address)) {
       setNewAddress(address)
     } else {
       const delegate = getDelegateByName(address!)
