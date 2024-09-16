@@ -24,7 +24,7 @@ export interface DelegateTxs {
 export const useGetDelegateTx = () => {
   const { api } = useNetwork()
   const { selectedAccount } = useAccounts()
-  const { delegations, voteLocks: locks } = useLocks()
+  const { delegations, voteLocks } = useLocks()
 
   const getDelegationTxs = useCallback(
     ({ delegateAddress, amount, tracks, conviction }: Params): DelegateTxs => {
@@ -35,14 +35,12 @@ export const useGetDelegateTx = () => {
           delegationTxs: [],
         }
 
-      const removeVotesTxs = locks
-        .filter(({ isOngoing }) => !!isOngoing)
-        .map(({ refId, trackId }) =>
-          api.tx.ConvictionVoting.remove_vote({
-            index: refId,
-            class: trackId,
-          }),
-        )
+      const removeVotesTxs = voteLocks.map(({ refId, trackId }) =>
+        api.tx.ConvictionVoting.remove_vote({
+          index: refId,
+          class: trackId,
+        }),
+      )
 
       const removeDelegationsTxs: ReturnType<
         typeof api.tx.ConvictionVoting.undelegate
@@ -67,7 +65,7 @@ export const useGetDelegateTx = () => {
 
       return { removeVotesTxs, removeDelegationsTxs, delegationTxs }
     },
-    [api, delegations, locks, selectedAccount],
+    [api, delegations, voteLocks, selectedAccount],
   )
 
   return getDelegationTxs

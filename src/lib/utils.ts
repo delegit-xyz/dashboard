@@ -7,7 +7,6 @@ import type { NetworkType, RouterType, Vote } from './types'
 import { ApiType, NetworksFromConfig } from '@/contexts/NetworkContext'
 import { DEFAULT_TIME, lockPeriod, ONE_DAY, THRESHOLD } from './constants'
 import { bnMin } from './bnMin'
-import React from 'react'
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs))
@@ -80,14 +79,23 @@ export const getLockTimes = async (api: ApiType) => {
   )
 }
 
-export const usePrevious = <T>(value: T): T | null => {
-  const [current, setCurrent] = React.useState(value)
-  const [previous, setPrevious] = React.useState<T | null>(null)
+// thanks to https://stackoverflow.com/a/2450976/3086912
+export const shuffleArray = (arrayToShuffle: unknown[]) => {
+  const array = [...arrayToShuffle]
+  let currentIndex = array.length
 
-  if (value !== current) {
-    setPrevious(current)
-    setCurrent(value)
+  // While there remain elements to shuffle...
+  while (currentIndex != 0) {
+    // Pick a remaining element...
+    const randomIndex = Math.floor(Math.random() * currentIndex)
+    currentIndex--
+
+    // And swap it with the current element.
+    ;[array[currentIndex], array[randomIndex]] = [
+      array[randomIndex],
+      array[currentIndex],
+    ]
   }
 
-  return previous
+  return array
 }
