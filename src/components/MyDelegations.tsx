@@ -86,7 +86,7 @@ export const MyDelegations = () => {
         {delegationsByDelegateConvictionAmount === undefined ? (
           <Skeleton className="h-[116px] rounded-xl" />
         ) : noDelegations ? (
-          <Card className="col-span-2 mb-5 bg-accent p-4">
+          <Card className="col-span-2 mb-5 bg-accent p-4 md:col-span-3">
             <div className="flex w-full flex-col justify-center">
               <div className="flex h-full items-center justify-center">
                 <TreePalm className="h-12 w-12" />

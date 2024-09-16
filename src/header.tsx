@@ -23,15 +23,6 @@ import {
   Unplug,
 } from 'lucide-react'
 
-// import {
-//   Menubar,
-//   MenubarContent,
-//   MenubarItem,
-//   MenubarMenu,
-//   MenubarSeparator,
-//   MenubarShortcut,
-//   MenubarTrigger,
-// } from '@/components/ui/menubar'
 import { useAccounts } from './contexts/AccountsContext'
 import { useState } from 'react'
 import { SupportedNetworkNames, useNetwork } from './contexts/NetworkContext'
@@ -144,105 +135,83 @@ export const Header = () => {
             </nav>
           </SheetContent>
         </Sheet>
-        <div className="flex w-full justify-between">
-          <div>
-            {/* TODO: split submenu based on routes 
-          <Menubar>
-            <MenubarMenu>
-              <MenubarTrigger>File</MenubarTrigger>
-              <MenubarContent>
-                <MenubarItem>
-                  New Tab <MenubarShortcut>⌘T</MenubarShortcut>
-                </MenubarItem>
-                <MenubarItem>New Window</MenubarItem>
-                <MenubarSeparator />
-                <MenubarItem>Share</MenubarItem>
-                <MenubarSeparator />
-                <MenubarItem>Print</MenubarItem>
-              </MenubarContent>
-            </MenubarMenu>
-          </Menubar>*/}
-          </div>
-          <div className="flex">
+        <div className="flex w-full justify-end">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                size="default"
+                variant={'outline'}
+                className="mx-2 cursor-pointer capitalize"
+              >
+                {network}
+                <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {networkList.map(({ name, display }) => (
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  key={name}
+                  onClick={() => selectNetwork(name)}
+                >
+                  {display}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          {selectedAccount?.address ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
+                  variant="outline"
                   size="default"
-                  variant={'outline'}
-                  className="mx-2 cursor-pointer capitalize"
+                  className="cursor-pointer overflow-hidden"
                 >
-                  {network}
+                  <Polkicon
+                    size={36}
+                    address={selectedAccount?.address || ''}
+                    className="mr-2"
+                    outerColor="transparent"
+                  />
+                  {selectedAccount?.name}
                   <ChevronDown className="ml-2 h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                {networkList.map(({ name, display }) => (
-                  <DropdownMenuItem
-                    className="cursor-pointer"
-                    key={name}
-                    onClick={() => selectNetwork(name)}
-                  >
-                    {display}
-                  </DropdownMenuItem>
+                {accounts.map((account, index) => (
+                  <>
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      key={account.address}
+                      onClick={() => selectAccount(account)}
+                    >
+                      <Polkicon
+                        size={28}
+                        address={account.address || ''}
+                        className="mr-2"
+                        outerColor="transparent"
+                      />
+                      {account.name}
+                    </DropdownMenuItem>
+                    {index !== accounts.length - 1 && <DropdownMenuSeparator />}
+                  </>
                 ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => {
+                      setModalOpen(true)
+                    }}
+                  >
+                    Show Wallets
+                  </div>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            {selectedAccount?.address ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="default"
-                    className="cursor-pointer overflow-hidden"
-                  >
-                    <Polkicon
-                      size={36}
-                      address={selectedAccount?.address || ''}
-                      className="mr-2"
-                      outerColor="transparent"
-                    />
-                    {selectedAccount?.name}
-                    <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  {accounts.map((account, index) => (
-                    <>
-                      <DropdownMenuItem
-                        className="cursor-pointer"
-                        key={account.address}
-                        onClick={() => selectAccount(account)}
-                      >
-                        <Polkicon
-                          size={28}
-                          address={account.address || ''}
-                          className="mr-2"
-                          outerColor="transparent"
-                        />
-                        {account.name}
-                      </DropdownMenuItem>
-                      {index !== accounts.length - 1 && (
-                        <DropdownMenuSeparator />
-                      )}
-                    </>
-                  ))}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <div
-                      className="cursor-pointer"
-                      onClick={() => {
-                        setModalOpen(true)
-                      }}
-                    >
-                      Show Wallets
-                    </div>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <Button onClick={() => setModalOpen(true)}>Connect</Button>
-            )}
-          </div>
+          ) : (
+            <Button onClick={() => setModalOpen(true)}>Connect</Button>
+          )}
         </div>
         <div style={{ fontSize: '1rem' }}>
           <ConnectModal

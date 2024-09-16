@@ -167,10 +167,7 @@ export const LocksCard = () => {
                           </span>
                           <div>
                             <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
-                            {planckToUnit(
-                              amount,
-                              assetInfo.precision,
-                            ).toLocaleString('en')}{' '}
+                            {planckToUnit(amount, assetInfo.precision)}{' '}
                             {assetInfo.symbol}
                           </div>
                         </div>
@@ -188,10 +185,7 @@ export const LocksCard = () => {
                       <Badge>#{refId}</Badge>
                       <div>
                         <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
-                        {planckToUnit(
-                          amount,
-                          assetInfo.precision,
-                        ).toLocaleString('en')}{' '}
+                        {planckToUnit(amount, assetInfo.precision)}{' '}
                         {assetInfo.symbol}
                       </div>
                     </li>
@@ -244,10 +238,7 @@ export const LocksCard = () => {
                           <Badge>#{refId}</Badge>
                           <div>
                             <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
-                            {planckToUnit(
-                              amount,
-                              assetInfo.precision,
-                            ).toLocaleString('en')}{' '}
+                            {planckToUnit(amount, assetInfo.precision)}{' '}
                             {assetInfo.symbol}
                           </div>
                           <div>
@@ -270,10 +261,7 @@ export const LocksCard = () => {
                           <TrackDisplay trackId={trackId} />
                           <div className="mt-0.5">
                             <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
-                            {planckToUnit(
-                              amount,
-                              assetInfo.precision,
-                            ).toLocaleString('en')}{' '}
+                            {planckToUnit(amount, assetInfo.precision)}{' '}
                             {assetInfo.symbol}
                           </div>
                           <div>
@@ -317,10 +305,7 @@ export const LocksCard = () => {
                           <Badge>#{refId}</Badge>
                           <div>
                             <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
-                            {planckToUnit(
-                              amount,
-                              assetInfo.precision,
-                            ).toLocaleString('en')}{' '}
+                            {planckToUnit(amount, assetInfo.precision)}{' '}
                             {assetInfo.symbol}
                           </div>
                         </li>
