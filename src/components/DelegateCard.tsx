@@ -5,6 +5,7 @@ import { Delegate } from '@/contexts/DelegatesContext'
 import { ContentReveal } from './ui/content-reveal'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
+import { LinkIcon } from 'lucide-react'
 
 interface Props {
   delegate: Delegate
@@ -56,7 +57,8 @@ export const DelegateCard = ({
         <div className="flex gap-1">
           {hasShareButton && (
             <Button variant="outline" onClick={onCopy}>
-              Copy link to profile
+              <LinkIcon className="mr-2 h-4 w-4" />
+              Share this delegate
             </Button>
           )}
           {hasDelegateButton && (
