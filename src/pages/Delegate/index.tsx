@@ -204,7 +204,7 @@ export const Delegate = () => {
           delegate={delegate}
           hasDelegateButton={false}
           hasShareButton
-          className="border-none bg-transparent shadow-none p0"
+          className="p0 border-none bg-transparent shadow-none"
         />
       </div>
       <div className="grid gap-8 rounded-xl bg-card p-6 shadow-xl">
