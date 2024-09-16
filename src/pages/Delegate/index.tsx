@@ -29,7 +29,7 @@ export const Delegate = () => {
   const getSubscriptionCallBack = useGetSigningCallback()
   const navigate = useNavigate()
   const { search } = useLocation()
-  const [newAddress, setNewAddress] = useState<string>()
+  const [newAddress, setNewAddress] = useState<string>('')
 
   const { getDelegateByAddress, getDelegateByName } = useDelegates()
 
