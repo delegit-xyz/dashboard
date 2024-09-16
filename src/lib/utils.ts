@@ -7,6 +7,8 @@ import type { NetworkType, RouterType, Vote } from './types'
 import { ApiType, NetworksFromConfig } from '@/contexts/NetworkContext'
 import { DEFAULT_TIME, lockPeriod, ONE_DAY, THRESHOLD } from './constants'
 import { bnMin } from './bnMin'
+import { WestendPeopleQueries } from '@polkadot-api/descriptors'
+import { Binary } from 'polkadot-api'
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs))
@@ -98,4 +100,39 @@ export const shuffleArray = (arrayToShuffle: unknown[]) => {
   }
 
   return array
+}
+
+// PEOPLE CHAIN RELATED
+
+export type AccountInfoIF = {
+  address: string | number | undefined
+  display?: string | number | undefined
+  legal?: string | number | undefined
+  matrix?: string | number | undefined
+  email?: string | number | undefined
+  twitter?: string | number | undefined
+  web?: string | number | undefined
+}
+
+const dataToString = (value: number | string | Binary | undefined) =>
+  typeof value === 'object' ? value.asText() : (value ?? '')
+
+export const mapRawIdentity = (
+  rawIdentity?: WestendPeopleQueries['Identity']['IdentityOf']['Value'],
+) => {
+  if (!rawIdentity) return rawIdentity
+  const {
+    info: { display, email, legal, matrix, twitter, web },
+  } = rawIdentity[0]
+
+  const display_id = dataToString(display.value)
+
+  return {
+    display: display_id,
+    web: dataToString(web.value),
+    email: dataToString(email.value),
+    legal: dataToString(legal.value),
+    matrix: dataToString(matrix.value),
+    twitter: dataToString(twitter.value),
+  }
 }

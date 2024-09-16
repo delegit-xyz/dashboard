@@ -207,7 +207,7 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
       client = createClient(getWsProvider(wsEndpoint))
       // TODO: Fix the RPCs
       peopleClient = createClient(
-        getWsProvider('wss://rpc-people-polkadot.luckyfriday.io'),
+        getWsProvider('wss://sys.ibp.network/people-westend'),
       )
     }
 
