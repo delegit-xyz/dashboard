@@ -60,7 +60,7 @@ export const Delegate = () => {
         ? amount / 10n
         : amount * BigInt(convictionMultiplier)
 
-    return planckToUnit(bnAmount, assetInfo.precision).toLocaleString('en')
+    return planckToUnit(bnAmount, assetInfo.precision)
   }, [amount, assetInfo.precision, convictionMultiplier])
 
   const convictionDisplay = useMemo(() => {
@@ -149,7 +149,7 @@ export const Delegate = () => {
     })
 
     const allTxs = api.tx.Utility.batch_all({
-      calls: [...delegationTxs, ...removeDelegationsTxs, ...removeVotesTxs].map(
+      calls: [...removeVotesTxs, ...removeDelegationsTxs, ...delegationTxs].map(
         (tx) => tx.decodedCall,
       ),
     })
