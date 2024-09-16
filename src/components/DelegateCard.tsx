@@ -1,10 +1,10 @@
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
 import { Delegate } from '@/contexts/DelegatesContext'
 import { ContentReveal } from './ui/content-reveal'
 import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
 
 interface Props {
   delegate: Delegate
@@ -19,15 +19,8 @@ export const DelegateCard = ({
   hasShareButton,
   hasDelegateButton = true,
 }: Props) => {
-  const [copied, setCopied] = useState<boolean>(false)
   const navigate = useNavigate()
   const { search } = useLocation()
-
-  useEffect(() => {
-    if (copied) {
-      setTimeout(() => setCopied(false), 1000)
-    }
-  }, [copied])
 
   const onDelegate = () => {
     navigate(`/delegate/${d.address}${search}`)
@@ -36,7 +29,9 @@ export const DelegateCard = ({
     navigator.clipboard.writeText(
       window.location.origin + `/delegate/${d.address}${search}`,
     )
-    setCopied(true)
+    toast.success('Copied to clipboard', {
+      duration: 1000,
+    })
   }
 
   return (
