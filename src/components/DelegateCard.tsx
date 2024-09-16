@@ -26,26 +26,23 @@ export const DelegateCard = ({
   hasShareButton,
   hasDelegateButton = true,
 }: Props) => {
-  const [copied, setCopied] = useState<boolean>(false)
   const { network } = useNetwork()
   const navigate = useNavigate()
   const { search } = useLocation()
-  const [copyLink, setCopyLink] = useState<string>(
-    `${window.location.host}/${network}/${sanitizeString(name)}`,
-  )
+  const copyLink = useMemo(() => `${window.location.host}/${network}/${sanitizeString(name)}`, [name, network])
   const shouldHideLongDescription =
     !longDescription || longDescription === shortDescription
 
-  useEffect(() => {
-    if (copied) {
-      setTimeout(() => setCopied(false), 1000)
-    }
-  }, [copied])
+  const onDelegate = useCallback(() => {
+    navigate(`/delegate/${address}${search}`)
+  },[address, navigate, search])
 
-  useEffect(() => {
-    setCopyLink(`${window.location.host}/${network}/${sanitizeString(name)}`)
-  }, [name, network])
-
+  const onCopy = useCallback(() => {
+    navigator.clipboard.writeText(copyLink)
+    toast.success('Copied to clipboard', {
+      duration: 1000,
+    })
+  }, [copyLink])
   const onDelegate = () => {
     navigate(`/delegate/${address}${search}`)
   }
