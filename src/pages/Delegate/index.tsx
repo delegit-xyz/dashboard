@@ -39,7 +39,7 @@ export const Delegate = () => {
     if (isValidAddress(address)) {
       setNewAddress(address)
     } else {
-      const delegate = getDelegateByName(address!)
+      const delegate = getDelegateByName(address)
       delegate?.address && setNewAddress(delegate?.address)
     }
   }, [address, getDelegateByName])
