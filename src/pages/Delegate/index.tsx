@@ -18,8 +18,7 @@ import { useTestTx } from '@/hooks/useTestTx'
 import { MultiTransactionDialog } from './MultiTransactionDialog'
 import { useGetSigningCallback } from '@/hooks/useGetSigningCallback'
 import { Title } from '@/components/ui/title'
-import { DelegateInfo } from '@/components/DelegateCard'
-import { ShareUrlButton } from '@/components/ShareUrlButton'
+import { DelegateCard } from '@/components/DelegateCard'
 
 export const Delegate = () => {
   const { api, assetInfo } = useNetwork()
@@ -179,7 +178,7 @@ export const Delegate = () => {
   }
 
   return (
-    <main className="m-auto grid w-full max-w-4xl gap-8 p-4 sm:px-6 sm:py-0">
+    <main className="m-auto grid w-full max-w-4xl gap-4 p-4 sm:px-6 sm:py-0">
       {!api && (
         <AlertNote
           title={msgs.api.title}
@@ -201,7 +200,12 @@ export const Delegate = () => {
       </Link>
       <Title>Delegate to {delegate.name}</Title>
       <div className="flex columns-3">
-        <DelegateInfo key={delegate.address} delegate={delegate} />
+        <DelegateCard
+          delegate={delegate}
+          hasDelegateButton={false}
+          hasShareButton
+          className="border-none bg-transparent shadow-none p0"
+        />
       </div>
       <div className="grid gap-8 rounded-xl bg-card p-6 shadow-xl">
         <div>
@@ -254,7 +258,6 @@ export const Delegate = () => {
         delegateTxs={delegateTxs}
         onProcessFinished={onProcessFinished}
       />
-      <ShareUrlButton> Share delegate Url</ShareUrlButton>
     </main>
   )
 }

@@ -4,35 +4,21 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { Delegate } from '@/contexts/DelegatesContext'
 import { ContentReveal } from './ui/content-reveal'
+import { cn } from '@/lib/utils'
 
 interface Props {
   delegate: Delegate
+  className?: string
+  hasShareButton?: boolean
+  hasDelegateButton?: boolean
 }
 
-export const DelegateInfo = ({ delegate: d }: Props) => {
-  return (
-    <>
-      <div className="vertical center p-2">
-        <img className="rounded-full" width="100" src={d.image} />
-      </div>
-      <div className="w-full p-2">
-        <div className="py-2 text-xl font-semibold">{d.name}</div>
-        <div className="text-accent-foreground">
-          <div className="break-words text-lg">{d.shortDescription}</div>
-          <ContentReveal
-            hidden={
-              d.shortDescription === d.longDescription || !d.longDescription
-            }
-          >
-            {d.longDescription}
-          </ContentReveal>
-        </div>
-      </div>
-    </>
-  )
-}
-
-export const DelegateCard = ({ delegate: d }: Props) => {
+export const DelegateCard = ({
+  delegate: d,
+  className,
+  hasShareButton,
+  hasDelegateButton = true,
+}: Props) => {
   const [copied, setCopied] = useState<boolean>(false)
   const navigate = useNavigate()
   const { search } = useLocation()
@@ -46,14 +32,44 @@ export const DelegateCard = ({ delegate: d }: Props) => {
   const onDelegate = () => {
     navigate(`/delegate/${d.address}${search}`)
   }
+  const onCopy = () => {
+    navigator.clipboard.writeText(
+      window.location.origin + `/delegate/${d.address}${search}`,
+    )
+    setCopied(true)
+  }
 
   return (
-    <Card className="mb-5 flex flex-col border p-4">
+    <Card className={cn('flex flex-col p-4', className)}>
       <div className="flex columns-3">
-        <DelegateInfo delegate={d} />
-        <Button variant="default" onClick={onDelegate} className="">
-          Delegate
-        </Button>
+        <div className="vertical center p-2">
+          <img className="rounded-full border" width="100" src={d.image} />
+        </div>
+        <div className="w-full p-2">
+          <div className="py-2 text-xl font-semibold">{d.name}</div>
+          <div className="text-accent-foreground">
+            <div className="break-words text-lg">{d.shortDescription}</div>
+            <ContentReveal
+              hidden={
+                d.shortDescription === d.longDescription || !d.longDescription
+              }
+            >
+              {d.longDescription}
+            </ContentReveal>
+          </div>
+        </div>
+        <div className="flex gap-1">
+          {hasShareButton && (
+            <Button variant="outline" onClick={onCopy}>
+              Copy link to profile
+            </Button>
+          )}
+          {hasDelegateButton && (
+            <Button variant="default" onClick={onDelegate}>
+              Delegate
+            </Button>
+          )}
+        </div>
       </div>
     </Card>
   )

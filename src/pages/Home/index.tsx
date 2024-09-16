@@ -13,7 +13,9 @@ export const Home = () => {
       <MyDelegations />
       <Title>Delegates</Title>
       <div className="sm:grid sm:grid-cols-1">
-        {delegates?.map((d) => <DelegateCard key={d.address} delegate={d} />)}
+        {delegates?.map((d) => (
+          <DelegateCard key={d.address} delegate={d} className="mb-5" />
+        ))}
       </div>
     </main>
   )
