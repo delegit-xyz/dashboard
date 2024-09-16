@@ -42,7 +42,14 @@ export const DelegateCard = ({
           <img className="rounded-full border" width="100" src={d.image} />
         </div>
         <div className="w-full p-2">
-          <div className="py-2 text-xl font-semibold">{d.name}</div>
+          <div className="flex items-center gap-1 py-2 text-xl font-semibold">
+            {d.name}
+            {hasShareButton && (
+              <Button variant="ghost" onClick={onCopy} size="icon">
+                <LinkIcon className="h-4 w-4 text-accent-foreground" />
+              </Button>
+            )}
+          </div>
           <div className="text-accent-foreground">
             <div className="break-words text-lg">{d.shortDescription}</div>
             <ContentReveal
@@ -55,12 +62,6 @@ export const DelegateCard = ({
           </div>
         </div>
         <div className="flex gap-1">
-          {hasShareButton && (
-            <Button variant="outline" onClick={onCopy}>
-              <LinkIcon className="mr-2 h-4 w-4" />
-              Share this delegate
-            </Button>
-          )}
           {hasDelegateButton && (
             <Button variant="default" onClick={onDelegate}>
               Delegate
