@@ -17,6 +17,8 @@ import { AlertNote } from '@/components/Alert'
 import { useTestTx } from '@/hooks/useTestTx'
 import { MultiTransactionDialog } from './MultiTransactionDialog'
 import { useGetSigningCallback } from '@/hooks/useGetSigningCallback'
+import { Title } from '@/components/ui/title'
+import { DelegateCard } from '@/components/DelegateCard'
 
 export const Delegate = () => {
   const { api, assetInfo } = useNetwork()
@@ -176,7 +178,7 @@ export const Delegate = () => {
   }
 
   return (
-    <main className="mx-0 grid flex-1 items-start gap-8 p-4 sm:mx-[5%] sm:px-6 sm:py-0 xl:mx-[20%]">
+    <main className="m-auto grid w-full max-w-4xl gap-4 p-4 sm:px-6 sm:py-0">
       {!api && (
         <AlertNote
           title={msgs.api.title}
@@ -196,52 +198,60 @@ export const Delegate = () => {
         <ArrowLeft className="h-4 w-4" />
         To all delegates
       </Link>
-      <h1 className="flex-1 shrink-0 whitespace-nowrap font-unbounded text-xl font-semibold tracking-tight sm:grow-0">
-        Delegate to {delegate.name}
-      </h1>
-      <div>
-        <Label>Amount</Label>
-        <Input
-          onChange={(value) => onChangeAmount(value, assetInfo.precision)}
-          value={amountVisible}
-          error={amountErrorDisplay}
+      <Title>Delegate to {delegate.name}</Title>
+      <div className="flex columns-3">
+        <DelegateCard
+          delegate={delegate}
+          hasDelegateButton={false}
+          hasShareButton
+          className="p0 border-none bg-transparent shadow-none"
         />
       </div>
+      <div className="grid gap-8 rounded-xl bg-card p-6 shadow-xl">
+        <div>
+          <Label>Amount</Label>
+          <Input
+            onChange={(value) => onChangeAmount(value, assetInfo.precision)}
+            value={amountVisible}
+            error={amountErrorDisplay}
+          />
+        </div>
 
-      <Label className="flex">
-        Conviction: {convictionDisplay}
-        <div className="ml-2">{}</div>
-      </Label>
-      <Slider
-        disabled={!api || !selectedAccount}
-        value={[convictionNo]}
-        min={0}
-        max={6}
-        step={1}
-        marks
-        marksLabels={['0.1', '1', '2', '3', '4', '5', '6']}
-        marksPreFix={'x'}
-        labelPosition="bottom"
-        onValueChange={(v: SetStateAction<number>[]) => {
-          const value = v[0] === 0 ? '0.1' : `Locked${v[0]}x`
-          setConvictionNo(v[0])
-          setConviction(
-            VotingConviction[value as keyof typeof VotingConviction],
-          )
-        }}
-      />
-      <AlertNote
-        title={'Note'}
-        message={`The ${convictionTimeDisplay} will start when you undelegate`}
-        variant={'default'}
-      />
-      <Button
-        onClick={onSign}
-        disabled={amount === 0n || !api || !selectedAccount || isTxInitiated}
-        loading={isTxInitiated}
-      >
-        Delegate with {voteAmount} {assetInfo.symbol} votes
-      </Button>
+        <Label className="flex">
+          Conviction: {convictionDisplay}
+          <div className="ml-2">{}</div>
+        </Label>
+        <Slider
+          disabled={!api || !selectedAccount}
+          value={[convictionNo]}
+          min={0}
+          max={6}
+          step={1}
+          marks
+          marksLabels={['0.1', '1', '2', '3', '4', '5', '6']}
+          marksPreFix={'x'}
+          labelPosition="bottom"
+          onValueChange={(v: SetStateAction<number>[]) => {
+            const value = v[0] === 0 ? '0.1' : `Locked${v[0]}x`
+            setConvictionNo(v[0])
+            setConviction(
+              VotingConviction[value as keyof typeof VotingConviction],
+            )
+          }}
+        />
+        <AlertNote
+          title={'Note'}
+          message={`The ${convictionTimeDisplay} will start when you undelegate`}
+          variant={'default'}
+        />
+        <Button
+          onClick={onSign}
+          disabled={amount === 0n || !api || !selectedAccount || isTxInitiated}
+          loading={isTxInitiated}
+        >
+          Delegate with {voteAmount} {assetInfo.symbol} votes
+        </Button>
+      </div>
       <MultiTransactionDialog
         isOpen={isMultiTxDialogOpen}
         onOpenChange={onChangeSplitTransactionDialog}
