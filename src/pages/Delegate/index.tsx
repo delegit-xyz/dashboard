@@ -19,10 +19,9 @@ import { MultiTransactionDialog } from './MultiTransactionDialog'
 import { useGetSigningCallback } from '@/hooks/useGetSigningCallback'
 import { Title } from '@/components/ui/title'
 import { DelegateCard } from '@/components/DelegateCard'
-import { sanitizeString } from '@/lib/utils'
 
 export const Delegate = () => {
-  const { api, assetInfo, network, selectNetwork } = useNetwork()
+  const { api, assetInfo, selectNetwork } = useNetwork()
   const { address, incomingNetwork } = useParams()
   const { selectedAccount } = useAccounts()
   const getDelegateTx = useGetDelegateTx()
@@ -58,15 +57,6 @@ export const Delegate = () => {
   ])
 
   const [delegate, setDelegate] = useState(getDelegateByAddress(newAddress!))
-
-  const [copyLink, setCopyLink] = useState<string>()
-
-  useEffect(() => {
-    delegate?.name &&
-      setCopyLink(
-        `${window.location.host}/${network}/${sanitizeString(delegate.name)}`,
-      )
-  }, [delegate?.name, network])
 
   const [isAmountDirty, setIsAmountDirty] = useState(false)
   const [amount, setAmount] = useState<bigint>(0n)
