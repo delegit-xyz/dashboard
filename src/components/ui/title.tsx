@@ -7,9 +7,13 @@ interface Props {
 }
 export const Title = ({ children, variant = 'h1', className }: Props) => {
   const baseClass =
-    'flex-1 shrink-0 whitespace-nowrap font-unbounded font-semibold tracking-tight text-slate-600 sm:grow-0'
+    'flex-1 shrink-0 whitespace-nowrap font-unbounded font-semibold tracking-tight text-accent-foreground sm:grow-0'
   if (variant === 'h1')
-    return <h1 className={cn(baseClass, 'text-2xl', className)}>{children}</h1>
+    return (
+      <h1 className={cn(baseClass, 'mb-5 mt-10 text-2xl', className)}>
+        {children}
+      </h1>
+    )
   if (variant === 'h2')
     return <h2 className={cn(baseClass, 'text-xl', className)}>{children}</h2>
   if (variant === 'h3')
@@ -29,3 +33,15 @@ export const Title = ({ children, variant = 'h1', className }: Props) => {
 
   return <h5 className={cn(baseClass, 'text-sm', className)}>{children}</h5>
 }
+
+// these are used in Markdown for react-markdown
+export const TitleH2 = ({ children, className }: Props) => (
+  <Title variant="h2" className={className}>
+    {children}
+  </Title>
+)
+export const TitleH3 = ({ children, className }: Props) => (
+  <Title variant="h3" className={className}>
+    {children}
+  </Title>
+)
