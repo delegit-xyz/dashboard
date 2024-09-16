@@ -11,7 +11,7 @@ import { LinkIcon } from 'lucide-react'
 import Markdown from 'react-markdown'
 import { Title, TitleH2, TitleH3 } from './ui/title'
 import { AnchorLink } from './ui/anchorLink'
-import { useEffect, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 
 interface Props {
   delegate: Delegate
@@ -29,13 +29,16 @@ export const DelegateCard = ({
   const { network } = useNetwork()
   const navigate = useNavigate()
   const { search } = useLocation()
-  const copyLink = useMemo(() => `${window.location.host}/${network}/${sanitizeString(name)}`, [name, network])
+  const copyLink = useMemo(
+    () => `${window.location.host}/${network}/${sanitizeString(name)}`,
+    [name, network],
+  )
   const shouldHideLongDescription =
     !longDescription || longDescription === shortDescription
 
   const onDelegate = useCallback(() => {
     navigate(`/delegate/${address}${search}`)
-  },[address, navigate, search])
+  }, [address, navigate, search])
 
   const onCopy = useCallback(() => {
     navigator.clipboard.writeText(copyLink)
@@ -43,15 +46,6 @@ export const DelegateCard = ({
       duration: 1000,
     })
   }, [copyLink])
-  const onDelegate = () => {
-    navigate(`/delegate/${address}${search}`)
-  }
-  const onCopy = () => {
-    navigator.clipboard.writeText(copyLink)
-    toast.success('Copied to clipboard', {
-      duration: 1000,
-    })
-  }
 
   return (
     <Card className={cn('flex flex-col p-4', className)}>
