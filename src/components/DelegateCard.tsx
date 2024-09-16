@@ -57,16 +57,16 @@ export const DelegateCard = ({
           </div>
           <div className="text-accent-foreground">
             <div className="break-words text-lg">{shortDescription}</div>
-            <ContentReveal
+            <ContentReveal hidden={shouldHideLongDescription}>
               <Markdown
-                  components={{
-                    h1: Title,
-                    h2: TitleH2,
-                    h3: TitleH3,
-                    a: AnchorLink,
-                  }}
-                >
-                  {longDescription}
+                components={{
+                  h1: Title,
+                  h2: TitleH2,
+                  h3: TitleH3,
+                  a: AnchorLink,
+                }}
+              >
+                {longDescription}
               </Markdown>
             </ContentReveal>
           </div>
