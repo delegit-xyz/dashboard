@@ -18,7 +18,7 @@ export interface IAccountContext {
   selectedAccount?: InjectedPolkadotAccount
   accounts: InjectedPolkadotAccount[]
   selectAccount: (account: InjectedPolkadotAccount | undefined) => void
-  setConnectedAccounts: (accounts: InjectedPolkadotAccount[]) => void
+  setAccounts: (accounts: InjectedPolkadotAccount[]) => void
 }
 
 const AccountContext = createContext<IAccountContext | undefined>(undefined)
@@ -26,29 +26,14 @@ const AccountContext = createContext<IAccountContext | undefined>(undefined)
 const AccountContextProvider = ({ children }: AccountContextProps) => {
   const [localStorageAccount, setLocalStorageAccount] = useAccountLocalStorage()
 
-  const { connectedAccounts, connectedExtensions } = useConnect()
+  const { connectedAccounts } = useConnect()
 
-  const [connAccounts, setConnAccounts] =
+  const [accounts, setAccounts] =
     useState<InjectedPolkadotAccount[]>(connectedAccounts)
-
-  useEffect(() => {
-    const acc: InjectedPolkadotAccount[] = []
-    for (const [, value] of connectedExtensions) {
-      acc.push(...value.getAccounts())
-    }
-    setConnAccounts(acc)
-  }, [connectedExtensions])
 
   const [selectedAccount, setSelected] = useState<
     InjectedPolkadotAccount | undefined
   >()
-
-  const setConnectedAccounts = useCallback(
-    (accounts: InjectedPolkadotAccount[]) => {
-      setConnAccounts(accounts)
-    },
-    [],
-  )
 
   const selectAccount = useCallback(
     (account: InjectedPolkadotAccount | undefined) => {
@@ -64,32 +49,21 @@ const AccountContextProvider = ({ children }: AccountContextProps) => {
   )
 
   useEffect(() => {
-    if (localStorageAccount?.address && connAccounts?.length !== 0) {
-      const account = connAccounts.find(
+    if (accounts?.length !== 0) {
+      const account = accounts.find(
         (account) => account.address === localStorageAccount?.address,
       )
-
-      if (account?.address) {
-        selectAccount(account)
-      }
-    } else {
-      if (connAccounts?.length === 0) {
-        setLocalStorageAccount('')
-        setSelected(undefined)
-        selectAccount(undefined)
-      } else {
-        selectAccount(connAccounts[0])
-      }
+      selectAccount(account?.address ? account : accounts[0])
     }
-  }, [connAccounts, localStorageAccount, selectAccount, setLocalStorageAccount])
+  }, [accounts, localStorageAccount, selectAccount])
 
   return (
     <AccountContext.Provider
       value={{
-        accounts: connAccounts,
+        accounts,
         selectedAccount,
         selectAccount,
-        setConnectedAccounts,
+        setAccounts,
       }}
     >
       {children}

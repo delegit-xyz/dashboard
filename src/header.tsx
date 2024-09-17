@@ -52,7 +52,7 @@ if (import.meta.env.DEV) {
 
 export const Header = () => {
   const { network, selectNetwork, lightClientLoaded, isLight } = useNetwork()
-  const { accounts, selectAccount, selectedAccount, setConnectedAccounts } =
+  const { accounts, selectAccount, selectedAccount, setAccounts } =
     useAccounts()
   // eslint-disable-next-line
   const { theme, setTheme } = useTheme()
@@ -197,15 +197,12 @@ export const Header = () => {
                   </>
                 ))}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <div
-                    className="cursor-pointer"
-                    onClick={() => {
-                      setModalOpen(true)
-                    }}
-                  >
-                    Show Wallets
-                  </div>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setModalOpen(true)
+                  }}
+                >
+                  <div className="cursor-pointer">Show Wallets</div>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -213,23 +210,23 @@ export const Header = () => {
             <Button onClick={() => setModalOpen(true)}>Connect</Button>
           )}
         </div>
-        <div style={{ fontSize: '1rem' }}>
+      </header>
+      {modalOpen && (
+        <div style={{ fontSize: '1rem', zIndex: 999 }}>
           <ConnectModal
             type="extensions"
             config={connectConfig}
             selected={selectedAccount}
             setSelected={selectAccount}
-            getConnectedAccounts={(acc) => {
-              setConnectedAccounts(acc)
-            }}
+            getConnectedAccounts={setAccounts}
             title={'Connect'}
             show={modalOpen}
-            onClose={(): void => {
+            onClose={() => {
               setModalOpen(false)
             }}
           />
         </div>
-      </header>
+      )}
     </>
   )
 }

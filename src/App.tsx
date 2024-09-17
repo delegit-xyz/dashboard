@@ -6,7 +6,6 @@ import { useLocalStorage } from 'usehooks-ts'
 import { Toaster } from '@/components/ui/sonner'
 import './index.css'
 import { Content } from './Content'
-import { Suspense } from 'react'
 import { AccountContextProvider } from './contexts/AccountsContext'
 import { LocksContextProvider } from './contexts/LocksContext'
 import { DelegateContextProvider } from '@/contexts/DelegatesContext'
@@ -22,25 +21,23 @@ const App = () => {
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme={settings?.themeMode as Theme}>
-        <Suspense fallback={<div>Loading...</div>}>
-          <NetworkContextProvider>
-            <DelegateContextProvider>
-              <AccountContextProvider>
-                <LocksContextProvider>
-                  <TooltipProvider>
-                    <div className="flex min-h-screen w-full flex-col bg-muted/40">
-                      <Navigation />
-                      <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
-                        <Header />
-                        <Content />
-                      </div>
+        <NetworkContextProvider>
+          <DelegateContextProvider>
+            <AccountContextProvider>
+              <LocksContextProvider>
+                <TooltipProvider>
+                  <div className="flex min-h-screen w-full flex-col bg-muted/40">
+                    <Navigation />
+                    <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
+                      <Header />
+                      <Content />
                     </div>
-                  </TooltipProvider>
-                </LocksContextProvider>
-              </AccountContextProvider>
-            </DelegateContextProvider>
-          </NetworkContextProvider>
-        </Suspense>
+                  </div>
+                </TooltipProvider>
+              </LocksContextProvider>
+            </AccountContextProvider>
+          </DelegateContextProvider>
+        </NetworkContextProvider>
       </ThemeProvider>
       <Toaster />
     </ErrorBoundary>
