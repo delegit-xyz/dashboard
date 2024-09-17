@@ -40,13 +40,25 @@ export const DelegateCard = ({
     })
   }
 
+  const DelegateAvatar: React.FC = () => {
+    const divStyle: React.CSSProperties = {
+      backgroundImage: 'url(' + image + ')',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+    }
+    return (
+      <div
+        className="vertical center h-20 w-20 min-w-20 rounded-full border"
+        style={divStyle}
+      />
+    )
+  }
+
   return (
     <Card className={cn('flex flex-col p-4', className)}>
-      <div className="flex flex-col md:flex-row">
-        <div className="vertical center p-2">
-          <img className="rounded-full border" width="100" src={image} />
-        </div>
-        <div className="p-2 md:w-[85%]">
+      <div className="flex flex-col gap-4 md:flex-row">
+        <DelegateAvatar />
+        <div>
           <div className="flex items-center gap-1 py-2 text-xl font-semibold">
             {name}
             {hasShareButton && (
