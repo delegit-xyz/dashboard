@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { LinkIcon } from 'lucide-react'
 import Markdown from 'react-markdown'
-import { Title, TitleH2, TitleH3 } from './ui/title'
+import { H, H2, H3, Hr, P } from './ui/md'
 import { AnchorLink } from './ui/anchorLink'
 
 interface Props {
@@ -60,10 +60,12 @@ export const DelegateCard = ({
             <ContentReveal hidden={shouldHideLongDescription}>
               <Markdown
                 components={{
-                  h1: Title,
-                  h2: TitleH2,
-                  h3: TitleH3,
+                  h1: H,
+                  h2: H2,
+                  h3: H3,
                   a: AnchorLink,
+                  hr: Hr,
+                  p: P,
                 }}
               >
                 {longDescription}
