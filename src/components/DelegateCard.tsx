@@ -58,7 +58,7 @@ export const DelegateCard = ({
     <Card className={cn('flex flex-col p-4', className)}>
       <div className="flex flex-col gap-4 md:flex-row">
         <DelegateAvatar />
-        <div>
+        <div className='w-full'>
           <div className="flex items-center gap-1 py-2 text-xl font-semibold">
             {name}
             {hasShareButton && (
