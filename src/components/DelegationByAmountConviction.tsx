@@ -41,6 +41,7 @@ export const DelegationByAmountConviction = ({
           <ContentReveal
             title={<Badge>{trackIds.length} tracks</Badge>}
             buttonClassName="w-auto"
+            noMaxHeight
           >
             {trackIds.sort().map((trackId) => (
               <TrackDisplay key={trackId} trackId={trackId} />
