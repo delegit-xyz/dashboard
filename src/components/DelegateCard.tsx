@@ -42,11 +42,11 @@ export const DelegateCard = ({
 
   return (
     <Card className={cn('flex flex-col p-4', className)}>
-      <div className="flex columns-3">
+      <div className="flex flex-col md:flex-row">
         <div className="vertical center p-2">
           <img className="rounded-full border" width="100" src={image} />
         </div>
-        <div className="w-full p-2">
+        <div className="p-2 md:w-[85%]">
           <div className="flex items-center gap-1 py-2 text-xl font-semibold">
             {name}
             {hasShareButton && (
@@ -73,7 +73,7 @@ export const DelegateCard = ({
         </div>
         <div className="flex gap-1">
           {hasDelegateButton && (
-            <Button variant="default" onClick={onDelegate}>
+            <Button variant="default" onClick={onDelegate} className="w-full">
               Delegate
             </Button>
           )}

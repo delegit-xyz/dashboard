@@ -34,7 +34,7 @@ export const Delegate = () => {
   const [amountVisible, setAmountVisible] = useState<string>('0')
   const [amountError, setAmountError] = useState<string>('')
   const [conviction, setConviction] = useState<VotingConviction>(
-    VotingConviction.None,
+    VotingConviction.Locked1x(),
   )
   const [convictionNo, setConvictionNo] = useState(1)
   const { selectedAccount } = useAccounts()
@@ -224,6 +224,7 @@ export const Delegate = () => {
         <Slider
           disabled={!api || !selectedAccount}
           value={[convictionNo]}
+          defaultValue={[convictionNo]}
           min={0}
           max={6}
           step={1}
@@ -232,7 +233,7 @@ export const Delegate = () => {
           marksPreFix={'x'}
           labelPosition="bottom"
           onValueChange={(v: SetStateAction<number>[]) => {
-            const value = v[0] === 0 ? '0.1' : `Locked${v[0]}x`
+            const value = v[0] === 0 ? 'None' : `Locked${v[0]}x`
             setConvictionNo(v[0])
             setConviction(
               VotingConviction[value as keyof typeof VotingConviction],
