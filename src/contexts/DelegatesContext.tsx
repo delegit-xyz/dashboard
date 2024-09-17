@@ -18,6 +18,7 @@ export type Delegate = {
 }
 
 export interface IDelegatesContext {
+  isLoading: boolean
   delegates: Delegate[]
   getDelegateByAddress: (address: string) => Delegate | undefined
   getDelegateByName: (name: string) => Delegate | undefined
@@ -28,8 +29,10 @@ const DelegatesContext = createContext<IDelegatesContext | undefined>(undefined)
 const DelegateContextProvider = ({ children }: DelegatesContextProps) => {
   const { network } = useNetwork()
   const [delegates, setDelegates] = useState<Delegate[]>([])
+  const [isLoading, setIsLoading] = useState<boolean>(true)
 
   useEffect(() => {
+    setIsLoading(true)
     const fetchOpenPRs = async () => {
       const response = await (
         await fetch(
@@ -41,7 +44,9 @@ const DelegateContextProvider = ({ children }: DelegatesContextProps) => {
 
       const randomized = shuffleArray(response) as Delegate[]
       setDelegates(randomized)
+      setIsLoading(false)
     }
+
     fetchOpenPRs()
   }, [network])
 
@@ -66,7 +71,7 @@ const DelegateContextProvider = ({ children }: DelegatesContextProps) => {
 
   return (
     <DelegatesContext.Provider
-      value={{ delegates, getDelegateByAddress, getDelegateByName }}
+      value={{ delegates, getDelegateByAddress, getDelegateByName, isLoading }}
     >
       {children}
     </DelegatesContext.Provider>
