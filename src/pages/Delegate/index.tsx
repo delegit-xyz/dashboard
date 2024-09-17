@@ -19,9 +19,10 @@ import { MultiTransactionDialog } from './MultiTransactionDialog'
 import { useGetSigningCallback } from '@/hooks/useGetSigningCallback'
 import { Title } from '@/components/ui/title'
 import { DelegateCard } from '@/components/DelegateCard'
+import { AccountInfoIF, mapRawIdentity } from '@/lib/utils'
 
 export const Delegate = () => {
-  const { api, assetInfo } = useNetwork()
+  const { api, peopleApi, assetInfo } = useNetwork()
   const { address } = useParams()
   const { getConvictionLockTimeDisplay } = useLocks()
 
@@ -83,6 +84,21 @@ export const Delegate = () => {
     setAmount(0n)
     setAmountVisible('0')
   }, [api])
+
+  const [identity, setIdentity] = useState<AccountInfoIF | undefined>()
+
+  useEffect(() => {
+    const retrieve = async () => {
+      const id = await peopleApi?.query?.Identity.IdentityOf.getValue(address!)
+
+      console.log('ID', id)
+      setIdentity({
+        address,
+        ...mapRawIdentity(id),
+      })
+    }
+    address && retrieve()
+  }, [address, peopleApi])
 
   useEffect(() => {
     if (!address || delegate) return
@@ -201,6 +217,7 @@ export const Delegate = () => {
       <Title>Delegate to {delegate.name}</Title>
       <div className="flex columns-3">
         <DelegateCard
+          identity={identity}
           delegate={delegate}
           hasDelegateButton={false}
           hasShareButton

@@ -7,7 +7,7 @@ import type { NetworkType, RouterType, Vote } from './types'
 import { ApiType, NetworksFromConfig } from '@/contexts/NetworkContext'
 import { DEFAULT_TIME, lockPeriod, ONE_DAY, THRESHOLD } from './constants'
 import { bnMin } from './bnMin'
-import { WestendPeopleQueries } from '@polkadot-api/descriptors'
+import { DotPeopleQueries } from '@polkadot-api/descriptors'
 import { Binary } from 'polkadot-api'
 
 export const cn = (...inputs: ClassValue[]) => {
@@ -118,7 +118,7 @@ const dataToString = (value: number | string | Binary | undefined) =>
   typeof value === 'object' ? value.asText() : (value ?? '')
 
 export const mapRawIdentity = (
-  rawIdentity?: WestendPeopleQueries['Identity']['IdentityOf']['Value'],
+  rawIdentity?: DotPeopleQueries['Identity']['IdentityOf']['Value'],
 ) => {
   if (!rawIdentity) return rawIdentity
   const {

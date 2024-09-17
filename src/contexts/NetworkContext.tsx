@@ -206,9 +206,18 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
 
       client = createClient(getWsProvider(wsEndpoint))
       // TODO: Fix the RPCs
-      peopleClient = createClient(
-        getWsProvider('wss://sys.ibp.network/people-westend'),
-      )
+
+      console.log(network)
+      let wss: string = ''
+      if (network === 'polkadot') {
+        wss = 'wss://polkadot-people-rpc.polkadot.io'
+      } else if (network === 'kusama') {
+        wss = 'wss://people-kusama-rpc.dwellir.com'
+      } else {
+        wss = 'wss://sys.ibp.network/people-westend'
+      }
+      console.log(wss)
+      peopleClient = createClient(getWsProvider(wss))
     }
 
     const descriptor = descriptorName[network]

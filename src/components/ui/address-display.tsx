@@ -1,8 +1,6 @@
-import type { WestendPeopleQueries } from '@polkadot-api/descriptors'
 import { useNetwork } from '@/contexts/NetworkContext'
-import { cn } from '@/lib/utils'
+import { AccountInfoIF, cn, mapRawIdentity } from '@/lib/utils'
 import { Polkicon } from '@polkadot-ui/react'
-import { Binary } from 'polkadot-api'
 import { useEffect, useState } from 'react'
 
 type Props = {
