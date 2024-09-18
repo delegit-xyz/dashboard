@@ -36,12 +36,10 @@ export const Content = () => {
   }, [isLight, lightClientLoaded])
 
   return (
-    <>
-      <Routes>
-        {pages.map(({ path, element }, i) => {
-          return <Route key={`page_${i}`} path={path} element={element} />
-        })}
-      </Routes>
-    </>
+    <Routes>
+      {pages.map(({ path, element }, i) => {
+        return <Route key={`page_${i}`} path={path} element={element} />
+      })}
+    </Routes>
   )
 }

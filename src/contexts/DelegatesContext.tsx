@@ -32,22 +32,21 @@ const DelegateContextProvider = ({ children }: DelegatesContextProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
   useEffect(() => {
+    if (!network) return
     setIsLoading(true)
-    const fetchOpenPRs = async () => {
-      const response = await (
-        await fetch(
-          network === 'polkadot' || network === 'polkadot-lc'
-            ? DelegateListPolkadot
-            : DelegateListKusama,
-        )!
-      ).json()
+    const networkToFetch =
+      network === 'polkadot' || network === 'polkadot-lc'
+        ? DelegateListPolkadot
+        : DelegateListKusama
 
-      const randomized = shuffleArray(response) as Delegate[]
-      setDelegates(randomized)
-      setIsLoading(false)
-    }
-
-    fetchOpenPRs()
+    fetch(networkToFetch)
+      .then(async (response) => {
+        const result = await response.json()
+        const randomized = shuffleArray(result) as Delegate[]
+        setDelegates(randomized)
+        setIsLoading(false)
+      })
+      .catch(console.error)
   }, [network])
 
   const getDelegateByAddress = (address: string) =>
