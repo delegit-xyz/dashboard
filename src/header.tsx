@@ -193,7 +193,7 @@ export const Header = () => {
                       />
                       {account.name}
                     </DropdownMenuItem>
-                    {index !== accounts.length - 1 && <DropdownMenuSeparator />}
+                    {index !== accounts.length - 1 && <DropdownMenuSeparator key={`${account.address}-separator`} />}
                   </>
                 ))}
                 <DropdownMenuSeparator />
