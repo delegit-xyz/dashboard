@@ -7,9 +7,8 @@ import React, {
   useEffect,
 } from 'react'
 import { InjectedPolkadotAccount } from 'polkadot-api/pjs-signer'
-import { useAccounts as useRedotAccounts } from '@reactive-dot/react'
-import { useLocalStorage } from 'usehooks-ts'
-import { SELECTED_ACCOUNT_KEY } from '@/lib/constants'
+
+import { useAccountLocalStorage, useConnect } from '@polkadot-ui/react'
 
 type AccountContextProps = {
   children: React.ReactNode | React.ReactNode[]
@@ -19,44 +18,42 @@ export interface IAccountContext {
   selectedAccount?: InjectedPolkadotAccount
   accounts: InjectedPolkadotAccount[]
   selectAccount: (account: InjectedPolkadotAccount | undefined) => void
+  setAccounts: (accounts: InjectedPolkadotAccount[]) => void
 }
 
 const AccountContext = createContext<IAccountContext | undefined>(undefined)
 
 const AccountContextProvider = ({ children }: AccountContextProps) => {
-  const accounts = useRedotAccounts()
+  const [localStorageAccount, setLocalStorageAccount] = useAccountLocalStorage()
+
+  const { connectedAccounts } = useConnect()
+
+  const [accounts, setAccounts] =
+    useState<InjectedPolkadotAccount[]>(connectedAccounts)
+
   const [selectedAccount, setSelected] = useState<
     InjectedPolkadotAccount | undefined
   >()
-  const [
-    localStorageAccount,
-    setLocalStorageAccount,
-    removeLocalStorageAccount,
-  ] = useLocalStorage(SELECTED_ACCOUNT_KEY, '')
 
   const selectAccount = useCallback(
     (account: InjectedPolkadotAccount | undefined) => {
       if (!account) {
-        removeLocalStorageAccount()
+        setLocalStorageAccount('')
       }
 
-      if (account?.address) setLocalStorageAccount(account.address)
+      if (account?.address) setLocalStorageAccount(account)
 
       setSelected(account)
     },
-    [removeLocalStorageAccount, setLocalStorageAccount],
+    [setLocalStorageAccount],
   )
 
   useEffect(() => {
-    if (localStorageAccount) {
+    if (accounts?.length !== 0) {
       const account = accounts.find(
-        (account) => account.address === localStorageAccount,
+        (account) => account.address === localStorageAccount?.address,
       )
-      if (account) {
-        selectAccount(account)
-      }
-    } else {
-      selectAccount(accounts[0])
+      selectAccount(account?.address ? account : accounts[0])
     }
   }, [accounts, localStorageAccount, selectAccount])
 
@@ -66,6 +63,7 @@ const AccountContextProvider = ({ children }: AccountContextProps) => {
         accounts,
         selectedAccount,
         selectAccount,
+        setAccounts,
       }}
     >
       {children}

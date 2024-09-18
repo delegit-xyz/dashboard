@@ -1,4 +1,9 @@
-import { Polkicon } from '@polkadot-ui/react'
+import {
+  ConnectConfiguration,
+  ConnectModal,
+  Polkicon,
+} from '@polkadot-ui/react'
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,26 +14,23 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { routes } from '@/lib/utils'
-import { useWalletDisconnector } from '@reactive-dot/react'
-import { ChevronDown, Moon, PanelLeft, Sun } from 'lucide-react'
-import { ConnectionDialog } from 'dot-connect/react.js'
+import {
+  ChevronDown,
+  Download,
+  Moon,
+  PanelLeft,
+  Sun,
+  Unplug,
+} from 'lucide-react'
 
-// import {
-//   Menubar,
-//   MenubarContent,
-//   MenubarItem,
-//   MenubarMenu,
-//   MenubarSeparator,
-//   MenubarShortcut,
-//   MenubarTrigger,
-// } from '@/components/ui/menubar'
 import { useAccounts } from './contexts/AccountsContext'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { SupportedNetworkNames, useNetwork } from './contexts/NetworkContext'
 import { useTheme } from './components/theme-provider'
 import { Link, useLocation } from 'react-router-dom'
 import { FaCheckCircle, FaGithub } from 'react-icons/fa'
 import { TbLoaderQuarter } from 'react-icons/tb'
+import { useMediaQuery } from 'usehooks-ts'
 
 interface NetworkDisplay {
   name: SupportedNetworkNames
@@ -50,18 +52,31 @@ if (import.meta.env.DEV) {
 
 export const Header = () => {
   const { network, selectNetwork, lightClientLoaded, isLight } = useNetwork()
-  const { accounts, selectAccount, selectedAccount } = useAccounts()
-  const [, disconnectAll] = useWalletDisconnector()
-  const [isConnectionDialiogOpen, setIsConnectionDialiogOpen] = useState(false)
+  const { accounts, selectAccount, selectedAccount, setAccounts } =
+    useAccounts()
   // eslint-disable-next-line
   const { theme, setTheme } = useTheme()
   const { search } = useLocation()
 
-  useEffect(() => {
-    if (!selectedAccount?.address && accounts.length > 0) {
-      selectAccount(accounts[0])
-    }
-  }, [accounts, selectAccount, selectedAccount?.address])
+  const [modalOpen, setModalOpen] = useState<boolean>(false)
+  const isDesktop = useMediaQuery('(min-width: 768px)')
+
+  const connectConfig: ConnectConfiguration = {
+    downloadIcon: <Download />,
+    disconnectIcon: <Unplug />,
+    modal: {
+      width: isDesktop ? '50vw' : '100%',
+      top: isDesktop ? '' : '20%',
+      bgColor: theme === 'light' ? '#fff' : '#171c17',
+      titleColor: theme === 'light' ? '#000' : '#fff',
+    },
+    bg: {
+      selected: theme === 'light' ? '#ccc' : '#000',
+    },
+    hover: {
+      bg: theme === 'light' ? '#ccc' : '#000',
+    },
+  }
 
   return (
     <>
@@ -120,113 +135,98 @@ export const Header = () => {
             </nav>
           </SheetContent>
         </Sheet>
-        <div className="flex w-full justify-between">
-          <div>
-            {/* TODO: split submenu based on routes 
-          <Menubar>
-            <MenubarMenu>
-              <MenubarTrigger>File</MenubarTrigger>
-              <MenubarContent>
-                <MenubarItem>
-                  New Tab <MenubarShortcut>⌘T</MenubarShortcut>
-                </MenubarItem>
-                <MenubarItem>New Window</MenubarItem>
-                <MenubarSeparator />
-                <MenubarItem>Share</MenubarItem>
-                <MenubarSeparator />
-                <MenubarItem>Print</MenubarItem>
-              </MenubarContent>
-            </MenubarMenu>
-          </Menubar>*/}
-          </div>
-          <div className="flex">
+        <div className="flex w-full justify-end">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                size="default"
+                variant={'outline'}
+                className="mx-2 cursor-pointer capitalize"
+              >
+                {network}
+                <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {networkList.map(({ name, display }) => (
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  key={name}
+                  onClick={() => selectNetwork(name)}
+                >
+                  {display}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          {selectedAccount?.address ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
+                  variant="outline"
                   size="default"
-                  variant={'outline'}
-                  className="mx-2 cursor-pointer capitalize"
+                  className="cursor-pointer overflow-hidden"
                 >
-                  {network}
+                  <Polkicon
+                    size={36}
+                    address={selectedAccount?.address || ''}
+                    className="mr-2"
+                    outerColor="transparent"
+                  />
+                  {selectedAccount?.name}
                   <ChevronDown className="ml-2 h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                {networkList.map(({ name, display }) => (
-                  <DropdownMenuItem
-                    className="cursor-pointer"
-                    key={name}
-                    onClick={() => selectNetwork(name)}
-                  >
-                    {display}
-                  </DropdownMenuItem>
+                {accounts.map((account, index) => (
+                  <>
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      key={account.address}
+                      onClick={() => selectAccount(account)}
+                    >
+                      <Polkicon
+                        size={28}
+                        address={account.address || ''}
+                        className="mr-2"
+                        outerColor="transparent"
+                      />
+                      {account.name}
+                    </DropdownMenuItem>
+                    {index !== accounts.length - 1 && <DropdownMenuSeparator key={`${account.address}-separator`} />}
+                  </>
                 ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => {
+                    setModalOpen(true)
+                  }}
+                >
+                  <div className="cursor-pointer">Show Wallets</div>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            {!accounts.length && (
-              <Button onClick={() => setIsConnectionDialiogOpen(true)}>
-                Connect
-              </Button>
-            )}
-            {!!accounts.length && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="default"
-                    className="cursor-pointer overflow-hidden"
-                  >
-                    <Polkicon
-                      size={36}
-                      address={selectedAccount?.address || ''}
-                      className="mr-2"
-                      outerColor="transparent"
-                    />
-                    {selectedAccount?.name}
-                    <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  {accounts.map((account, index) => (
-                    <>
-                      <DropdownMenuItem
-                        className="cursor-pointer"
-                        key={account.address}
-                        onClick={() => selectAccount(account)}
-                      >
-                        <Polkicon
-                          size={28}
-                          address={account.address || ''}
-                          className="mr-2"
-                          outerColor="transparent"
-                        />
-                        {account.name}
-                      </DropdownMenuItem>
-                      {index !== accounts.length - 1 && (
-                        <DropdownMenuSeparator />
-                      )}
-                    </>
-                  ))}
-                  <DropdownMenuItem
-                    className="cursor-pointer"
-                    key={'logout'}
-                    onClick={() => {
-                      disconnectAll()
-                      selectAccount(undefined)
-                    }}
-                  >
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-          </div>
+          ) : (
+            <Button onClick={() => setModalOpen(true)}>Connect</Button>
+          )}
         </div>
       </header>
-      <ConnectionDialog
-        open={isConnectionDialiogOpen}
-        onClose={() => setIsConnectionDialiogOpen(false)}
-      />
+      {modalOpen && (
+        <div style={{ fontSize: '1rem', zIndex: 999 }}>
+          <ConnectModal
+            type="extensions"
+            config={connectConfig}
+            selected={selectedAccount}
+            setSelected={selectAccount}
+            getConnectedAccounts={setAccounts}
+            title={'Connect'}
+            show={modalOpen}
+            onClose={() => {
+              setModalOpen(false)
+            }}
+          />
+        </div>
+      )}
     </>
   )
 }
