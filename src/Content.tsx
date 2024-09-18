@@ -5,6 +5,8 @@ import { Delegate } from '@/pages/Delegate'
 import { toast } from 'sonner'
 import { useEffect } from 'react'
 import { useNetwork } from './contexts/NetworkContext'
+import { RedirectByName } from './components/RedirectByName'
+
 const pages = [
   {
     path: '',
@@ -19,8 +21,8 @@ const pages = [
     element: <Delegate />,
   },
   {
-    path: '/:incomingNetwork/:address',
-    element: <Delegate />,
+    path: '/:network/:name',
+    element: <RedirectByName />,
   },
 ]
 
