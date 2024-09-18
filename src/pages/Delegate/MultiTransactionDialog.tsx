@@ -135,10 +135,11 @@ export const MultiTransactionDialog = ({
         <DialogHeader>
           <DialogTitle>Step {step}</DialogTitle>
           <DialogDescription>
-            <div className="m-4">
+            <div className="my-4">
               {step === 1 &&
-                'The delegation process is in 2 parts, first please sign a transaction to remove current votes and delegations'}
-              {step === 2 && 'Second please sign a transaction to delegate'}
+                'The delegation process is in 2 parts. First, please sign a transaction to remove current votes and delegations.'}
+              {step === 2 &&
+                'Votes and delegation are removed. You are now ready to sign a transaction to delegate.'}
             </div>
             <div className="text-end">
               <Button
@@ -146,7 +147,7 @@ export const MultiTransactionDialog = ({
                 disabled={isTxInitiated}
                 loading={isTxInitiated}
               >
-                {!waitingForFinalization && `Sign tx ${step}/2`}
+                {!waitingForFinalization && `Sign transaction ${step} / 2`}
                 {waitingForFinalization && 'Waiting for finalization'}
               </Button>
             </div>
