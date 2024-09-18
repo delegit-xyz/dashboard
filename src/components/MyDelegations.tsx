@@ -47,9 +47,9 @@ export const MyDelegations = () => {
     (delegate: string) => {
       if (!api || !selectedAccount || !delegations) return
 
-      const tracks = delegations[delegate].map((d) => d.trackId)
-
       setDelegatesLoading((prev) => [...prev, delegate])
+
+      const tracks = delegations[delegate].map((d) => d.trackId)
 
       // @ts-expect-error we can't strongly type this
       let tx: Transaction<undefined, unknown, unknown, undefined>
@@ -72,6 +72,7 @@ export const MyDelegations = () => {
           refreshLocks()
         },
       })
+
       tx.signSubmitAndWatch(selectedAccount.polkadotSigner).subscribe(
         subscriptionCallback,
       )
@@ -100,6 +101,7 @@ export const MyDelegations = () => {
           Object.entries(delegationsByDelegateConvictionAmount).map(
             ([delegateAddress, amountConvictionMap]) => {
               const knownDelegate = getDelegateByAddress(delegateAddress)
+              const isUndelegating = delegateLoading.includes(delegateAddress)
 
               return (
                 <Card
@@ -132,9 +134,10 @@ export const MyDelegations = () => {
                       className="w-a bottom-0 mb-2 mt-4"
                       variant={'outline'}
                       onClick={() => onUndelegate(delegateAddress)}
-                      disabled={delegateLoading.includes(delegateAddress)}
+                      disabled={isUndelegating}
+                      loading={isUndelegating}
                     >
-                      Undelegate
+                      {isUndelegating ? 'Undelegating...' : 'Undelegate'}
                     </Button>
                   </>
                 </Card>
