@@ -9,9 +9,9 @@ import { useNetwork } from '@/contexts/NetworkContext'
 import { AddressDisplay } from './ui/address-display'
 import { Button } from './ui/button'
 import { useAccounts } from '@/contexts/AccountsContext'
-import { Transaction, TypedApi } from 'polkadot-api'
-import { dot } from '@polkadot-api/descriptors'
+import { Transaction } from 'polkadot-api'
 import { DelegationByAmountConviction } from './DelegationByAmountConviction'
+import { useGetSigningCallback } from '@/hooks/useGetSigningCallback'
 
 export const MyDelegations = () => {
   const { api } = useNetwork()
@@ -42,13 +42,14 @@ export const MyDelegations = () => {
     return result
   }, [delegations])
 
+  const getSubscriptionCallback = useGetSigningCallback()
   const onUndelegate = useCallback(
     (delegate: string) => {
       if (!api || !selectedAccount || !delegations) return
 
-      const tracks = delegations[delegate].map((d) => d.trackId)
-
       setDelegatesLoading((prev) => [...prev, delegate])
+
+      const tracks = delegations[delegate].map((d) => d.trackId)
 
       // @ts-expect-error we can't strongly type this
       let tx: Transaction<undefined, unknown, unknown, undefined>
@@ -59,30 +60,30 @@ export const MyDelegations = () => {
         const batchTx = tracks.map(
           (t) => api.tx.ConvictionVoting.undelegate({ class: t }).decodedCall,
         )
-        tx = (api as TypedApi<typeof dot>).tx.Utility.batch({ calls: batchTx })
+        tx = api.tx.Utility.batch({ calls: batchTx })
       }
 
-      tx.signSubmitAndWatch(selectedAccount.polkadotSigner).subscribe({
-        next: (event) => {
-          console.log(event)
-          if (event.type === 'finalized') {
-            setDelegatesLoading((prev) => prev.filter((id) => id !== delegate))
-            refreshLocks()
-          }
-        },
-        error: (error) => {
-          console.error(error)
+      const subscriptionCallback = getSubscriptionCallback({
+        onError: () => {
           setDelegatesLoading((prev) => prev.filter((id) => id !== delegate))
         },
+        onFinalized: () => {
+          setDelegatesLoading((prev) => prev.filter((id) => id !== delegate))
+          refreshLocks()
+        },
       })
+
+      tx.signSubmitAndWatch(selectedAccount.polkadotSigner).subscribe(
+        subscriptionCallback,
+      )
     },
-    [api, delegations, refreshLocks, selectedAccount],
+    [api, delegations, getSubscriptionCallback, refreshLocks, selectedAccount],
   )
 
   return (
     <>
-      <Title className="mb-4">My Delegations</Title>
-      <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+      <Title>My Delegations</Title>
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         {delegationsByDelegateConvictionAmount === undefined ? (
           <Skeleton className="h-[116px] rounded-xl" />
         ) : noDelegations ? (
@@ -100,36 +101,43 @@ export const MyDelegations = () => {
           Object.entries(delegationsByDelegateConvictionAmount).map(
             ([delegateAddress, amountConvictionMap]) => {
               const knownDelegate = getDelegateByAddress(delegateAddress)
+              const isUndelegating = delegateLoading.includes(delegateAddress)
 
               return (
                 <Card
-                  className="flex h-full flex-col border bg-card p-2 px-4"
+                  className="flex h-max flex-col justify-between border bg-card p-2 px-4"
                   key={delegateAddress}
                 >
                   <>
-                    {knownDelegate?.name ? (
-                      <div className="flex items-center gap-2">
-                        <img
-                          src={knownDelegate.image}
-                          className="mr-2 w-12 rounded-full"
-                        />
-                        <div className="py-2 text-xl font-semibold">
-                          {knownDelegate.name}
+                    <div className="flex flex-col justify-between">
+                      {knownDelegate?.name ? (
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={knownDelegate.image}
+                            className="mr-2 w-12 rounded-full"
+                          />
+                          <div className="py-2 text-xl font-semibold">
+                            {knownDelegate.name}
+                          </div>
                         </div>
-                      </div>
-                    ) : (
-                      <AddressDisplay address={delegateAddress} size={'3rem'} />
-                    )}
-                    <DelegationByAmountConviction
-                      amountConvictionMap={amountConvictionMap}
-                    />
+                      ) : (
+                        <AddressDisplay
+                          address={delegateAddress}
+                          size={'3rem'}
+                        />
+                      )}
+                      <DelegationByAmountConviction
+                        amountConvictionMap={amountConvictionMap}
+                      />
+                    </div>
                     <Button
-                      className="mb-2 mt-4 w-full"
+                      className="w-a bottom-0 mb-2 mt-4"
                       variant={'outline'}
                       onClick={() => onUndelegate(delegateAddress)}
-                      disabled={delegateLoading.includes(delegateAddress)}
+                      disabled={isUndelegating}
+                      loading={isUndelegating}
                     >
-                      Undelegate
+                      {isUndelegating ? 'Undelegating...' : 'Undelegate'}
                     </Button>
                   </>
                 </Card>

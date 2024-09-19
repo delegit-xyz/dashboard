@@ -17,19 +17,19 @@
 @layer base {
   :root {
     --background: 0 5% 98%;
-    --foreground: 240 10% 3.9%;
+    --foreground: 240 5% 20%;
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card-foreground: 240 5% 20%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
+    --popover-foreground: 240 5% 20%;
     --primary: 328 100% 45%;
     --primary-foreground: 355.7 100% 97.3%;
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
+    --accent: 228 12% 94%;
+    --accent-foreground: 215 20% 35%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 5.9% 90%;
@@ -41,6 +41,15 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
+
+    --dc-primary-color: hsl(var(--accent));
+    --dc-on-primary-color: hsl(var(--accent-foreground));
+    --dc-surface-color: hsl(var(--popover));
+    --dc-on-surface-color: hsl(var(--popover-foreground));
+  }
+
+  .light {
+    color-scheme: light;
   }
 
   .dark {
@@ -57,7 +66,7 @@
     --muted: 0 0% 15%;
     --muted-foreground: 240 5% 64.9%;
     --accent: 12 6.5% 15.1%;
-    --accent-foreground: 0 0% 98%;
+    --accent-foreground: 213 27% 84%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 85.7% 97.3%;
     --border: 240 3.7% 15.9%;
@@ -68,6 +77,8 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+
+    color-scheme: dark;
   }
 }
 

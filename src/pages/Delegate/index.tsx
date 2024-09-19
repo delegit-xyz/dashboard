@@ -1,6 +1,9 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useDelegates } from '@/contexts/DelegatesContext'
+import {
+  type Delegate as DelegateType,
+  useDelegates,
+} from '@/contexts/DelegatesContext'
 import { useNetwork } from '@/contexts/NetworkContext'
 import { VotingConviction } from '@polkadot-api/descriptors'
 import { SetStateAction, useEffect, useMemo, useState } from 'react'
@@ -8,50 +11,77 @@ import { Button } from '@/components/ui/button'
 import { useAccounts } from '@/contexts/AccountsContext'
 import { Slider } from '@/components/ui/slider'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
-
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Loader2 } from 'lucide-react'
 import { msgs } from '@/lib/constants'
 import { evalUnits, planckToUnit } from '@polkadot-ui/utils'
 import { useLocks } from '@/contexts/LocksContext'
-import { useGetDelegateTx } from '@/hooks/useGetDelegateTx'
+import { DelegateTxs, useGetDelegateTx } from '@/hooks/useGetDelegateTx'
 import { AlertNote } from '@/components/Alert'
+import { useTestTx } from '@/hooks/useTestTx'
+import { MultiTransactionDialog } from './MultiTransactionDialog'
+import { useGetSigningCallback } from '@/hooks/useGetSigningCallback'
+import { Title } from '@/components/ui/title'
+import { DelegateCard } from '@/components/DelegateCard'
 
 export const Delegate = () => {
   const { api, assetInfo } = useNetwork()
   const { address } = useParams()
-  const { getConvictionLockTimeDisplay } = useLocks()
+  const { selectedAccount } = useAccounts()
+  const getDelegateTx = useGetDelegateTx()
+  const { getConvictionLockTimeDisplay, refreshLocks } = useLocks()
+  const getSubscriptionCallBack = useGetSigningCallback()
+  const navigate = useNavigate()
+  const { search } = useLocation()
+  const { getDelegateByAddress, isLoading: isLoadingDelegates } = useDelegates()
+  const [delegate, setDelegate] = useState<DelegateType | undefined>()
 
-  const { getDelegateByAddress } = useDelegates()
-  const [delegate, setDelegate] = useState(
-    address && getDelegateByAddress(address),
-  )
   const [isAmountDirty, setIsAmountDirty] = useState(false)
   const [amount, setAmount] = useState<bigint>(0n)
   const [amountVisible, setAmountVisible] = useState<string>('0')
   const [amountError, setAmountError] = useState<string>('')
   const [conviction, setConviction] = useState<VotingConviction>(
-    VotingConviction.None,
+    VotingConviction.Locked1x(),
   )
   const [convictionNo, setConvictionNo] = useState(1)
-  const { selectedAccount } = useAccounts()
   const [isTxInitiated, setIsTxInitiated] = useState(false)
-  const getDelegateTx = useGetDelegateTx()
-  const navigate = useNavigate()
-  const { search } = useLocation()
+  const { isExhaustsResources } = useTestTx()
+  const [isMultiTxDialogOpen, setIsMultiTxDialogOpen] = useState(false)
+  const [delegateTxs, setDelegateTxs] = useState<DelegateTxs>({} as DelegateTxs)
+  const [noDelegateFound, setNoDelegateFound] = useState(false)
+
+  useEffect(() => {
+    // the delegate list may still be loading
+    if (isLoadingDelegates || delegate) return
+
+    const foundDelegate = address && getDelegateByAddress(address)
+
+    // if no delegate is found based on the address
+    // or there's no address passed in the url
+    if (!foundDelegate || !address) {
+      setNoDelegateFound(true)
+      return
+    }
+
+    setDelegate(foundDelegate)
+  }, [address, delegate, getDelegateByAddress, isLoadingDelegates])
 
   const { display: convictionTimeDisplay, multiplier: convictionMultiplier } =
     getConvictionLockTimeDisplay(convictionNo)
 
   const voteAmount = useMemo(() => {
+    if (!convictionMultiplier) return
+
     const bnAmount =
       convictionMultiplier === 0.1
         ? amount / 10n
         : amount * BigInt(convictionMultiplier)
 
-    return planckToUnit(bnAmount, assetInfo.precision).toLocaleString('en')
+    return planckToUnit(bnAmount, assetInfo.precision)
   }, [amount, assetInfo.precision, convictionMultiplier])
 
   const convictionDisplay = useMemo(() => {
+    if (!convictionMultiplier) return
+
     return `x${Number(convictionMultiplier)} | ${convictionTimeDisplay}`
   }, [convictionTimeDisplay, convictionMultiplier])
 
@@ -71,15 +101,6 @@ export const Delegate = () => {
     setAmountVisible('0')
   }, [api])
 
-  useEffect(() => {
-    if (!address || delegate) return
-
-    const res = getDelegateByAddress(address)
-    setDelegate(res)
-  }, [address, delegate, getDelegateByAddress])
-
-  if (!delegate || !api) return <div>No delegate found</div>
-
   const onChangeAmount = (
     e: React.ChangeEvent<HTMLInputElement>,
     decimals: number,
@@ -92,48 +113,91 @@ export const Delegate = () => {
     setAmountVisible(e.target.value)
   }
 
-  const onSign = async () => {
-    if (selectedAccount && amount) {
-      const allTracks = await api.constants.Referenda.Tracks()
-        .then((tracks) => {
-          return tracks.map(([track]) => track)
-        })
-        .catch(console.error)
-
-      const tx = getDelegateTx({
-        target: delegate.address,
-        conviction: conviction,
-        amount,
-        tracks: allTracks || [],
-      })
-
-      if (!tx) return
-
-      setIsTxInitiated(true)
-      ;(await tx)
-        .signSubmitAndWatch(selectedAccount?.polkadotSigner)
-        .subscribe((event) => {
-          console.info(event)
-
-          if (event.type === 'txBestBlocksState' && event.found) {
-            if (event.dispatchError) {
-              console.error('Tx error', event)
-              setIsTxInitiated(false)
-            }
-          }
-
-          if (event.type === 'finalized') {
-            navigate(`/${search}`)
-            setIsTxInitiated(false)
-          }
-        })
-    } else {
-      return
-    }
+  const onChangeSplitTransactionDialog = (isOpen: boolean) => {
+    setIsMultiTxDialogOpen(isOpen)
+    setIsTxInitiated(false)
   }
 
+  const onProcessFinished = () => {
+    refreshLocks()
+    navigate(`/${search}`)
+    setIsTxInitiated(false)
+    onChangeSplitTransactionDialog(false)
+  }
+
+  const onSign = async () => {
+    if (!delegate || !selectedAccount || !amount || !api) return
+
+    setIsTxInitiated(true)
+
+    const allTracks = await api.constants.Referenda.Tracks()
+      .then((tracks) => {
+        return tracks.map(([track]) => track)
+      })
+      .catch((e) => {
+        console.error(e)
+        setIsTxInitiated(false)
+      })
+
+    const {
+      delegationTxs = [],
+      removeDelegationsTxs = [],
+      removeVotesTxs = [],
+    } = getDelegateTx({
+      delegateAddress: delegate.address,
+      conviction: conviction,
+      amount,
+      tracks: allTracks || [],
+    })
+
+    setDelegateTxs({
+      removeVotesTxs,
+      removeDelegationsTxs,
+      delegationTxs,
+    })
+
+    const allTxs = api.tx.Utility.batch_all({
+      calls: [...removeVotesTxs, ...removeDelegationsTxs, ...delegationTxs].map(
+        (tx) => tx.decodedCall,
+      ),
+    })
+
+    if (!allTxs) {
+      setIsTxInitiated(false)
+      return
+    }
+
+    // check if we have an exhausted limit on the whole tx
+    const isExhaustsRessouces = await isExhaustsResources(allTxs)
+
+    // this is too big of a batch we need to split it up
+    if (isExhaustsRessouces) {
+      setIsMultiTxDialogOpen(true)
+      return
+    }
+
+    const subscriptionCallBack = getSubscriptionCallBack({
+      onError: () => setIsTxInitiated(false),
+      onFinalized: () => onProcessFinished(),
+    })
+
+    await allTxs
+      .signSubmitAndWatch(selectedAccount?.polkadotSigner)
+      .subscribe(subscriptionCallBack)
+  }
+
+  if (noDelegateFound)
+    return (
+      <div className="mx-auto">
+        No delegate found for this address: {address}
+      </div>
+    )
+
+  if (!delegate || !api)
+    return <Loader2 className="mx-auto h-8 w-8 animate-spin" />
+
   return (
-    <main className="mx-0 grid flex-1 items-start gap-4 gap-8 p-4 sm:mx-[5%] sm:px-6 sm:py-0 xl:mx-[20%]">
+    <main className="m-auto grid w-full max-w-4xl gap-4 p-4 sm:px-6 sm:py-0">
       {!api && (
         <AlertNote
           title={msgs.api.title}
@@ -153,51 +217,67 @@ export const Delegate = () => {
         <ArrowLeft className="h-4 w-4" />
         To all delegates
       </Link>
-      <h1 className="flex-1 shrink-0 whitespace-nowrap font-unbounded text-xl font-semibold tracking-tight sm:grow-0">
-        Delegate to {delegate.name}
-      </h1>
-      <div>
-        <Label>Amount</Label>
-        <Input
-          onChange={(value) => onChangeAmount(value, assetInfo.precision)}
-          value={amountVisible}
-          error={amountErrorDisplay}
+      <Title>Delegate to {delegate.name}</Title>
+      <div className="flex columns-3">
+        <DelegateCard
+          delegate={delegate}
+          hasDelegateButton={false}
+          hasShareButton
+          className="p0 border-none bg-transparent shadow-none"
         />
       </div>
+      <div className="grid gap-8 rounded-xl bg-card p-6 shadow-xl">
+        <div>
+          <Label>Amount</Label>
+          <Input
+            onChange={(value) => onChangeAmount(value, assetInfo.precision)}
+            value={amountVisible}
+            error={amountErrorDisplay}
+          />
+        </div>
 
-      <Label className="flex">
-        Conviction: {convictionDisplay}
-        <div className="ml-2">{}</div>
-      </Label>
-      <Slider
-        disabled={!api || !selectedAccount}
-        value={[convictionNo]}
-        min={0}
-        max={6}
-        step={1}
-        marks
-        marksLabels={['0.1', '1', '2', '3', '4', '5', '6']}
-        marksPreFix={'x'}
-        labelPosition="bottom"
-        onValueChange={(v: SetStateAction<number>[]) => {
-          const value = v[0] === 0 ? '0.1' : `Locked${v[0]}x`
-          setConvictionNo(v[0])
-          setConviction(
-            VotingConviction[value as keyof typeof VotingConviction],
-          )
-        }}
+        <Label className="flex">
+          Conviction: {convictionDisplay}
+          <div className="ml-2">{}</div>
+        </Label>
+        <Slider
+          disabled={!api || !selectedAccount}
+          value={[convictionNo]}
+          defaultValue={[convictionNo]}
+          min={0}
+          max={6}
+          step={1}
+          marks
+          marksLabels={['0.1', '1', '2', '3', '4', '5', '6']}
+          marksPreFix={'x'}
+          labelPosition="bottom"
+          onValueChange={(v: SetStateAction<number>[]) => {
+            const value = v[0] === 0 ? 'None' : `Locked${v[0]}x`
+            setConvictionNo(v[0])
+            setConviction(
+              VotingConviction[value as keyof typeof VotingConviction],
+            )
+          }}
+        />
+        <AlertNote
+          title={'Note'}
+          message={`The ${convictionTimeDisplay} will start when you undelegate`}
+          variant={'default'}
+        />
+        <Button
+          onClick={onSign}
+          disabled={amount === 0n || !api || !selectedAccount || isTxInitiated}
+          loading={isTxInitiated}
+        >
+          Delegate with {voteAmount} {assetInfo.symbol} votes
+        </Button>
+      </div>
+      <MultiTransactionDialog
+        isOpen={isMultiTxDialogOpen}
+        onOpenChange={onChangeSplitTransactionDialog}
+        delegateTxs={delegateTxs}
+        onProcessFinished={onProcessFinished}
       />
-      <AlertNote
-        title={'Note'}
-        message={`The ${convictionTimeDisplay} will start when you undelegate`}
-        variant={'default'}
-      />
-      <Button
-        onClick={onSign}
-        disabled={amount === 0n || !api || !selectedAccount || isTxInitiated}
-      >
-        Delegate with {voteAmount} {assetInfo.symbol} votes
-      </Button>
     </main>
   )
 }

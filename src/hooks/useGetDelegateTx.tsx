@@ -1,69 +1,72 @@
 import { useAccounts } from '@/contexts/AccountsContext'
 import { useLocks } from '@/contexts/LocksContext'
 import { useNetwork } from '@/contexts/NetworkContext'
-import { dot, MultiAddress, VotingConviction } from '@polkadot-api/descriptors'
-import { TypedApi } from 'polkadot-api'
+import { MultiAddress, VotingConviction } from '@polkadot-api/descriptors'
+import { Transaction } from 'polkadot-api'
 import { useCallback } from 'react'
 
 interface Params {
-  target: string
+  delegateAddress: string
   amount: bigint
   tracks: number[]
   conviction: VotingConviction
 }
 
+export interface DelegateTxs {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  removeVotesTxs?: Transaction<any, any, any, undefined>[]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  removeDelegationsTxs?: Transaction<any, any, any, undefined>[]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  delegationTxs?: Transaction<any, any, any, undefined>[]
+}
+
 export const useGetDelegateTx = () => {
   const { api } = useNetwork()
   const { selectedAccount } = useAccounts()
-  const { delegations, voteLocks: locks } = useLocks()
+  const { delegations, voteLocks } = useLocks()
 
-  const getDelegationTx = useCallback(
-    ({ target, amount, tracks, conviction }: Params) => {
-      if (!api || !selectedAccount) return
+  const getDelegationTxs = useCallback(
+    ({ delegateAddress, amount, tracks, conviction }: Params): DelegateTxs => {
+      if (!api || !selectedAccount)
+        return {
+          removeVotesTxs: [],
+          removeDelegationsTxs: [],
+          delegationTxs: [],
+        }
 
-      const txs: Array<
-        | ReturnType<typeof api.tx.ConvictionVoting.remove_vote>
-        | ReturnType<typeof api.tx.ConvictionVoting.undelegate>
-        | ReturnType<typeof api.tx.ConvictionVoting.delegate>
-      > = []
+      const removeVotesTxs = voteLocks.map(({ refId, trackId }) =>
+        api.tx.ConvictionVoting.remove_vote({
+          index: refId,
+          class: trackId,
+        }),
+      )
 
-      // first we remove all ongoing votes
-      locks
-        .filter(({ isOngoing }) => !!isOngoing)
-        .forEach(({ refId, trackId }) => {
-          txs.push(
-            api.tx.ConvictionVoting.remove_vote({
-              index: refId,
-              class: trackId,
-            }),
+      const removeDelegationsTxs: ReturnType<
+        typeof api.tx.ConvictionVoting.undelegate
+      >[] = []
+
+      Object.values(delegations || {}).forEach((delegation) => {
+        delegation.map(({ trackId }) => {
+          removeDelegationsTxs.push(
+            api.tx.ConvictionVoting.undelegate({ class: trackId }),
           )
         })
-
-      // then we remove all ongoing delegations
-      Object.values(delegations || {}).forEach((d) => {
-        d.map(({ trackId }) => {
-          txs.push(api.tx.ConvictionVoting.undelegate({ class: trackId }))
-        })
       })
 
-      // then we delegate for the selected tracks
-      tracks.forEach((trackId) => {
-        txs.push(
-          api.tx.ConvictionVoting.delegate({
-            class: trackId,
-            conviction,
-            to: MultiAddress.Id(target),
-            balance: amount,
-          }),
-        )
-      })
+      const delegationTxs = tracks.map((trackId) =>
+        api.tx.ConvictionVoting.delegate({
+          class: trackId,
+          conviction,
+          to: MultiAddress.Id(delegateAddress),
+          balance: amount,
+        }),
+      )
 
-      return (api as TypedApi<typeof dot>).tx.Utility.batch_all({
-        calls: txs.map((tx) => tx.decodedCall),
-      })
+      return { removeVotesTxs, removeDelegationsTxs, delegationTxs }
     },
-    [api, delegations, locks, selectedAccount],
+    [api, delegations, voteLocks, selectedAccount],
   )
 
-  return getDelegationTx
+  return getDelegationTxs
 }

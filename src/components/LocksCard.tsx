@@ -12,9 +12,7 @@ import { Title } from './ui/title'
 import { ContentReveal } from './ui/content-reveal'
 import { BadgeCent, Clock2, Info, LockKeyholeOpen, Vote } from 'lucide-react'
 import { Badge } from './ui/badge'
-import { dot } from '@polkadot-api/descriptors'
 import { useAccounts } from '@/contexts/AccountsContext'
-import { TypedApi } from 'polkadot-api'
 import {
   DelegationLock,
   LockType,
@@ -25,13 +23,13 @@ import { Skeleton } from './ui/skeleton'
 import { useGetUnlockTx } from '@/hooks/useGetUnlockTx'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 import { TrackDisplay } from './TrackDisplay'
+import { useGetSigningCallback } from '@/hooks/useGetSigningCallback'
 
 export const LocksCard = () => {
   const [currentBlock, setCurrentBlock] = useState(0)
   const [expectedBlockTime, setExpectedBlockTime] = useState(0)
-  const { api } = useNetwork()
-  const { voteLocks: locks, delegationLocks } = useLocks()
-  const { assetInfo } = useNetwork()
+  const { api, assetInfo } = useNetwork()
+  const { voteLocks, delegationLocks } = useLocks()
   const [ongoingVoteLocks, setOngoingVoteLocks] = useState<VoteLock[]>([])
   const [freeLocks, setFreeLocks] = useState<Array<VoteLock | DelegationLock>>(
     [],
@@ -44,6 +42,7 @@ export const LocksCard = () => {
   const { selectedAccount } = useAccounts()
   const [isUnlockingLoading, setIsUnlockingLoading] = useState(false)
   const getUnlockTx = useGetUnlockTx()
+  const getSubscriptionCallBack = useGetSigningCallback()
 
   useEffect(() => {
     if (!currentBlock) return
@@ -52,13 +51,13 @@ export const LocksCard = () => {
     const tempFree: Array<VoteLock | DelegationLock> = []
     const tempCurrent: VoteLock[] = []
 
-    locks.forEach((lock) => {
-      if (lock.isOngoing) {
-        tempOngoingLocks.push(lock)
-      } else if (lock.endBlock <= currentBlock) {
-        tempFree.push(lock)
+    voteLocks.forEach((voteLocks) => {
+      if (voteLocks.isOngoing) {
+        tempOngoingLocks.push(voteLocks)
+      } else if (voteLocks.endBlock <= currentBlock) {
+        tempFree.push(voteLocks)
       } else {
-        tempCurrent.push(lock)
+        tempCurrent.push(voteLocks)
       }
     })
 
@@ -80,7 +79,7 @@ export const LocksCard = () => {
     setCurrentLocks(tempCurrent)
     setCurrentDelegationLocks(tempDelegationLocks)
     setLocksLoaded(true)
-  }, [currentBlock, delegationLocks, locks])
+  }, [currentBlock, delegationLocks, voteLocks])
 
   useEffect(() => {
     if (!api) return
@@ -109,108 +108,88 @@ export const LocksCard = () => {
 
     if (!unVoteTxs || !unlockTxs) return
 
-    // We need this to make TS happy for now
-    const dotApi = api as TypedApi<typeof dot>
+    const subscriptionCallback = getSubscriptionCallBack({
+      onFinalized: () => setIsUnlockingLoading(false),
+      onError: () => setIsUnlockingLoading(false),
+    })
 
-    dotApi.tx.Utility.batch({ calls: [...unVoteTxs, ...unlockTxs] })
+    api.tx.Utility.batch({ calls: [...unVoteTxs, ...unlockTxs] })
       .signSubmitAndWatch(selectedAccount.polkadotSigner)
-      .subscribe({
-        next: (event) => {
-          console.log(event)
-          if (event.type === 'finalized') {
-            setIsUnlockingLoading(false)
-          }
-        },
-        error: (error) => {
-          console.error(error)
-          setIsUnlockingLoading(false)
-        },
-      })
-  }, [api, freeLocks, getUnlockTx, selectedAccount])
+      .subscribe(subscriptionCallback)
+  }, [api, freeLocks, getSubscriptionCallBack, getUnlockTx, selectedAccount])
 
   return (
-    <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
-      {freeLocks.length > 0 && (
-        <Card className="relative h-full border-2 p-2 px-4">
-          <div className="relative z-10">
-            <div className="flex gap-x-2">
-              <Title variant="h4">Unlockable</Title>
-              <Popover>
-                <PopoverTrigger>
-                  <Info className="h-3 w-3 text-gray-500" />
-                </PopoverTrigger>
-                <PopoverContent>
-                  <p className="max-w-[15rem]">
-                    Elapsed locks for votes casted on referenda, or tracks
-                    delegation. Since locks can overlap, unlocking doesn't
-                    necessarily mean the transferable balance will change.
-                  </p>
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div className="font-unbounded text-5xl font-bold">
-              {freeLocks.length}
-              <LockKeyholeOpen className="ml-1 inline-block h-8 w-8 rotate-[10deg] text-gray-200" />
-            </div>
-            {freeLocks.length > 0 && (
-              <>
-                <Button
-                  className="mb-2 mt-4 w-full"
-                  onClick={onUnlockClick}
-                  disabled={isUnlockingLoading}
-                >
-                  Unlock
-                </Button>
-                <ContentReveal hidden={false}>
-                  {freeLocks.map((lock) => {
-                    if (lock.type === LockType.Delegating) {
-                      const { amount, trackId } = lock
-                      return (
-                        <div key={trackId}>
-                          <ul>
-                            <li className="mb-2">
-                              <div className="capitalize">
-                                <TrackDisplay trackId={trackId} />
-                                <div>
-                                  <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
-                                  {planckToUnit(
-                                    amount,
-                                    assetInfo.precision,
-                                  ).toLocaleString('en')}{' '}
-                                  {assetInfo.symbol}
-                                </div>
-                              </div>
-                            </li>
-                          </ul>
-                        </div>
-                      )
-                    }
-
-                    const { amount, refId } = lock
-                    return (
-                      <div key={refId}>
-                        <ul>
-                          <li className="mb-2">
-                            <Badge>#{refId}</Badge>
-                            <div>
-                              <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
-                              {planckToUnit(
-                                amount,
-                                assetInfo.precision,
-                              ).toLocaleString('en')}{' '}
-                              {assetInfo.symbol}
-                            </div>
-                          </li>
-                        </ul>
-                      </div>
-                    )
-                  })}
-                </ContentReveal>
-              </>
-            )}
+    <div className="flex flex-col gap-2 md:grid md:grid-cols-3 md:flex-row">
+      <Card className="h-max border-2 p-2 px-4">
+        <div className="relative z-10">
+          <div className="flex gap-x-2">
+            <Title variant="h4">Unlockable</Title>
+            <Popover>
+              <PopoverTrigger>
+                <Info className="h-3 w-3 text-gray-500" />
+              </PopoverTrigger>
+              <PopoverContent>
+                <p className="max-w-[15rem]">Funds that are unlockable.</p>
+              </PopoverContent>
+            </Popover>
           </div>
-        </Card>
-      )}
+          <div className="font-unbounded text-5xl font-bold">
+            {freeLocks.length}
+            <LockKeyholeOpen className="ml-1 inline-block h-8 w-8 rotate-[10deg] text-gray-200" />
+          </div>
+          {freeLocks.length > 0 && (
+            <Button
+              className="mb-2 mt-4 w-full"
+              onClick={onUnlockClick}
+              disabled={isUnlockingLoading}
+              loading={isUnlockingLoading}
+            >
+              {isUnlockingLoading ? 'Unlocking...' : 'Unlock'}
+            </Button>
+          )}
+          <ContentReveal hidden={freeLocks.length == 0}>
+            {freeLocks.map((lock) => {
+              if (lock.type === LockType.Delegating) {
+                const { amount, trackId } = lock
+                return (
+                  <div key={trackId}>
+                    <ul>
+                      <li className="mb-2">
+                        <div className="capitalize">
+                          <span className="capitalize">
+                            <TrackDisplay trackId={trackId} />
+                          </span>
+                          <div>
+                            <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
+                            {planckToUnit(amount, assetInfo.precision)}{' '}
+                            {assetInfo.symbol}
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                )
+              }
+
+              const { amount, refId } = lock
+              return (
+                <div key={refId}>
+                  <ul>
+                    <li className="mb-2">
+                      <Badge>#{refId}</Badge>
+                      <div>
+                        <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
+                        {planckToUnit(amount, assetInfo.precision)}{' '}
+                        {assetInfo.symbol}
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              )
+            })}
+          </ContentReveal>
+        </div>
+      </Card>
       {!locksLoaded ? (
         <>
           <Skeleton className="h-[116px] rounded-xl" />
@@ -218,7 +197,7 @@ export const LocksCard = () => {
         </>
       ) : (
         <>
-          <Card className="h-full border-2 p-2 px-4">
+          <Card className="h-max border-2 p-2 px-4">
             <div className="flex gap-x-2">
               <Title variant="h4">Unlocking</Title>
               <Popover>
@@ -242,7 +221,7 @@ export const LocksCard = () => {
               hidden={currentLocks.length + currentDelegationLocks.length === 0}
             >
               <>
-                {currentLocks.map(({ amount, endBlock, refId }) => {
+                {currentLocks.map(({ amount, endBlock, refId, trackId }) => {
                   const remainingTimeMs =
                     (Number(endBlock) - currentBlock) * expectedBlockTime
                   const remainingDisplay = convertMiliseconds(remainingTimeMs)
@@ -251,12 +230,12 @@ export const LocksCard = () => {
                       <ul>
                         <li>
                           <Badge>#{refId}</Badge>
+                          <span className="ml-2 border-l-2 pl-2 text-xs font-semibold text-slate-400">
+                            {trackId}
+                          </span>
                           <div>
                             <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
-                            {planckToUnit(
-                              amount,
-                              assetInfo.precision,
-                            ).toLocaleString('en')}{' '}
+                            {planckToUnit(amount, assetInfo.precision)}{' '}
                             {assetInfo.symbol}
                           </div>
                           <div>
@@ -279,10 +258,7 @@ export const LocksCard = () => {
                           <TrackDisplay trackId={trackId} />
                           <div className="mt-0.5">
                             <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
-                            {planckToUnit(
-                              amount,
-                              assetInfo.precision,
-                            ).toLocaleString('en')}{' '}
+                            {planckToUnit(amount, assetInfo.precision)}{' '}
                             {assetInfo.symbol}
                           </div>
                           <div>
@@ -297,7 +273,7 @@ export const LocksCard = () => {
               </>
             </ContentReveal>
           </Card>
-          <Card className="h-full border-2 p-2 px-4">
+          <Card className="h-max border-2 p-2 px-4">
             <div className="flex gap-x-2">
               <Title variant="h4">Votes</Title>
               <Popover>
@@ -318,18 +294,18 @@ export const LocksCard = () => {
             </div>
             {
               <ContentReveal hidden={!ongoingVoteLocks.length}>
-                {ongoingVoteLocks.map(({ amount, refId }) => {
+                {ongoingVoteLocks.map(({ amount, refId, trackId }) => {
                   return (
                     <div key={refId}>
                       <ul>
                         <li>
-                          <Badge>#{refId}</Badge>
+                          <Badge>#{refId}</Badge>{' '}
+                          <span className="ml-2 border-l-2 pl-2 text-xs font-semibold text-slate-400">
+                            {trackId}
+                          </span>
                           <div>
                             <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
-                            {planckToUnit(
-                              amount,
-                              assetInfo.precision,
-                            ).toLocaleString('en')}{' '}
+                            {planckToUnit(amount, assetInfo.precision)}{' '}
                             {assetInfo.symbol}
                           </div>
                         </li>

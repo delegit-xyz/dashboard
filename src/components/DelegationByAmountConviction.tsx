@@ -31,7 +31,7 @@ export const DelegationByAmountConviction = ({
     return (
       <div
         key={`${conviction}-${balance.toString()}`}
-        className="mb-2 ml-12 border-l-2 pl-2"
+        className="mb-2 ml-12 overflow-auto border-l-2 pl-2"
       >
         {trackIds.length === 1 ? (
           trackIds.map((trackId) => (
@@ -41,6 +41,7 @@ export const DelegationByAmountConviction = ({
           <ContentReveal
             title={<Badge>{trackIds.length} tracks</Badge>}
             buttonClassName="w-auto"
+            maxHeightClassName="max-h-tracks"
           >
             {trackIds.sort().map((trackId) => (
               <TrackDisplay key={trackId} trackId={trackId} />
@@ -50,14 +51,17 @@ export const DelegationByAmountConviction = ({
 
         <div className="mt-1">
           <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
-          {planckToUnit(balance, assetInfo.precision).toLocaleString('en')}{' '}
-          {assetInfo.symbol}
+          {planckToUnit(balance, assetInfo.precision)} {assetInfo.symbol}
         </div>
         <div>
-          conviction: x{Number(multiplier)}
-          <span className="ml-2 border-l-2 pl-2 text-xs font-semibold text-slate-400">
-            {display}
-          </span>
+          {!!multiplier && !!display && (
+            <>
+              conviction: x{Number(multiplier)}
+              <span className="ml-2 border-l-2 pl-2 text-xs font-semibold text-slate-400">
+                {display}
+              </span>
+            </>
+          )}
         </div>
       </div>
     )

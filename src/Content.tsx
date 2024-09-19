@@ -5,6 +5,8 @@ import { Delegate } from '@/pages/Delegate'
 import { toast } from 'sonner'
 import { useEffect } from 'react'
 import { useNetwork } from './contexts/NetworkContext'
+import { RedirectByName } from './components/RedirectByName'
+
 const pages = [
   {
     path: '',
@@ -18,6 +20,10 @@ const pages = [
     path: '/delegate/:address',
     element: <Delegate />,
   },
+  {
+    path: '/:network/:name',
+    element: <RedirectByName />,
+  },
 ]
 
 export const Content = () => {
@@ -30,12 +36,10 @@ export const Content = () => {
   }, [isLight, lightClientLoaded])
 
   return (
-    <>
-      <Routes>
-        {pages.map(({ path, element }, i) => {
-          return <Route key={`page_${i}`} path={path} element={element} />
-        })}
-      </Routes>
-    </>
+    <Routes>
+      {pages.map(({ path, element }, i) => {
+        return <Route key={`page_${i}`} path={path} element={element} />
+      })}
+    </Routes>
   )
 }
