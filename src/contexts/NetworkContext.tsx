@@ -32,14 +32,18 @@ type NetworkContextProps = {
 export type NetworksFromConfig = keyof typeof networks
 export type SupportedNetworkNames =
   | 'polkadot-lc'
+  | 'porkydot'
   | 'kusama-lc'
+  | 'kus000mba'
   | NetworksFromConfig
 export type ApiType = TypedApi<typeof dot | typeof ksm>
 
 export const descriptorName: Record<SupportedNetworkNames, ChainDefinition> = {
+  porkydot: dot,
   polkadot: dot,
   'polkadot-lc': dot,
   kusama: ksm,
+  kus000mba: ksm,
   'kusama-lc': ksm,
   westend: westend,
   'fast-westend': fastWestend,
@@ -57,6 +61,13 @@ export interface INetworkContext {
   assetInfo: AssetType
   trackList: TrackList
 }
+
+const isEasternEggNetwork = (network: string) =>
+  network === 'porkydot'
+    ? ('polkadot' as SupportedNetworkNames)
+    : network === 'kus000mba'
+      ? ('kusama' as SupportedNetworkNames)
+      : (network as SupportedNetworkNames)
 
 export const isSupportedNetwork = (
   network: string,
@@ -83,18 +94,18 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
 
   const selectNetwork = useCallback(
     (network: string) => {
-      if (!isSupportedNetwork(network)) {
+      if (!isSupportedNetwork(isEasternEggNetwork(network))) {
         console.error('This network is not supported', network)
         selectNetwork(DEFAULT_NETWORK)
         return
       }
 
-      setNetwork(network)
+      setNetwork(isEasternEggNetwork(network))
       setSearchParams((prev) => {
         prev.set('network', network)
         return prev
       })
-      setLocalStorageNetwork(network)
+      setLocalStorageNetwork(isEasternEggNetwork(network))
     },
     [setLocalStorageNetwork, setSearchParams],
   )
@@ -117,8 +128,17 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
 
     let client: PolkadotClient
 
-    if (network === 'polkadot-lc' || network === 'kusama-lc') {
-      const relay = network === 'polkadot-lc' ? 'polkadot' : 'kusama'
+    const altNetworksPolkadot = ['polkadot-lc', 'porkydot']
+    const altNetworksKusama = ['kus000mba', 'kusama-lc']
+
+    if ([...altNetworksPolkadot, ...altNetworksKusama].includes(network)) {
+      const relay = altNetworksPolkadot.includes(network)
+        ? 'polkadot'
+        : altNetworksKusama.includes(network)
+          ? 'kusama'
+          : ''
+
+      if (!relay) return
 
       const { assetInfo } = getChainInformation(relay)
       setAssetInfo(assetInfo)
@@ -137,6 +157,13 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
 
       client = createClient(getSmProvider(relayChain))
     } else {
+      if (
+        network === 'polkadot-lc' ||
+        network === 'porkydot' ||
+        network === 'kusama-lc' ||
+        network === 'kus000mba'
+      )
+        return
       const { assetInfo, wsEndpoint } = getChainInformation(network)
       setAssetInfo(assetInfo)
       setIsLight(false)
