@@ -52,7 +52,7 @@ export const Header = () => {
   const { network, selectNetwork, lightClientLoaded, isLight } = useNetwork()
   const { accounts, selectAccount, selectedAccount } = useAccounts()
   const [, disconnectAll] = useWalletDisconnector()
-  const [isConnectionDialiogOpen, setIsConnectionDialiogOpen] = useState(false)
+  const [isConnectionDialogOpen, setIsConnectionDialogOpen] = useState(false)
   // eslint-disable-next-line
   const { theme, setTheme } = useTheme()
   const { search } = useLocation()
@@ -60,6 +60,7 @@ export const Header = () => {
   useEffect(() => {
     if (!selectedAccount?.address && accounts.length > 0) {
       selectAccount(accounts[0])
+      setIsConnectionDialogOpen(false)
     }
   }, [accounts, selectAccount, selectedAccount?.address])
 
@@ -164,7 +165,7 @@ export const Header = () => {
               </DropdownMenuContent>
             </DropdownMenu>
             {!accounts.length && (
-              <Button onClick={() => setIsConnectionDialiogOpen(true)}>
+              <Button onClick={() => setIsConnectionDialogOpen(true)}>
                 Connect
               </Button>
             )}
@@ -209,6 +210,15 @@ export const Header = () => {
                   ))}
                   <DropdownMenuItem
                     className="cursor-pointer"
+                    key={'show'}
+                    onClick={() => {
+                      setIsConnectionDialogOpen(true)
+                    }}
+                  >
+                    Show wallets
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="cursor-pointer"
                     key={'logout'}
                     onClick={() => {
                       disconnectAll()
@@ -224,8 +234,8 @@ export const Header = () => {
         </div>
       </header>
       <ConnectionDialog
-        open={isConnectionDialiogOpen}
-        onClose={() => setIsConnectionDialiogOpen(false)}
+        open={isConnectionDialogOpen}
+        onClose={() => setIsConnectionDialogOpen(false)}
       />
     </>
   )
