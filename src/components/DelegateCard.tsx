@@ -3,12 +3,15 @@ import { Card } from '@/components/ui/card'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Delegate } from '@/contexts/DelegatesContext'
 import { ContentReveal } from './ui/content-reveal'
+import { sanitizeString } from '@/lib/utils'
+import { useNetwork } from '@/contexts/NetworkContext'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { LinkIcon } from 'lucide-react'
 import Markdown from 'react-markdown'
 import { H, H2, H3, Hr, P } from './ui/md'
 import { AnchorLink } from './ui/anchorLink'
+import { useCallback, useMemo } from 'react'
 
 interface Props {
   delegate: Delegate
@@ -23,22 +26,26 @@ export const DelegateCard = ({
   hasShareButton,
   hasDelegateButton = true,
 }: Props) => {
+  const { network } = useNetwork()
   const navigate = useNavigate()
   const { search } = useLocation()
+  const copyLink = useMemo(
+    () => `${window.location.host}/${network}/${sanitizeString(name)}`,
+    [name, network],
+  )
   const shouldHideLongDescription =
     !longDescription || longDescription === shortDescription
 
-  const onDelegate = () => {
+  const onDelegate = useCallback(() => {
     navigate(`/delegate/${address}${search}`)
-  }
-  const onCopy = () => {
-    navigator.clipboard.writeText(
-      window.location.origin + `/delegate/${address}${search}`,
-    )
+  }, [address, navigate, search])
+
+  const onCopy = useCallback(() => {
+    navigator.clipboard.writeText(copyLink)
     toast.success('Copied to clipboard', {
       duration: 1000,
     })
-  }
+  }, [copyLink])
 
   const DelegateAvatar: React.FC = () => {
     const divStyle: React.CSSProperties = {

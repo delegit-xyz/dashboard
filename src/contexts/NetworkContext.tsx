@@ -58,7 +58,7 @@ export interface INetworkContext {
   trackList: TrackList
 }
 
-const isSupportedNetwork = (
+export const isSupportedNetwork = (
   network: string,
 ): network is SupportedNetworkNames =>
   !!descriptorName[network as SupportedNetworkNames]
