@@ -57,11 +57,11 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@18.3.0)(@types/react@18.3.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@reactive-dot/core':
-        specifier: ^0.10.0
-        version: 0.10.0(polkadot-api@1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1))
+        specifier: ^0.14.0
+        version: 0.14.0(polkadot-api@1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1))
       '@reactive-dot/react':
-        specifier: ^0.10.0
-        version: 0.10.0(@types/react@18.3.5)(polkadot-api@1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1))(react@18.3.1)
+        specifier: ^0.14.0
+        version: 0.14.0(@types/react@18.3.5)(polkadot-api@1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1))(react@18.3.1)
       '@tanstack/react-table':
         specifier: ^8.20.5
         version: 8.20.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -75,8 +75,8 @@ importers:
         specifier: ^3.3.3
         version: 3.3.3
       dot-connect:
-        specifier: ^0.6.0
-        version: 0.6.0(@reactive-dot/core@0.10.0(polkadot-api@1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1)))(@types/react@18.3.5)(react@18.3.1)
+        specifier: ^0.8.1
+        version: 0.8.1(@reactive-dot/core@0.14.0(polkadot-api@1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1)))(@types/react@18.3.5)(react@18.3.1)
       lucide-react:
         specifier: ^0.437.0
         version: 0.437.0(react@18.3.1)
@@ -1267,20 +1267,13 @@ packages:
   '@radix-ui/rect@1.1.0':
     resolution: {integrity: sha512-A9+lCBZoaMJlVKcRBz2YByCG+Cp2t6nAnMnNba+XiWxnj6r4JUFqfsgwocMBZU9LPtdxC6wB56ySYpc7LQIoJg==}
 
-  '@reactive-dot/core@0.10.0':
-    resolution: {integrity: sha512-CC19qv3ETZI3/H+BNy202dRcVccjyXZgFG9g88NKAoBMTbvibXEBnIoI1/IvGHgDqACnmchk9OuyTJhFhRnYEg==}
+  '@reactive-dot/core@0.14.0':
+    resolution: {integrity: sha512-L8w6U0/hLvBm8sX/wsWAfRJ93oCEvmL/AQF2o0l0Dc7vQS4htmJqzAKz8HkPEFYNjUuHKJU8ERRetZ2aGguVIg==}
     peerDependencies:
-      '@walletconnect/modal': 2.x
-      '@walletconnect/universal-provider': 2.x
-      polkadot-api: ^1.0.0
-    peerDependenciesMeta:
-      '@walletconnect/modal':
-        optional: true
-      '@walletconnect/universal-provider':
-        optional: true
+      polkadot-api: 1.x
 
-  '@reactive-dot/react@0.10.0':
-    resolution: {integrity: sha512-9u0GuyQ2sqTZUnpYZLsqZ31AwZyIl6T24m2bTnJ5t6uq657ufNvnN0YmIa0md3UyvAyxnGxtzhohh+XCODYxyQ==}
+  '@reactive-dot/react@0.14.0':
+    resolution: {integrity: sha512-U+l0msgWUloyBrajTAeSxiEiBPnYtqJHI3/kNFnt7dQ1eCJzmOmwJwkorQo99QE1oYTTmH617hv/Ane0hEjYqQ==}
     peerDependencies:
       react: 18.x
 
@@ -1923,8 +1916,8 @@ packages:
   dot-case@3.0.4:
     resolution: {integrity: sha512-Kv5nKlh6yRrdrGvxeJ2e5y2eRUpkUosIW4A2AS38zwSz27zu7ufDwQPi5Jhs3XAlGNetl3bmnGhQsMtkKJnj3w==}
 
-  dot-connect@0.6.0:
-    resolution: {integrity: sha512-eFZsPjnRBLwhERBNRGTx0h2tHMfZSV5LTpoQIHcsaJVyjGbKRl1KEhALnaBILgZUwYeD7nrpXeQAtcwPBbLupQ==}
+  dot-connect@0.8.1:
+    resolution: {integrity: sha512-Hacysfily01JJfrf+7oKuk3Nj1P+xHqiczYeOVr0PNOxHfLAdj/cdc1fPMhOIe/HiB+tcOPHOMz44XJzdKvleQ==}
     peerDependencies:
       '@reactive-dot/core': '*'
       react: '>= 18'
@@ -2335,12 +2328,6 @@ packages:
   jiti@1.21.6:
     resolution: {integrity: sha512-2yTgeWTWzMWkHu6Jp9NKgePDaYHbntiwvYuuJLbbN9vl7DC9DvXKOB2BC3ZZ92D3cvV/aflH0osDfwpHepQ53w==}
     hasBin: true
-
-  jotai-scope@0.7.2:
-    resolution: {integrity: sha512-Gwed97f3dDObrO43++2lRcgOqw4O2sdr4JCjP/7eHK1oPACDJ7xKHGScpJX9XaflU+KBHXF+VhwECnzcaQiShg==}
-    peerDependencies:
-      jotai: '>=2.9.2'
-      react: '>=17.0.0'
 
   jotai@2.9.3:
     resolution: {integrity: sha512-IqMWKoXuEzWSShjd9UhalNsRGbdju5G2FrqNLQJT+Ih6p41VNYe2sav5hnwQx4HJr25jq9wRqvGSWGviGG6Gjw==}
@@ -4585,21 +4572,18 @@ snapshots:
 
   '@radix-ui/rect@1.1.0': {}
 
-  '@reactive-dot/core@0.10.0(polkadot-api@1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1))':
+  '@reactive-dot/core@0.14.0(polkadot-api@1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1))':
     dependencies:
       '@reactive-dot/utils': 0.8.0
       polkadot-api: 1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1)
 
-  '@reactive-dot/react@0.10.0(@types/react@18.3.5)(polkadot-api@1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1))(react@18.3.1)':
+  '@reactive-dot/react@0.14.0(@types/react@18.3.5)(polkadot-api@1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1))(react@18.3.1)':
     dependencies:
-      '@reactive-dot/core': 0.10.0(polkadot-api@1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1))
+      '@reactive-dot/core': 0.14.0(polkadot-api@1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1))
       jotai: 2.9.3(@types/react@18.3.5)(react@18.3.1)
-      jotai-scope: 0.7.2(jotai@2.9.3(@types/react@18.3.5)(react@18.3.1))(react@18.3.1)
       react: 18.3.1
     transitivePeerDependencies:
       - '@types/react'
-      - '@walletconnect/modal'
-      - '@walletconnect/universal-provider'
       - polkadot-api
 
   '@reactive-dot/utils@0.8.0': {}
@@ -5189,11 +5173,11 @@ snapshots:
       no-case: 3.0.4
       tslib: 2.7.0
 
-  dot-connect@0.6.0(@reactive-dot/core@0.10.0(polkadot-api@1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1)))(@types/react@18.3.5)(react@18.3.1):
+  dot-connect@0.8.1(@reactive-dot/core@0.14.0(polkadot-api@1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1)))(@types/react@18.3.5)(react@18.3.1):
     dependencies:
       '@lit-labs/preact-signals': 1.0.2
       '@lit/react': 1.0.5(@types/react@18.3.5)
-      '@reactive-dot/core': 0.10.0(polkadot-api@1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1))
+      '@reactive-dot/core': 0.14.0(polkadot-api@1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1))
       lit: 3.2.0
       qrcode: 1.5.4
     optionalDependencies:
@@ -5675,11 +5659,6 @@ snapshots:
       '@pkgjs/parseargs': 0.11.0
 
   jiti@1.21.6: {}
-
-  jotai-scope@0.7.2(jotai@2.9.3(@types/react@18.3.5)(react@18.3.1))(react@18.3.1):
-    dependencies:
-      jotai: 2.9.3(@types/react@18.3.5)(react@18.3.1)
-      react: 18.3.1
 
   jotai@2.9.3(@types/react@18.3.5)(react@18.3.1):
     optionalDependencies:
