@@ -11,7 +11,7 @@ export const RedirectByName = () => {
   const [address, setAddress] = useState('')
   const { selectNetwork } = useNetwork()
 
-  const [actNetwork, setActualNetwork] = useState<string>()
+  const [redirectionNetwor, setRedirectionNetwork] = useState<string>('')
 
   useEffect(() => {
     const netw =
@@ -19,19 +19,19 @@ export const RedirectByName = () => {
         ? 'polkadot'
         : network === 'kus000mba'
           ? 'kusama'
-          : network
-    setActualNetwork(netw)
+          : network || ''
+    setRedirectionNetwork(netw)
   }, [network])
 
   useEffect(() => {
-    if (!actNetwork || !isSupportedNetwork(actNetwork)) {
+    if (!redirectionNetwor || !isSupportedNetwork(redirectionNetwor)) {
       setIsDelegateMissing(true)
 
       return
     }
 
-    selectNetwork(actNetwork)
-  }, [actNetwork, selectNetwork])
+    selectNetwork(redirectionNetwor)
+  }, [redirectionNetwor, selectNetwork])
 
   useEffect(() => {
     if (!name) {
@@ -48,10 +48,16 @@ export const RedirectByName = () => {
     } else {
       setAddress(delegate.address)
     }
-  }, [getDelegateByName, isDelegateLoading, name, actNetwork, selectNetwork])
+  }, [
+    getDelegateByName,
+    isDelegateLoading,
+    name,
+    redirectionNetwor,
+    selectNetwork,
+  ])
 
-  if (address && !!actNetwork && isSupportedNetwork(actNetwork)) {
-    return <Navigate to={`/delegate/${address}?network=${actNetwork}`} />
+  if (address && !!redirectionNetwor && isSupportedNetwork(redirectionNetwor)) {
+    return <Navigate to={`/delegate/${address}?network=${redirectionNetwor}`} />
   }
 
   if (!isDelegateMissing) {
@@ -62,7 +68,7 @@ export const RedirectByName = () => {
     <div className="flex h-full w-full items-center justify-center">
       Delegate not found for name:{' '}
       <span className="mx-2 font-bold">{name}</span> and network:{' '}
-      <span className="mx-2 font-bold">{actNetwork}</span>
+      <span className="mx-2 font-bold">{redirectionNetwor}</span>
     </div>
   )
 }
