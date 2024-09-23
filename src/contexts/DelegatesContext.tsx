@@ -59,7 +59,7 @@ const DelegateContextProvider = ({ children }: DelegatesContextProps) => {
   // useEffect(() => {
   //   const a = async (delegates: any[]) => {
   //     const result: Promise<any>[] = delegates.map((d) => {
-  //       return dotApi.query.ConvictionVoting.VotingFor.getEntries(d.address)
+  //       return dotApi.query.ConvictionVoting.VotingFor.getEntries(d.address, 'best')
   //     })
   //     await Promise.all(result).then((res) => {
   //       console.log(res)
