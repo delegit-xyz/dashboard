@@ -109,12 +109,12 @@ export const LocksCard = () => {
     if (!unVoteTxs || !unlockTxs) return
 
     const subscriptionCallback = getSubscriptionCallBack({
-      onFinalized: () => setIsUnlockingLoading(false),
+      onInBlock: () => setIsUnlockingLoading(false),
       onError: () => setIsUnlockingLoading(false),
     })
 
     api.tx.Utility.batch({ calls: [...unVoteTxs, ...unlockTxs] })
-      .signSubmitAndWatch(selectedAccount.polkadotSigner)
+      .signSubmitAndWatch(selectedAccount.polkadotSigner, { at: 'best' })
       .subscribe(subscriptionCallback)
   }, [api, freeLocks, getSubscriptionCallBack, getUnlockTx, selectedAccount])
 

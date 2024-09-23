@@ -67,15 +67,15 @@ export const MyDelegations = () => {
         onError: () => {
           setDelegatesLoading((prev) => prev.filter((id) => id !== delegate))
         },
-        onFinalized: () => {
+        onInBlock: () => {
           setDelegatesLoading((prev) => prev.filter((id) => id !== delegate))
           refreshLocks()
         },
       })
 
-      tx.signSubmitAndWatch(selectedAccount.polkadotSigner).subscribe(
-        subscriptionCallback,
-      )
+      tx.signSubmitAndWatch(selectedAccount.polkadotSigner, {
+        at: 'best',
+      }).subscribe(subscriptionCallback)
     },
     [api, delegations, getSubscriptionCallback, refreshLocks, selectedAccount],
   )

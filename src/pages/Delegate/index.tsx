@@ -202,11 +202,11 @@ export const Delegate = () => {
 
     const subscriptionCallBack = getSubscriptionCallBack({
       onError: () => setIsTxInitiated(false),
-      onFinalized: () => onProcessFinished(),
+      onInBlock: () => onProcessFinished(),
     })
 
     await allTxs
-      .signSubmitAndWatch(selectedAccount?.polkadotSigner)
+      .signSubmitAndWatch(selectedAccount?.polkadotSigner, { at: 'best' })
       .subscribe(subscriptionCallBack)
   }
 

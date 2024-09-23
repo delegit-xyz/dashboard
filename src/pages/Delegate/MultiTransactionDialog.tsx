@@ -68,14 +68,14 @@ export const MultiTransactionDialog = ({
 
     const subscriptionCallBack1 = getSubscriptionCallBack({
       onError: () => setIsTxInitiated(false),
-      onFinalized: () => {
+      onInBlock: () => {
         setStep(2)
         setIsTxInitiated(false)
       },
     })
 
     ;(await step1Txs)
-      .signSubmitAndWatch(selectedAccount?.polkadotSigner)
+      .signSubmitAndWatch(selectedAccount?.polkadotSigner, { at: 'best' })
       .subscribe(subscriptionCallBack1)
   }
 
@@ -107,10 +107,12 @@ export const MultiTransactionDialog = ({
         setIsTxInitiated(false)
         setWaitingForFinalization(true)
       },
-      onInBlock: () => setWaitingForFinalization(true),
-      onFinalized: () => {
+      onInBlock: () => {
+        setWaitingForFinalization(true)
         onProcessFinished()
         setIsTxInitiated(false)
+      },
+      onFinalized: () => {
         setWaitingForFinalization(false)
       },
     })
