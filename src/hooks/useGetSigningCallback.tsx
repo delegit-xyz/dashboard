@@ -25,8 +25,8 @@ export const useGetSigningCallback =
         }
         if (event.type === 'txBestBlocksState') {
           toast.success(`Tx in block`)
+          onInBlock && onInBlock()
         }
-        onInBlock && onInBlock()
         if (event.type === 'finalized') {
           toast.success(`Tx finalized in block: ${event.block.number}`)
           onFinalized && onFinalized()
