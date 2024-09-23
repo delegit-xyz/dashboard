@@ -1,5 +1,5 @@
 import { useNetwork } from '@/contexts/NetworkContext'
-import { AccountInfoIF, cn, mapRawIdentity } from '@/lib/utils'
+import { AccountInfoIF, cn, retrieveIdentity } from '@/lib/utils'
 import { Polkicon } from '@polkadot-ui/react'
 import { useEffect, useState } from 'react'
 
@@ -16,12 +16,8 @@ export const AddressDisplay = ({ address, size, className = '' }: Props) => {
 
   useEffect(() => {
     const retrieve = async () => {
-      console.log('address', address)
-      const id = await peopleApi?.query?.Identity.IdentityOf.getValue(address)
-      setIdentity({
-        address,
-        ...mapRawIdentity(id),
-      })
+      const id = await retrieveIdentity(peopleApi, address)
+      setIdentity(id)
     }
     retrieve()
   }, [address, peopleApi])

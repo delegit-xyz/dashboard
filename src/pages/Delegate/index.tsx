@@ -108,7 +108,6 @@ export const Delegate = () => {
     const retrieve = async () => {
       const id = await peopleApi?.query?.Identity.IdentityOf.getValue(address!)
 
-      console.log('ID', id)
       setIdentity({
         address,
         ...mapRawIdentity(id),

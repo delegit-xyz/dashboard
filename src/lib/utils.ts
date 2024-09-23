@@ -7,8 +7,13 @@ import type { NetworkType, RouterType, Vote } from './types'
 import { ApiType, NetworksFromConfig } from '@/contexts/NetworkContext'
 import { DEFAULT_TIME, lockPeriod, ONE_DAY, THRESHOLD } from './constants'
 import { bnMin } from './bnMin'
-import { DotPeopleQueries } from '@polkadot-api/descriptors'
-import { Binary } from 'polkadot-api'
+import {
+  DotPeopleQueries,
+  dotPeople,
+  ksmPeople,
+  westendPeople,
+} from '@polkadot-api/descriptors'
+import { Binary, TypedApi } from 'polkadot-api'
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs))
@@ -145,5 +150,18 @@ export const mapRawIdentity = (
     legal: dataToString(legal.value),
     matrix: dataToString(matrix.value),
     twitter: dataToString(twitter.value),
+  }
+}
+
+export const retrieveIdentity = async (
+  peopleApi:
+    | TypedApi<typeof dotPeople | typeof ksmPeople | typeof westendPeople>
+    | undefined,
+  address: string,
+) => {
+  const id = await peopleApi?.query?.Identity.IdentityOf.getValue(address)
+  return {
+    address,
+    ...mapRawIdentity(id),
   }
 }

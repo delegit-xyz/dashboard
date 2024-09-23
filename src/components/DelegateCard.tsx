@@ -7,14 +7,13 @@ import { AccountInfoIF, cn } from '@/lib/utils'
 import { sanitizeString } from '@/lib/utils'
 import { useNetwork } from '@/contexts/NetworkContext'
 import { toast } from 'sonner'
-import { LinkIcon, Mail } from 'lucide-react'
-import { BsTwitterX } from 'react-icons/bs'
+import { LinkIcon } from 'lucide-react'
 
 import Markdown from 'react-markdown'
 import { H, H2, H3, Hr, P } from './ui/md'
 import { AnchorLink } from './ui/anchorLink'
-import { TbWorldWww } from 'react-icons/tb'
 import { useCallback, useMemo } from 'react'
+import { IdentityInfo } from './IdentityInfo'
 
 interface Props {
   delegate: Delegate
@@ -26,12 +25,10 @@ interface Props {
 
 export const DelegateCard = ({
   delegate: { address, longDescription, shortDescription, image, name },
-  identity,
   className,
   hasShareButton,
   hasDelegateButton = true,
 }: Props) => {
-  console.log(identity)
   const { network } = useNetwork()
   const navigate = useNavigate()
   const { search } = useLocation()
@@ -74,41 +71,13 @@ export const DelegateCard = ({
         <div className="w-full p-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1 py-2 text-xl font-semibold">
-              {name}
+              <IdentityInfo address={address} name={name} />
               {hasShareButton && (
                 <Button variant="ghost" onClick={onCopy} size="icon">
                   <LinkIcon className="h-4 w-4 text-accent-foreground" />
                 </Button>
               )}
             </div>
-            {!!identity && (
-              <div className="flex">
-                {identity?.web && (
-                  <TbWorldWww
-                    className="cursor-pointer"
-                    onClick={() =>
-                      window.open(identity?.web as string, '_blank')
-                    }
-                  />
-                )}
-                {identity?.twitter && (
-                  <BsTwitterX
-                    className="cursor-pointer"
-                    onClick={() =>
-                      window.open(
-                        `https://twitter.com/@${identity?.twitter}`,
-                        '_blank',
-                      )
-                    }
-                  />
-                )}
-                {identity?.email && (
-                  <a href={`mailto:${identity?.email}`}>
-                    <Mail className="cursor-pointer" />
-                  </a>
-                )}
-              </div>
-            )}
           </div>
           <div className="text-accent-foreground">
             <div className="break-words text-lg">{shortDescription}</div>
