@@ -142,8 +142,9 @@ export const LocksCard = () => {
               className="mb-2 mt-4 w-full"
               onClick={onUnlockClick}
               disabled={isUnlockingLoading}
+              loading={isUnlockingLoading}
             >
-              Unlock
+              {isUnlockingLoading ? 'Unlocking...' : 'Unlock'}
             </Button>
           )}
           <ContentReveal hidden={freeLocks.length == 0}>

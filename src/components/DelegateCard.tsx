@@ -4,14 +4,17 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Delegate } from '@/contexts/DelegatesContext'
 import { ContentReveal } from './ui/content-reveal'
 import { AccountInfoIF, cn } from '@/lib/utils'
+import { sanitizeString } from '@/lib/utils'
+import { useNetwork } from '@/contexts/NetworkContext'
 import { toast } from 'sonner'
 import { LinkIcon, Mail } from 'lucide-react'
 import { BsTwitterX } from 'react-icons/bs'
 
 import Markdown from 'react-markdown'
-import { Title, TitleH2, TitleH3 } from './ui/title'
+import { H, H2, H3, Hr, P } from './ui/md'
 import { AnchorLink } from './ui/anchorLink'
 import { TbWorldWww } from 'react-icons/tb'
+import { useCallback, useMemo } from 'react'
 
 interface Props {
   delegate: Delegate
@@ -29,29 +32,45 @@ export const DelegateCard = ({
   hasDelegateButton = true,
 }: Props) => {
   console.log(identity)
+  const { network } = useNetwork()
   const navigate = useNavigate()
   const { search } = useLocation()
+  const copyLink = useMemo(
+    () => `${window.location.host}/${network}/${sanitizeString(name)}`,
+    [name, network],
+  )
   const shouldHideLongDescription =
     !longDescription || longDescription === shortDescription
 
-  const onDelegate = () => {
+  const onDelegate = useCallback(() => {
     navigate(`/delegate/${address}${search}`)
-  }
-  const onCopy = () => {
-    navigator.clipboard.writeText(
-      window.location.origin + `/delegate/${address}${search}`,
-    )
+  }, [address, navigate, search])
+
+  const onCopy = useCallback(() => {
+    navigator.clipboard.writeText(copyLink)
     toast.success('Copied to clipboard', {
       duration: 1000,
     })
+  }, [copyLink])
+
+  const DelegateAvatar: React.FC = () => {
+    const divStyle: React.CSSProperties = {
+      backgroundImage: 'url(' + image + ')',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+    }
+    return (
+      <div
+        className="vertical center h-20 w-20 min-w-20 rounded-full border"
+        style={divStyle}
+      />
+    )
   }
 
   return (
     <Card className={cn('flex flex-col p-4', className)}>
       <div className="flex columns-3">
-        <div className="vertical center p-2">
-          <img className="rounded-full border" width="100" src={image} />
-        </div>
+        <DelegateAvatar />
         <div className="w-full p-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1 py-2 text-xl font-semibold">
@@ -96,10 +115,12 @@ export const DelegateCard = ({
             <ContentReveal hidden={shouldHideLongDescription}>
               <Markdown
                 components={{
-                  h1: Title,
-                  h2: TitleH2,
-                  h3: TitleH3,
+                  h1: H,
+                  h2: H2,
+                  h3: H3,
                   a: AnchorLink,
+                  hr: Hr,
+                  p: P,
                 }}
               >
                 {longDescription}
@@ -109,7 +130,7 @@ export const DelegateCard = ({
         </div>
         <div className="flex gap-1">
           {hasDelegateButton && (
-            <Button variant="default" onClick={onDelegate}>
+            <Button variant="default" onClick={onDelegate} className="w-full">
               Delegate
             </Button>
           )}

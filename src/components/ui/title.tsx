@@ -33,15 +33,3 @@ export const Title = ({ children, variant = 'h1', className }: Props) => {
 
   return <h5 className={cn(baseClass, 'text-sm', className)}>{children}</h5>
 }
-
-// these are used in Markdown for react-markdown
-export const TitleH2 = ({ children, className }: Props) => (
-  <Title variant="h2" className={className}>
-    {children}
-  </Title>
-)
-export const TitleH3 = ({ children, className }: Props) => (
-  <Title variant="h3" className={className}>
-    {children}
-  </Title>
-)

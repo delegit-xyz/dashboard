@@ -6,7 +6,7 @@ type Props = {
   children: React.ReactNode
   className?: string
   hidden?: boolean
-  noMaxHeight?: boolean
+  maxHeightClassName?: string
   title?: string | React.ReactNode
   buttonClassName?: string
 }
@@ -15,11 +15,10 @@ export const ContentReveal = ({
   children,
   className,
   hidden = false,
-  noMaxHeight = false,
+  maxHeightClassName = 'max-h-96',
   title = '',
   buttonClassName = '',
 }: Props) => {
-  const maxHeight = noMaxHeight ? '' : 'max-h-96'
   const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
@@ -54,7 +53,7 @@ export const ContentReveal = ({
       </button>
       <div
         className={`overflow-auto transition-all duration-300 ${
-          isOpen ? maxHeight : 'max-h-0'
+          isOpen ? maxHeightClassName : 'max-h-0'
         }`}
       >
         {children}
