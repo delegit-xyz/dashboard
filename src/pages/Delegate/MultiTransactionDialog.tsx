@@ -143,7 +143,7 @@ export const MultiTransactionDialog = ({
                 disabled={isTxInitiated}
                 loading={isTxInitiated}
               >
-                Sign transaction ${step} / 2
+                Sign transaction {step} / 2
               </Button>
             </div>
           </DialogDescription>
