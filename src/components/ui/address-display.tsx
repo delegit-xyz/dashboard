@@ -1,7 +1,6 @@
-import { useNetwork } from '@/contexts/NetworkContext'
-import { AccountInfoIF, cn, retrieveIdentity } from '@/lib/utils'
+import { useIdentity } from '@/hooks/useIdentity'
+import { cn } from '@/lib/utils'
 import { Polkicon } from '@polkadot-ui/react'
-import { useEffect, useState } from 'react'
 
 type Props = {
   address: string
@@ -10,17 +9,7 @@ type Props = {
 }
 
 export const AddressDisplay = ({ address, size, className = '' }: Props) => {
-  const { peopleApi } = useNetwork()
-
-  const [identity, setIdentity] = useState<AccountInfoIF | undefined>()
-
-  useEffect(() => {
-    const retrieve = async () => {
-      const id = await retrieveIdentity(peopleApi, address)
-      setIdentity(id)
-    }
-    retrieve()
-  }, [address, peopleApi])
+  const identity = useIdentity(address)
 
   return (
     <div className={cn('flex items-center gap-2', className)}>

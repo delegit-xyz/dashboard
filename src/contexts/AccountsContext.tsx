@@ -50,7 +50,8 @@ const AccountContextProvider = ({ children }: AccountContextProps) => {
   useEffect(() => {
     if (localStorageAccount) {
       const account = accounts.find(
-        (account) => account.address === localStorageAccount,
+        (account: { address: string }) =>
+          account.address === localStorageAccount,
       )
       if (account) {
         selectAccount(account)

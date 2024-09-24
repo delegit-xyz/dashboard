@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Delegate } from '@/contexts/DelegatesContext'
 import { ContentReveal } from './ui/content-reveal'
-import { AccountInfoIF, cn } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { sanitizeString } from '@/lib/utils'
 import { useNetwork } from '@/contexts/NetworkContext'
 import { toast } from 'sonner'
@@ -17,7 +17,6 @@ import { IdentityInfo } from './IdentityInfo'
 
 interface Props {
   delegate: Delegate
-  identity?: AccountInfoIF
   className?: string
   hasShareButton?: boolean
   hasDelegateButton?: boolean

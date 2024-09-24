@@ -1,19 +1,20 @@
 import { type ClassValue, clsx } from 'clsx'
 import { House } from 'lucide-react'
 import networks from '@/assets/networks.json'
+import peopleNetworks from '@/assets/peopleNetworks.json'
 
 import { twMerge } from 'tailwind-merge'
-import type { NetworkType, RouterType, Vote } from './types'
-import { ApiType, NetworksFromConfig } from '@/contexts/NetworkContext'
+import type { NetworkType, PeopleNetworkType, RouterType, Vote } from './types'
+import {
+  ApiType,
+  NetworksFromConfig,
+  SupportedPeopleNetworkNames,
+} from '@/contexts/NetworkContext'
 import { DEFAULT_TIME, lockPeriod, ONE_DAY, THRESHOLD } from './constants'
 import { bnMin } from './bnMin'
-import {
-  DotPeopleQueries,
-  dotPeople,
-  ksmPeople,
-  westendPeople,
-} from '@polkadot-api/descriptors'
-import { Binary, TypedApi } from 'polkadot-api'
+
+const randomFromInterval = (min: number, max: number) =>
+  Math.floor(Math.random() * (max - min + 1) + min)
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs))
@@ -28,6 +29,16 @@ export const getChainInformation = (networkName: NetworksFromConfig) => {
   return {
     assetInfo: network.assets[0],
     wsEndpoint: network.nodes[0].url,
+  }
+}
+
+export const getPeopleChainInformation = (
+  peopleName: SupportedPeopleNetworkNames,
+) => {
+  const peopleNetwork: PeopleNetworkType = peopleNetworks[peopleName]
+  const pick = randomFromInterval(0, peopleNetwork.nodes.length - 1)
+  return {
+    wsEndpoint: peopleNetwork.nodes[pick].url,
   }
 }
 
@@ -119,49 +130,21 @@ export const shuffleArray = (arrayToShuffle: unknown[]) => {
 }
 
 // PEOPLE CHAIN RELATED
-
 export type AccountInfoIF = {
-  address: string | number | undefined
-  display?: string | number | undefined
-  legal?: string | number | undefined
-  matrix?: string | number | undefined
-  email?: string | number | undefined
-  twitter?: string | number | undefined
-  web?: string | number | undefined
+  address: string | number
+  display?: string | number
+  legal?: string | number
+  matrix?: string | number
+  email?: string | number
+  twitter?: string | number
+  web?: string | number
+  judgement?: boolean
 }
 
-const dataToString = (value: number | string | Binary | undefined) =>
-  typeof value === 'object' ? value.asText() : (value ?? '')
-
-export const mapRawIdentity = (
-  rawIdentity?: DotPeopleQueries['Identity']['IdentityOf']['Value'],
-) => {
-  if (!rawIdentity) return rawIdentity
-  const {
-    info: { display, email, legal, matrix, twitter, web },
-  } = rawIdentity[0]
-
-  const display_id = dataToString(display.value)
-
-  return {
-    display: display_id,
-    web: dataToString(web.value),
-    email: dataToString(email.value),
-    legal: dataToString(legal.value),
-    matrix: dataToString(matrix.value),
-    twitter: dataToString(twitter.value),
-  }
-}
-
-export const retrieveIdentity = async (
-  peopleApi:
-    | TypedApi<typeof dotPeople | typeof ksmPeople | typeof westendPeople>
-    | undefined,
-  address: string,
-) => {
-  const id = await peopleApi?.query?.Identity.IdentityOf.getValue(address)
-  return {
-    address,
-    ...mapRawIdentity(id),
-  }
-}
+export const acceptedJudgement = ['Reasonable', 'FeePaid', 'KnownGood']
+export const notAcceptedJudgement = [
+  'Unknown',
+  'OutOfDate',
+  'LowQuality',
+  'Erroneous',
+]

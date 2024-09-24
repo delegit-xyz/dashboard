@@ -1,10 +1,9 @@
-import { AccountInfoIF, retrieveIdentity } from '@/lib/utils'
 import { BsTwitterX } from 'react-icons/bs'
 import { IoCheckmarkCircle, IoMail } from 'react-icons/io5'
 import { TbWorld } from 'react-icons/tb'
 import { Button } from './ui/button'
-import { useState, useEffect } from 'react'
-import { useNetwork } from '@/contexts/NetworkContext'
+import { useIdentity } from '@/hooks/useIdentity'
+import { TbCircleDashedMinus } from 'react-icons/tb'
 
 interface Props {
   name: string
@@ -12,29 +11,26 @@ interface Props {
 }
 
 export const IdentityInfo = ({ name, address }: Props) => {
-  const { peopleApi } = useNetwork()
-  const [identity, setIdentity] = useState<AccountInfoIF | undefined>()
-
-  useEffect(() => {
-    const retrieve = async () => {
-      const id = await retrieveIdentity(peopleApi, address)
-      setIdentity(id)
-    }
-    retrieve()
-  }, [address, peopleApi])
+  const identity = useIdentity(address)
 
   return (
     <>
       {identity?.display ? (
         <div className="flex items-center">
           {identity?.display}
-          <IoCheckmarkCircle className="ml-4 text-green-500" />
+          {identity?.judgement ? (
+            <IoCheckmarkCircle className="ml-4 text-green-500" />
+          ) : (
+            <TbCircleDashedMinus className="ml-4 text-gray-500" />
+          )}
         </div>
       ) : (
         name
       )}
-      {identity ? (
-        <div className="flex items-center justify-around text-green-500">
+      {identity && (
+        <div
+          className={`flex items-center justify-around text-${identity?.judgement ? 'green' : 'gray'}-500`}
+        >
           {identity?.web && (
             <Button
               variant="ghost"
@@ -66,7 +62,7 @@ export const IdentityInfo = ({ name, address }: Props) => {
             </Button>
           )}
         </div>
-      ) : null}
+      )}
     </>
   )
 }
