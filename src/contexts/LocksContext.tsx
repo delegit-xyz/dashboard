@@ -75,6 +75,11 @@ type LocksContextProps = {
   children: React.ReactNode | React.ReactNode[]
 }
 
+export interface TrackLock {
+  trackId: number
+  amount: bigint
+}
+
 export interface ConvictionDisplay {
   multiplier?: number
   display?: string
@@ -88,6 +93,7 @@ export interface ILocksContext {
     conviction: number | string,
   ) => ConvictionDisplay
   refreshLocks: () => void
+  maxLocked: bigint
 }
 
 const LocksContext = createContext<ILocksContext | undefined>(undefined)
@@ -97,7 +103,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
   const { api } = useNetwork()
 
   const [forcerefresh, setForceRefresh] = useState(0)
-  const [lockTracks, setLockTracks] = useState<number[]>([])
+  const [lockTracks, setLockTracks] = useState<TrackLock[]>([])
   const [stateOfRefs, setStateOfRefs] = useState<StateOfRefs>({})
   const [currentVoteLocks, setCurrentVoteLocks] = useState<
     {
@@ -109,6 +115,13 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
   const [convictionLocksMap, setConvictionLocksMap] = useState<
     Record<string, bigint>
   >({})
+  const maxLocked = useMemo(() => {
+    let max = 0n
+    lockTracks.forEach(({ amount }) => {
+      if (amount > max) max = amount
+    })
+    return max
+  }, [lockTracks])
 
   const refreshLocks = useCallback(() => {
     setForceRefresh((prev) => prev + 1)
@@ -131,7 +144,10 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
       selectedAccount.address,
       'best',
     ).subscribe((value) => {
-      const trackIdArray = value.map(([trackId]) => trackId)
+      const trackIdArray = value.map(([trackId, amount]) => ({
+        trackId,
+        amount,
+      }))
       setLockTracks(trackIdArray)
     })
 
@@ -177,6 +193,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
     currentVoteLocks.forEach(({ trackId, vote: { type, value } }) => {
       // when the account is currently delegating
       // when it undelegated, this will have the type Casting
+      // unless it's delegated again
       if (type === 'Delegating') {
         const prev = delegations[value.target] || []
 
@@ -188,6 +205,8 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
             conviction: value.conviction,
           },
         ]
+
+        // it may have a prior, if it's been delegating before
       } else if (type === 'Casting') {
         // this is when the account has casted a vote directly
         // or it's undelegating in which `votes` is empty
@@ -198,9 +217,23 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
             vote,
           }
         })
+      }
 
-        // this is when the account is undelegating
-        if (value.prior[1] > 0) {
+      // this is when the account is undelegating
+      if (value.prior[1] > 0) {
+        // if we're now delegating less than before
+        if (type === 'Delegating' && value.prior[1] - value.balance > 0) {
+          delegationLocks.push({
+            type: LockType.Delegating,
+            trackId,
+            amount: value.prior[1] - value.balance,
+            endBlock: value.prior[0],
+          })
+        }
+
+        // we're not delegating any more on this track
+        // so we have some lock from previous delegations
+        if (type === 'Casting') {
           delegationLocks.push({
             type: LockType.Delegating,
             trackId,
@@ -413,6 +446,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
         getConvictionLockTimeDisplay,
         delegationLocks,
         refreshLocks,
+        maxLocked,
       }}
     >
       {children}

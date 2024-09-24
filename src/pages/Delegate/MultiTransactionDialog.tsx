@@ -34,7 +34,6 @@ export const MultiTransactionDialog = ({
   const [isTxInitiated, setIsTxInitiated] = useState(false)
   const { isExhaustsResources } = useTestTx()
   const { selectedAccount } = useAccounts()
-  const [waitingForFinalization, setWaitingForFinalization] = useState(false)
   const [promptForHelpCallData, setPromptForHelpCallData] = useState('')
   const getSubscriptionCallBack = useGetSigningCallback()
 
@@ -105,15 +104,10 @@ export const MultiTransactionDialog = ({
     const subscriptionCallBack2 = getSubscriptionCallBack({
       onError: () => {
         setIsTxInitiated(false)
-        setWaitingForFinalization(true)
       },
       onInBlock: () => {
-        setWaitingForFinalization(true)
         onProcessFinished()
         setIsTxInitiated(false)
-      },
-      onFinalized: () => {
-        setWaitingForFinalization(false)
       },
     })
 
@@ -149,8 +143,7 @@ export const MultiTransactionDialog = ({
                 disabled={isTxInitiated}
                 loading={isTxInitiated}
               >
-                {!waitingForFinalization && `Sign transaction ${step} / 2`}
-                {waitingForFinalization && 'Waiting for finalization'}
+                Sign transaction {step} / 2
               </Button>
             </div>
           </DialogDescription>
