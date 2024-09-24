@@ -75,7 +75,7 @@ export interface INetworkContext {
   selectNetwork: (network: string, shouldResetAccountAddress?: boolean) => void
   client?: PolkadotClient
   api?: TypedApi<typeof dot | typeof ksm>
-  peopleApi: PeopleApiType
+  peopleApi?: PeopleApiType
   peopleClient?: PolkadotClient
   network?: SupportedNetworkNames
   peopleNetwork?: SupportedPeopleNetworkNames
