@@ -201,15 +201,7 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
       setIsLight(false)
 
       client = createClient(getWsProvider(wsEndpoint))
-      // TODO: Fix the RPCs
-      let wss: string = getPeopleChainInformation(peopleNetwork).wsEndpoint
-      if (network === 'polkadot') {
-        wss = 'wss://polkadot-people-rpc.polkadot.io'
-      } else if (network === 'kusama') {
-        wss = 'wss://people-kusama-rpc.dwellir.com'
-      } else {
-        wss = 'wss://sys.ibp.network/people-westend'
-      }
+      const wss: string = getPeopleChainInformation(peopleNetwork).wsEndpoint
       peopleClient = createClient(getWsProvider(wss))
     }
 
