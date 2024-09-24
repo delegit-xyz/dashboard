@@ -10,13 +10,25 @@
         "name": "IBP2"
       },
       {
+        "url": "wss://rpc-people-polkadot.luckyfriday.io",
+        "name": "LuckyFriday"
+      },
+      {
         "url": "wss://polkadot-people-rpc.polkadot.io",
         "name": "Parity"
+      },
+      {
+        "url": "wss://people-polkadot.public.curie.radiumblock.co/ws",
+        "name": "RadiumBlock"
       }
     ]
   },
   "kusamaPeople": {
     "nodes": [
+      {
+        "url": "wss://people-kusama-rpc.dwellir.com",
+        "name": "Dwellir"
+      },
       {
         "url": "wss://sys.ibp.network/people-kusama",
         "name": "IBP1"
@@ -26,13 +38,25 @@
         "name": "IBP2"
       },
       {
+        "url": "wss://rpc-people-kusama.luckyfriday.io",
+        "name": "LuckyFriday"
+      },
+      {
         "url": "wss://kusama-people-rpc.polkadot.io",
         "name": "Parity"
+      },
+      {
+        "url": "wss://ksm-rpc.stakeworld.io/people",
+        "name": "Stakeworld"
       }
     ]
   },
   "westendPeople": {
     "nodes": [
+      {
+        "url": "wss://people-westend-rpc.dwellir.com",
+        "name": "Dwellir"
+      },
       {
         "url": "wss://sys.ibp.network/people-westend",
         "name": "IBP1"

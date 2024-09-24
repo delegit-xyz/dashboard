@@ -27,7 +27,7 @@ import { getWsProvider } from 'polkadot-api/ws-provider/web'
 import { getSmProvider } from 'polkadot-api/sm-provider'
 import SmWorker from 'polkadot-api/smoldot/worker?worker'
 import { startFromWorker } from 'polkadot-api/smoldot/from-worker'
-import { getChainInformation, getPeopleChainInformation } from '@/lib/utils'
+import { getChainInformation } from '@/lib/utils'
 import { AssetType } from '@/lib/types'
 import networks from '@/assets/networks.json'
 import peopleNetworks from '@/assets/peopleNetworks.json'
@@ -201,7 +201,14 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
       setIsLight(false)
 
       client = createClient(getWsProvider(wsEndpoint))
-      const wss: string = getPeopleChainInformation(peopleNetwork).wsEndpoint
+      let wss: string = ''
+      if (network === 'polkadot') {
+        wss = 'wss://sys.ibp.network/people-polkadot'
+      } else if (network === 'kusama') {
+        wss = 'wss://sys.ibp.network/people-kusama'
+      } else {
+        wss = 'wss://sys.ibp.network/people-westend'
+      }
       peopleClient = createClient(getWsProvider(wss))
     }
 
