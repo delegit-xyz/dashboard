@@ -73,10 +73,10 @@ export interface INetworkContext {
   lightClientLoaded: boolean
   isLight: boolean
   selectNetwork: (network: string, shouldResetAccountAddress?: boolean) => void
-  client: PolkadotClient
-  api: TypedApi<typeof dot | typeof ksm>
+  client?: PolkadotClient
+  api?: TypedApi<typeof dot | typeof ksm>
   peopleApi: PeopleApiType
-  peopleClient: PolkadotClient
+  peopleClient?: PolkadotClient
   network?: SupportedNetworkNames
   peopleNetwork?: SupportedPeopleNetworkNames
   assetInfo: AssetType
