@@ -27,9 +27,10 @@ import { getWsProvider } from 'polkadot-api/ws-provider/web'
 import { getSmProvider } from 'polkadot-api/sm-provider'
 import SmWorker from 'polkadot-api/smoldot/worker?worker'
 import { startFromWorker } from 'polkadot-api/smoldot/from-worker'
-import { getChainInformation } from '@/lib/utils'
+import { getChainInformation, getPeopleChainInformation } from '@/lib/utils'
 import { AssetType } from '@/lib/types'
 import networks from '@/assets/networks.json'
+import peopleNetworks from '@/assets/peopleNetworks.json'
 import { DEFAULT_NETWORK, SELECTED_NETWORK_KEY } from '@/lib/constants'
 import { useLocalStorage } from 'usehooks-ts'
 import { useSearchParams } from 'react-router-dom'
@@ -38,11 +39,7 @@ type NetworkContextProps = {
   children: React.ReactNode | React.ReactNode[]
 }
 export type NetworksFromConfig = keyof typeof networks
-export type SupportedPeopleNetworkNames =
-  | 'people-polkadot'
-  | 'people-kusama'
-  | 'people-westend'
-  | 'people-fast-westend'
+export type SupportedPeopleNetworkNames = keyof typeof peopleNetworks
 
 export type SupportedNetworkNames =
   | 'polkadot-lc'
@@ -63,10 +60,9 @@ export const descriptorPeopleName: Record<
   SupportedPeopleNetworkNames,
   ChainDefinition
 > = {
-  'people-polkadot': dotPeople,
-  'people-kusama': ksmPeople,
-  'people-westend': westendPeople,
-  'people-fast-westend': westendPeople,
+  polkadotPeople: dotPeople,
+  kusamaPeople: ksmPeople,
+  westendPeople: westendPeople,
 }
 
 export type TrackList = Record<number, string>
@@ -92,6 +88,12 @@ export const isSupportedNetwork = (
 ): network is SupportedNetworkNames =>
   !!descriptorName[network as SupportedNetworkNames]
 
+const extractPeopleFromNetwork = (network: SupportedNetworkNames) =>
+  network
+    .replace('-lc', '')
+    .replace('fast-', '')
+    .concat('People') as SupportedPeopleNetworkNames
+
 const NetworkContext = createContext<INetworkContext | undefined>(undefined)
 
 const NetworkContextProvider = ({ children }: NetworkContextProps) => {
@@ -110,30 +112,23 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
 
   const [assetInfo, setAssetInfo] = useState<AssetType>({} as AssetType)
   const [network, setNetwork] = useState<SupportedNetworkNames | undefined>()
-  const [peopleNetwork, setPeopleNetwork] = useState<
-    SupportedPeopleNetworkNames | undefined
-  >()
-  const [searchParams, setSearchParams] = useSearchParams({ network: '' })
-
-  const selectPeopleNetork = (network: string) => {
-    setPeopleNetwork(
-      'people-'.concat(
-        network.replace('-lc', ''),
-      ) as SupportedPeopleNetworkNames,
+  const [peopleNetwork, setPeopleNetwork] =
+    useState<SupportedPeopleNetworkNames>(
+      extractPeopleFromNetwork(DEFAULT_NETWORK),
     )
-  }
+  const [searchParams, setSearchParams] = useSearchParams({ network: '' })
 
   const selectNetwork = useCallback(
     (network: string) => {
       if (!isSupportedNetwork(network)) {
         console.error('This network is not supported', network)
         selectNetwork(DEFAULT_NETWORK)
-        selectPeopleNetork(DEFAULT_NETWORK)
+        setPeopleNetwork(extractPeopleFromNetwork(DEFAULT_NETWORK))
         return
       }
 
       setNetwork(network)
-      selectPeopleNetork(network)
+      setPeopleNetwork(extractPeopleFromNetwork(network))
 
       setSearchParams((prev) => {
         prev.set('network', network)
@@ -150,11 +145,12 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
 
       // in this order we prefer the network in query string
       // or the local storage or the default
-      const selected =
-        queryStringNetwork || localStorageNetwork || DEFAULT_NETWORK
+      const selected = (queryStringNetwork ||
+        localStorageNetwork ||
+        DEFAULT_NETWORK) as SupportedNetworkNames
 
       selectNetwork(selected)
-      selectPeopleNetork(selected)
+      setPeopleNetwork(extractPeopleFromNetwork(selected))
     }
   }, [localStorageNetwork, network, searchParams, selectNetwork])
 
@@ -206,9 +202,7 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
 
       client = createClient(getWsProvider(wsEndpoint))
       // TODO: Fix the RPCs
-
-      console.log(network)
-      let wss: string = ''
+      let wss: string = getPeopleChainInformation(peopleNetwork).wsEndpoint
       if (network === 'polkadot') {
         wss = 'wss://polkadot-people-rpc.polkadot.io'
       } else if (network === 'kusama') {
@@ -216,7 +210,6 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
       } else {
         wss = 'wss://sys.ibp.network/people-westend'
       }
-      console.log(wss)
       peopleClient = createClient(getWsProvider(wss))
     }
 
