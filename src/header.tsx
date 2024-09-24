@@ -187,7 +187,7 @@ export const Header = () => {
                     <ChevronDown className="ml-2 h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent>
+                <DropdownMenuContent className="max-h-[calc(100vh-5rem)] overflow-auto">
                   {accounts.map((account, index) => (
                     <>
                       <DropdownMenuItem
