@@ -46,7 +46,9 @@ export type SupportedNetworkNames =
   | 'kusama-lc'
   | NetworksFromConfig
 export type ApiType = TypedApi<typeof dot | typeof ksm>
-export type PeopleApiType = TypedApi<typeof dotPeople | typeof ksmPeople>
+export type PeopleApiType = TypedApi<
+  typeof dotPeople | typeof ksmPeople | typeof westendPeople
+>
 
 export const descriptorName: Record<SupportedNetworkNames, ChainDefinition> = {
   polkadot: dot,
@@ -71,12 +73,10 @@ export interface INetworkContext {
   lightClientLoaded: boolean
   isLight: boolean
   selectNetwork: (network: string, shouldResetAccountAddress?: boolean) => void
-  client: PolkadotClient | undefined
-  api: TypedApi<typeof dot | typeof ksm> | undefined
-  peopleApi:
-    | TypedApi<typeof dotPeople | typeof ksmPeople | typeof westendPeople>
-    | undefined
-  peopleClient: PolkadotClient | undefined
+  client: PolkadotClient
+  api: TypedApi<typeof dot | typeof ksm>
+  peopleApi: PeopleApiType
+  peopleClient: PolkadotClient
   network?: SupportedNetworkNames
   peopleNetwork?: SupportedPeopleNetworkNames
   assetInfo: AssetType

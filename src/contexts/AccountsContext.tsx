@@ -21,6 +21,10 @@ export interface IAccountContext {
   selectAccount: (account: InjectedPolkadotAccount | undefined) => void
 }
 
+type AccountAddressType = {
+  address: string
+}
+
 const AccountContext = createContext<IAccountContext | undefined>(undefined)
 
 const AccountContextProvider = ({ children }: AccountContextProps) => {
@@ -50,8 +54,7 @@ const AccountContextProvider = ({ children }: AccountContextProps) => {
   useEffect(() => {
     if (localStorageAccount) {
       const account = accounts.find(
-        (account: { address: string }) =>
-          account.address === localStorageAccount,
+        ({ address }: AccountAddressType) => address === localStorageAccount,
       )
       if (account) {
         selectAccount(account)

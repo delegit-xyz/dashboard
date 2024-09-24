@@ -101,13 +101,6 @@ export const Delegate = () => {
     setAmountVisible('0')
   }, [api])
 
-  useEffect(() => {
-    if (!address || delegate) return
-
-    const res = getDelegateByAddress(address)
-    setDelegate(res)
-  }, [address, delegate, getDelegateByAddress])
-
   if (!delegate || !api) return <div>No delegate found</div>
 
   const onChangeAmount = (

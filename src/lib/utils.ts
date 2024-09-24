@@ -142,9 +142,3 @@ export type AccountInfoIF = {
 }
 
 export const acceptedJudgement = ['Reasonable', 'FeePaid', 'KnownGood']
-export const notAcceptedJudgement = [
-  'Unknown',
-  'OutOfDate',
-  'LowQuality',
-  'Erroneous',
-]
