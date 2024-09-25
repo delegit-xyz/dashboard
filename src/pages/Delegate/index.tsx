@@ -101,8 +101,6 @@ export const Delegate = () => {
     setAmountVisible('0')
   }, [api])
 
-  if (!delegate || !api) return <div>No delegate found</div>
-
   const onChangeAmount = (
     e: React.ChangeEvent<HTMLInputElement>,
     decimals: number,

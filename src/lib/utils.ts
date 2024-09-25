@@ -1,20 +1,12 @@
 import { type ClassValue, clsx } from 'clsx'
 import { House } from 'lucide-react'
 import networks from '@/assets/networks.json'
-import peopleNetworks from '@/assets/peopleNetworks.json'
 
 import { twMerge } from 'tailwind-merge'
-import type { NetworkType, PeopleNetworkType, RouterType, Vote } from './types'
-import {
-  ApiType,
-  NetworksFromConfig,
-  SupportedPeopleNetworkNames,
-} from '@/contexts/NetworkContext'
+import type { NetworkType, RouterType, Vote } from './types'
+import { ApiType, NetworksFromConfig } from '@/contexts/NetworkContext'
 import { DEFAULT_TIME, lockPeriod, ONE_DAY, THRESHOLD } from './constants'
 import { bnMin } from './bnMin'
-
-const randomFromInterval = (min: number, max: number) =>
-  Math.floor(Math.random() * (max - min + 1) + min)
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs))
@@ -29,16 +21,6 @@ export const getChainInformation = (networkName: NetworksFromConfig) => {
   return {
     assetInfo: network.assets[0],
     wsEndpoint: network.nodes[0].url,
-  }
-}
-
-export const getPeopleChainInformation = (
-  peopleName: SupportedPeopleNetworkNames,
-) => {
-  const peopleNetwork: PeopleNetworkType = peopleNetworks[peopleName]
-  const pick = randomFromInterval(0, peopleNetwork.nodes.length - 1)
-  return {
-    wsEndpoint: peopleNetwork.nodes[pick].url,
   }
 }
 

@@ -43,10 +43,6 @@ export type ExplorerType = {
   event?: string
 }
 
-export type PeopleNetworkType = {
-  nodes: NameUrl[]
-}
-
 export type NetworkType = {
   name: string
   specName: string
