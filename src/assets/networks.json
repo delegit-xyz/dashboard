@@ -36,6 +36,28 @@
         "name": "Dotters Net node"
       }
     ],
+    "peopleNodes": [
+      {
+        "url": "wss://sys.ibp.network/people-polkadot",
+        "name": "IBP1"
+      },
+      {
+        "url": "wss://sys.dotters.network/people-polkadot",
+        "name": "IBP2"
+      },
+      {
+        "url": "wss://rpc-people-polkadot.luckyfriday.io",
+        "name": "LuckyFriday"
+      },
+      {
+        "url": "wss://polkadot-people-rpc.polkadot.io",
+        "name": "Parity"
+      },
+      {
+        "url": "wss://people-polkadot.public.curie.radiumblock.co/ws",
+        "name": "RadiumBlock"
+      }
+    ],
     "assets": [
       {
         "assetId": 0,
@@ -121,6 +143,32 @@
         "name": "OnFinality node"
       }
     ],
+    "peopleNodes": [
+      {
+        "url": "wss://people-kusama-rpc.dwellir.com",
+        "name": "Dwellir"
+      },
+      {
+        "url": "wss://sys.ibp.network/people-kusama",
+        "name": "IBP1"
+      },
+      {
+        "url": "wss://sys.dotters.network/people-kusama",
+        "name": "IBP2"
+      },
+      {
+        "url": "wss://rpc-people-kusama.luckyfriday.io",
+        "name": "LuckyFriday"
+      },
+      {
+        "url": "wss://kusama-people-rpc.polkadot.io",
+        "name": "Parity"
+      },
+      {
+        "url": "wss://ksm-rpc.stakeworld.io/people",
+        "name": "Stakeworld"
+      }
+    ],
     "assets": [
       {
         "assetId": 0,
@@ -198,6 +246,24 @@
         "name": "OnFinality node"
       }
     ],
+    "peopleNodes": [
+      {
+        "url": "wss://sys.ibp.network/people-westend",
+        "name": "IBP1"
+      },
+      {
+        "url": "wss://people-westend-rpc.dwellir.com",
+        "name": "Dwellir"
+      },
+      {
+        "url": "wss://sys.dotters.network/people-westend",
+        "name": "IBP2"
+      },
+      {
+        "url": "wss://westend-people-rpc.polkadot.io",
+        "name": "Parity"
+      }
+    ],
     "assets": [
       {
         "assetId": 0,
@@ -242,6 +308,12 @@
       {
         "url": "wss://rpc-test-network-1.novasamatech.org",
         "name": "Development node"
+      }
+    ],
+    "peopleNodes": [
+      {
+        "url": "wss://sys.ibp.network/people-westend",
+        "name": "IBP1"
       }
     ],
     "assets": [

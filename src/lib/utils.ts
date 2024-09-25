@@ -3,7 +3,7 @@ import { House } from 'lucide-react'
 import networks from '@/assets/networks.json'
 
 import { twMerge } from 'tailwind-merge'
-import type { NetworkType, RouterType, Vote } from './types'
+import type { RouterType, Vote } from './types'
 import { ApiType, NetworksFromConfig } from '@/contexts/NetworkContext'
 import { DEFAULT_TIME, lockPeriod, ONE_DAY, THRESHOLD } from './constants'
 import { bnMin } from './bnMin'
@@ -17,10 +17,11 @@ export const routes: RouterType[] = [
 ]
 
 export const getChainInformation = (networkName: NetworksFromConfig) => {
-  const network: NetworkType = networks[networkName]
+  const network = networks[networkName]
   return {
     assetInfo: network.assets[0],
     wsEndpoint: network.nodes[0].url,
+    peopleEndpoint: network.peopleNodes[0].url,
   }
 }
 
