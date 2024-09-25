@@ -43,22 +43,6 @@ export type ExplorerType = {
   event?: string
 }
 
-export type NetworkType = {
-  name: string
-  specName: string
-  addressPrefix: number
-  chainId: string
-  icon: string
-  options: string[]
-  nodes: NameUrl[]
-  assets: AssetType[]
-  explorers?: ExplorerType[]
-  externalApi?: {
-    staking?: TypeUrl[]
-    history?: TypeUrl[]
-  }
-}
-
 export interface Vote {
   aye: boolean
   conviction: number
