@@ -6,7 +6,15 @@ import {
   useEffect,
   useState,
 } from 'react'
-import { dot, fastWestend, ksm, westend } from '@polkadot-api/descriptors'
+import {
+  dot,
+  dotPeople,
+  fastWestend,
+  ksm,
+  ksmPeople,
+  westend,
+  westendPeople,
+} from '@polkadot-api/descriptors'
 import {
   ChainDefinition,
   PolkadotClient,
@@ -22,6 +30,7 @@ import { startFromWorker } from 'polkadot-api/smoldot/from-worker'
 import { getChainInformation } from '@/lib/utils'
 import { AssetType } from '@/lib/types'
 import networks from '@/assets/networks.json'
+import peopleNetworks from '@/assets/peopleNetworks.json'
 import { DEFAULT_NETWORK, SELECTED_NETWORK_KEY } from '@/lib/constants'
 import { useLocalStorage } from 'usehooks-ts'
 import { useSearchParams } from 'react-router-dom'
@@ -30,11 +39,16 @@ type NetworkContextProps = {
   children: React.ReactNode | React.ReactNode[]
 }
 export type NetworksFromConfig = keyof typeof networks
+export type SupportedPeopleNetworkNames = keyof typeof peopleNetworks
+
 export type SupportedNetworkNames =
   | 'polkadot-lc'
   | 'kusama-lc'
   | NetworksFromConfig
 export type ApiType = TypedApi<typeof dot | typeof ksm>
+export type PeopleApiType = TypedApi<
+  typeof dotPeople | typeof ksmPeople | typeof westendPeople
+>
 
 export const descriptorName: Record<SupportedNetworkNames, ChainDefinition> = {
   polkadot: dot,
@@ -44,6 +58,14 @@ export const descriptorName: Record<SupportedNetworkNames, ChainDefinition> = {
   westend: westend,
   'fast-westend': fastWestend,
 }
+export const descriptorPeopleName: Record<
+  SupportedPeopleNetworkNames,
+  ChainDefinition
+> = {
+  polkadotPeople: dotPeople,
+  kusamaPeople: ksmPeople,
+  westendPeople: westendPeople,
+}
 
 export type TrackList = Record<number, string>
 
@@ -51,9 +73,12 @@ export interface INetworkContext {
   lightClientLoaded: boolean
   isLight: boolean
   selectNetwork: (network: string, shouldResetAccountAddress?: boolean) => void
-  client: PolkadotClient | undefined
-  api: TypedApi<typeof dot | typeof ksm> | undefined
+  client?: PolkadotClient
+  api?: TypedApi<typeof dot | typeof ksm>
+  peopleApi?: PeopleApiType
+  peopleClient?: PolkadotClient
   network?: SupportedNetworkNames
+  peopleNetwork?: SupportedPeopleNetworkNames
   assetInfo: AssetType
   trackList: TrackList
 }
@@ -62,6 +87,12 @@ export const isSupportedNetwork = (
   network: string,
 ): network is SupportedNetworkNames =>
   !!descriptorName[network as SupportedNetworkNames]
+
+const extractPeopleFromNetwork = (network: SupportedNetworkNames) =>
+  network
+    .replace('-lc', '')
+    .replace('fast-', '')
+    .concat('People') as SupportedPeopleNetworkNames
 
 const NetworkContext = createContext<INetworkContext | undefined>(undefined)
 
@@ -74,11 +105,17 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
   const [lightClientLoaded, setLightClientLoaded] = useState<boolean>(false)
   const [isLight, setIsLight] = useState<boolean>(false)
   const [client, setClient] = useState<PolkadotClient>()
+  const [peopleClient, setPeopleClient] = useState<PolkadotClient>()
   const [api, setApi] = useState<ApiType>()
+  const [peopleApi, setPeopleApi] = useState<PeopleApiType>()
   const [trackList, setTrackList] = useState<TrackList>({})
 
   const [assetInfo, setAssetInfo] = useState<AssetType>({} as AssetType)
   const [network, setNetwork] = useState<SupportedNetworkNames | undefined>()
+  const [peopleNetwork, setPeopleNetwork] =
+    useState<SupportedPeopleNetworkNames>(
+      extractPeopleFromNetwork(DEFAULT_NETWORK),
+    )
   const [searchParams, setSearchParams] = useSearchParams({ network: '' })
 
   const selectNetwork = useCallback(
@@ -86,10 +123,13 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
       if (!isSupportedNetwork(network)) {
         console.error('This network is not supported', network)
         selectNetwork(DEFAULT_NETWORK)
+        setPeopleNetwork(extractPeopleFromNetwork(DEFAULT_NETWORK))
         return
       }
 
       setNetwork(network)
+      setPeopleNetwork(extractPeopleFromNetwork(network))
+
       setSearchParams((prev) => {
         prev.set('network', network)
         return prev
@@ -105,10 +145,12 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
 
       // in this order we prefer the network in query string
       // or the local storage or the default
-      const selected =
-        queryStringNetwork || localStorageNetwork || DEFAULT_NETWORK
+      const selected = (queryStringNetwork ||
+        localStorageNetwork ||
+        DEFAULT_NETWORK) as SupportedNetworkNames
 
       selectNetwork(selected)
+      setPeopleNetwork(extractPeopleFromNetwork(selected))
     }
   }, [localStorageNetwork, network, searchParams, selectNetwork])
 
@@ -116,6 +158,7 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
     if (!network) return
 
     let client: PolkadotClient
+    let peopleClient: PolkadotClient
 
     if (network === 'polkadot-lc' || network === 'kusama-lc') {
       const relay = network === 'polkadot-lc' ? 'polkadot' : 'kusama'
@@ -125,31 +168,61 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
       setIsLight(true)
       const smoldot = startFromWorker(new SmWorker())
       let relayChain: Promise<Chain>
+      let peopleChain: Promise<Chain>
       if (relay === 'polkadot') {
         relayChain = import('polkadot-api/chains/polkadot').then(
           ({ chainSpec }) => smoldot.addChain({ chainSpec }),
+        )
+
+        peopleChain = Promise.all([
+          relayChain,
+          import('polkadot-api/chains/polkadot_people'),
+        ]).then(([relayChain, { chainSpec }]) =>
+          smoldot.addChain({ chainSpec, potentialRelayChains: [relayChain] }),
         )
       } else {
         relayChain = import('polkadot-api/chains/ksmcc3').then(
           ({ chainSpec }) => smoldot.addChain({ chainSpec }),
         )
+
+        peopleChain = Promise.all([
+          relayChain,
+          import('polkadot-api/chains/ksmcc3_people'),
+        ]).then(([relayChain, { chainSpec }]) =>
+          smoldot.addChain({ chainSpec, potentialRelayChains: [relayChain] }),
+        )
       }
 
       client = createClient(getSmProvider(relayChain))
+      peopleClient = createClient(getSmProvider(peopleChain))
     } else {
       const { assetInfo, wsEndpoint } = getChainInformation(network)
       setAssetInfo(assetInfo)
       setIsLight(false)
 
       client = createClient(getWsProvider(wsEndpoint))
+      let wss: string = ''
+      if (network === 'polkadot') {
+        wss = 'wss://sys.ibp.network/people-polkadot'
+      } else if (network === 'kusama') {
+        wss = 'wss://sys.ibp.network/people-kusama'
+      } else {
+        wss = 'wss://sys.ibp.network/people-westend'
+      }
+      peopleClient = createClient(getWsProvider(wss))
     }
 
     const descriptor = descriptorName[network]
     const typedApi = client.getTypedApi(descriptor)
 
+    const descriptorPeople = descriptorPeopleName[peopleNetwork]
+    const typedPeopleApi = peopleClient.getTypedApi(descriptorPeople)
+
     setClient(client)
+    setPeopleClient(peopleClient)
     setApi(typedApi)
-  }, [network])
+    setPeopleApi(typedPeopleApi)
+  }, [network, peopleNetwork])
 
   useEffect(() => {
     if (isLight) {
@@ -185,6 +258,8 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
         selectNetwork,
         client,
         api,
+        peopleClient,
+        peopleApi,
         assetInfo,
         trackList,
       }}

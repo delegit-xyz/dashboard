@@ -110,3 +110,17 @@ export const shuffleArray = (arrayToShuffle: unknown[]) => {
 
   return array
 }
+
+// PEOPLE CHAIN RELATED
+export type AccountInfoIF = {
+  address: string | number
+  display?: string | number
+  legal?: string | number
+  matrix?: string | number
+  email?: string | number
+  twitter?: string | number
+  web?: string | number
+  judgement?: boolean
+}
+
+export const acceptedJudgement = ['Reasonable', 'FeePaid', 'KnownGood']

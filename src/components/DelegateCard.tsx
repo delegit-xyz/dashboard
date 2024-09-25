@@ -3,15 +3,17 @@ import { Card } from '@/components/ui/card'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Delegate } from '@/contexts/DelegatesContext'
 import { ContentReveal } from './ui/content-reveal'
+import { cn } from '@/lib/utils'
 import { sanitizeString } from '@/lib/utils'
 import { useNetwork } from '@/contexts/NetworkContext'
-import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { LinkIcon } from 'lucide-react'
+
 import Markdown from 'react-markdown'
 import { H, H2, H3, Hr, P } from './ui/md'
 import { AnchorLink } from './ui/anchorLink'
 import { useCallback, useMemo } from 'react'
+import { IdentityInfo } from './IdentityInfo'
 
 interface Props {
   delegate: Delegate
@@ -63,16 +65,18 @@ export const DelegateCard = ({
 
   return (
     <Card className={cn('flex flex-col p-4', className)}>
-      <div className="flex flex-col gap-4 md:flex-row">
+      <div className="flex columns-3">
         <DelegateAvatar />
-        <div className="w-full">
-          <div className="flex items-center gap-1 py-2 text-xl font-semibold">
-            {name}
-            {hasShareButton && (
-              <Button variant="ghost" onClick={onCopy} size="icon">
-                <LinkIcon className="h-4 w-4 text-accent-foreground" />
-              </Button>
-            )}
+        <div className="w-full p-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1 py-2 text-xl font-semibold">
+              <IdentityInfo address={address} name={name} />
+              {hasShareButton && (
+                <Button variant="ghost" onClick={onCopy} size="icon">
+                  <LinkIcon className="h-4 w-4 text-accent-foreground" />
+                </Button>
+              )}
+            </div>
           </div>
           <div className="text-accent-foreground">
             <div className="break-words text-lg">{shortDescription}</div>
