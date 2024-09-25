@@ -30,7 +30,6 @@ import { startFromWorker } from 'polkadot-api/smoldot/from-worker'
 import { getChainInformation } from '@/lib/utils'
 import { AssetType } from '@/lib/types'
 import networks from '@/assets/networks.json'
-import peopleNetworks from '@/assets/peopleNetworks.json'
 import { DEFAULT_NETWORK, SELECTED_NETWORK_KEY } from '@/lib/constants'
 import { useLocalStorage } from 'usehooks-ts'
 import { useSearchParams } from 'react-router-dom'
@@ -39,7 +38,6 @@ type NetworkContextProps = {
   children: React.ReactNode | React.ReactNode[]
 }
 export type NetworksFromConfig = keyof typeof networks
-export type SupportedPeopleNetworkNames = keyof typeof peopleNetworks
 
 export type SupportedNetworkNames =
   | 'polkadot-lc'
@@ -50,21 +48,18 @@ export type PeopleApiType = TypedApi<
   typeof dotPeople | typeof ksmPeople | typeof westendPeople
 >
 
-export const descriptorName: Record<SupportedNetworkNames, ChainDefinition> = {
-  polkadot: dot,
-  'polkadot-lc': dot,
-  kusama: ksm,
-  'kusama-lc': ksm,
-  westend: westend,
-  'fast-westend': fastWestend,
+export interface ChainDefinitions {
+  main: ChainDefinition
+  people: ChainDefinition
 }
-export const descriptorPeopleName: Record<
-  SupportedPeopleNetworkNames,
-  ChainDefinition
-> = {
-  polkadotPeople: dotPeople,
-  kusamaPeople: ksmPeople,
-  westendPeople: westendPeople,
+
+export const descriptorName: Record<SupportedNetworkNames, ChainDefinitions> = {
+  polkadot: { main: dot, people: dotPeople },
+  'polkadot-lc': { main: dot, people: dotPeople },
+  kusama: { main: ksm, people: ksmPeople },
+  'kusama-lc': { main: ksm, people: ksmPeople },
+  westend: { main: westend, people: westendPeople },
+  'fast-westend': { main: fastWestend, people: westendPeople },
 }
 
 export type TrackList = Record<number, string>
@@ -78,7 +73,6 @@ export interface INetworkContext {
   peopleApi?: PeopleApiType
   peopleClient?: PolkadotClient
   network?: SupportedNetworkNames
-  peopleNetwork?: SupportedPeopleNetworkNames
   assetInfo: AssetType
   trackList: TrackList
 }
@@ -87,12 +81,6 @@ export const isSupportedNetwork = (
   network: string,
 ): network is SupportedNetworkNames =>
   !!descriptorName[network as SupportedNetworkNames]
-
-const extractPeopleFromNetwork = (network: SupportedNetworkNames) =>
-  network
-    .replace('-lc', '')
-    .replace('fast-', '')
-    .concat('People') as SupportedPeopleNetworkNames
 
 const NetworkContext = createContext<INetworkContext | undefined>(undefined)
 
@@ -112,10 +100,6 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
 
   const [assetInfo, setAssetInfo] = useState<AssetType>({} as AssetType)
   const [network, setNetwork] = useState<SupportedNetworkNames | undefined>()
-  const [peopleNetwork, setPeopleNetwork] =
-    useState<SupportedPeopleNetworkNames>(
-      extractPeopleFromNetwork(DEFAULT_NETWORK),
-    )
   const [searchParams, setSearchParams] = useSearchParams({ network: '' })
 
   const selectNetwork = useCallback(
@@ -123,12 +107,10 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
       if (!isSupportedNetwork(network)) {
         console.error('This network is not supported', network)
         selectNetwork(DEFAULT_NETWORK)
-        setPeopleNetwork(extractPeopleFromNetwork(DEFAULT_NETWORK))
         return
       }
 
       setNetwork(network)
-      setPeopleNetwork(extractPeopleFromNetwork(network))
 
       setSearchParams((prev) => {
         prev.set('network', network)
@@ -150,7 +132,6 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
         DEFAULT_NETWORK) as SupportedNetworkNames
 
       selectNetwork(selected)
-      setPeopleNetwork(extractPeopleFromNetwork(selected))
     }
   }, [localStorageNetwork, network, searchParams, selectNetwork])
 
@@ -212,17 +193,15 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
       peopleClient = createClient(getWsProvider(wss))
     }
 
-    const descriptor = descriptorName[network]
-    const typedApi = client.getTypedApi(descriptor)
-
-    const descriptorPeople = descriptorPeopleName[peopleNetwork]
-    const typedPeopleApi = peopleClient.getTypedApi(descriptorPeople)
+    const descriptors = descriptorName[network]
+    const typedApi = client.getTypedApi(descriptors.main)
+    const typedPeopleApi = peopleClient.getTypedApi(descriptors.people)
 
     setClient(client)
     setPeopleClient(peopleClient)
     setApi(typedApi)
     setPeopleApi(typedPeopleApi)
-  }, [network, peopleNetwork])
+  }, [network])
 
   useEffect(() => {
     if (isLight) {
