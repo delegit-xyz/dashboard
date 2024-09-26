@@ -6,14 +6,15 @@ import { ContentReveal } from './ui/content-reveal'
 import { cn } from '@/lib/utils'
 import { sanitizeString } from '@/lib/utils'
 import { useNetwork } from '@/contexts/NetworkContext'
-import { toast } from 'sonner'
 import { LinkIcon } from 'lucide-react'
 
 import Markdown from 'react-markdown'
 import { H, H2, H3, Hr, P } from './ui/md'
 import { AnchorLink } from './ui/anchorLink'
-import { useCallback, useMemo } from 'react'
-import { IdentityInfo } from './IdentityInfo'
+import { useCallback, useMemo, useState } from 'react'
+import { IdentityIcon } from './IdentityIcon'
+import { PopoverContent, PopoverTrigger } from './ui/popover'
+import { Popover } from '@radix-ui/react-popover'
 
 interface Props {
   delegate: Delegate
@@ -31,8 +32,10 @@ export const DelegateCard = ({
   const { network } = useNetwork()
   const navigate = useNavigate()
   const { search } = useLocation()
+  const [isCopyPopoverOpen, setIsCopyPopoverOpen] = useState(false)
   const copyLink = useMemo(
-    () => `${window.location.host}/${network}/${sanitizeString(name)}`,
+    () =>
+      `${location.protocol}//${location.host}/${network}/${sanitizeString(name)}`,
     [name, network],
   )
   const shouldHideLongDescription =
@@ -44,9 +47,10 @@ export const DelegateCard = ({
 
   const onCopy = useCallback(() => {
     navigator.clipboard.writeText(copyLink)
-    toast.success('Copied to clipboard', {
-      duration: 1000,
-    })
+    setIsCopyPopoverOpen(true)
+    setTimeout(() => {
+      setIsCopyPopoverOpen(false)
+    }, 1000)
   }, [copyLink])
 
   const DelegateAvatar: React.FC = () => {
@@ -70,12 +74,20 @@ export const DelegateCard = ({
         <div className="w-full p-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1 py-2 text-xl font-semibold">
-              <IdentityInfo address={address} name={name} />
               {hasShareButton && (
-                <Button variant="ghost" onClick={onCopy} size="icon">
-                  <LinkIcon className="h-4 w-4 text-accent-foreground" />
-                </Button>
+                <Popover open={isCopyPopoverOpen}>
+                  <PopoverTrigger onClick={(event) => event.stopPropagation()}>
+                    <Button variant="ghost" onClick={onCopy} size="icon">
+                      <LinkIcon className="h-4 w-4 text-accent-foreground" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto">
+                    Direct link copied!
+                  </PopoverContent>
+                </Popover>
               )}
+              <IdentityIcon address={address} />
+              <span>{name}</span>
             </div>
           </div>
           <div className="text-accent-foreground">
