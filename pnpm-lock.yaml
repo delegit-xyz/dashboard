@@ -75,8 +75,8 @@ importers:
         specifier: ^3.3.3
         version: 3.3.3
       dot-connect:
-        specifier: ^0.8.1
-        version: 0.8.1(@reactive-dot/core@0.14.0(polkadot-api@1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1)))(@types/react@18.3.5)(react@18.3.1)
+        specifier: ^0.9.0
+        version: 0.9.0(@reactive-dot/core@0.14.0(polkadot-api@1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1)))(@types/react@18.3.5)(react@18.3.1)
       lucide-react:
         specifier: ^0.437.0
         version: 0.437.0(react@18.3.1)
@@ -1916,8 +1916,8 @@ packages:
   dot-case@3.0.4:
     resolution: {integrity: sha512-Kv5nKlh6yRrdrGvxeJ2e5y2eRUpkUosIW4A2AS38zwSz27zu7ufDwQPi5Jhs3XAlGNetl3bmnGhQsMtkKJnj3w==}
 
-  dot-connect@0.8.1:
-    resolution: {integrity: sha512-Hacysfily01JJfrf+7oKuk3Nj1P+xHqiczYeOVr0PNOxHfLAdj/cdc1fPMhOIe/HiB+tcOPHOMz44XJzdKvleQ==}
+  dot-connect@0.9.0:
+    resolution: {integrity: sha512-uu6jornBfnCFUtt3vrkcgFW5/rd8u5AbJteA5jQr8wsI5z5xEaEnqhAi68+Rp1XMDi5od03/DjsH1C4IRq3Axg==}
     peerDependencies:
       '@reactive-dot/core': '*'
       react: '>= 18'
@@ -5173,7 +5173,7 @@ snapshots:
       no-case: 3.0.4
       tslib: 2.7.0
 
-  dot-connect@0.8.1(@reactive-dot/core@0.14.0(polkadot-api@1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1)))(@types/react@18.3.5)(react@18.3.1):
+  dot-connect@0.9.0(@reactive-dot/core@0.14.0(polkadot-api@1.2.0(jiti@1.21.6)(postcss@8.4.42)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1)))(@types/react@18.3.5)(react@18.3.1):
     dependencies:
       '@lit-labs/preact-signals': 1.0.2
       '@lit/react': 1.0.5(@types/react@18.3.5)
