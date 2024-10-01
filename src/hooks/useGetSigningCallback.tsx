@@ -34,7 +34,7 @@ export const useGetSigningCallback =
       },
       error: (error: DispatchError) => {
         console.error(error)
-        toast.error(`Error: ${JSON.stringify(error)}`)
+        toast.error(`${error.toString()}`)
         onError && onError()
       },
     }
