@@ -40,7 +40,7 @@
     "clsx": "^2.1.1",
     "copy-to-clipboard": "^3.3.3",
     "dot-connect": "^0.8.1",
-    "lucide-react": "^0.437.0",
+    "lucide-react": "^0.446.0",
     "next-themes": "^0.3.0",
     "polkadot-api": "^1.2.0",
     "react": "^18.3.1",
