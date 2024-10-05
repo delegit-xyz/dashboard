@@ -6,7 +6,13 @@ import {
 } from '@/contexts/DelegatesContext'
 import { useNetwork } from '@/contexts/NetworkContext'
 import { VotingConviction } from '@polkadot-api/descriptors'
-import { SetStateAction, useEffect, useMemo, useState } from 'react'
+import {
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { Button } from '@/components/ui/button'
 import { useAccounts } from '@/contexts/AccountsContext'
 import { Slider } from '@/components/ui/slider'
@@ -15,7 +21,7 @@ import { ArrowLeft, Loader2 } from 'lucide-react'
 import { msgs } from '@/lib/constants'
 import { evalUnits, planckToUnit } from '@polkadot-ui/utils'
 import { useLocks } from '@/contexts/LocksContext'
-import { DelegateTxs, useGetDelegateTx } from '@/hooks/useGetDelegateTx'
+import { useGetDelegateTx } from '@/hooks/useGetDelegateTx'
 import { AlertNote } from '@/components/Alert'
 import { useTestTx } from '@/hooks/useTestTx'
 import { MultiTransactionDialog } from './MultiTransactionDialog'
@@ -46,9 +52,50 @@ export const Delegate = () => {
   const [isTxInitiated, setIsTxInitiated] = useState(false)
   const { isExhaustsResources } = useTestTx()
   const [isMultiTxDialogOpen, setIsMultiTxDialogOpen] = useState(false)
-  const [delegateTxs, setDelegateTxs] = useState<DelegateTxs>({} as DelegateTxs)
   const [noDelegateFound, setNoDelegateFound] = useState(false)
+  const [allTracks, setAllTracks] = useState<number[]>([])
+  const [isExhaustsResourcesError, setIsExhaustsResourcesError] = useState<
+    boolean | null
+  >(false)
+  const {
+    delegationTxs = [],
+    removeDelegationsTxs = [],
+    removeVotesTxs = [],
+  } = useMemo(() => {
+    if (!delegate) return {}
 
+    return getDelegateTx({
+      delegateAddress: delegate.address,
+      conviction: conviction,
+      amount,
+      tracks: allTracks || [],
+    })
+  }, [allTracks, amount, conviction, delegate, getDelegateTx])
+
+  const allTxs = useMemo(() => {
+    if (!api) return
+
+    return api.tx.Utility.batch_all({
+      calls: [...removeVotesTxs, ...removeDelegationsTxs, ...delegationTxs].map(
+        (tx) => tx.decodedCall,
+      ),
+    })
+  }, [api, delegationTxs, removeDelegationsTxs, removeVotesTxs])
+
+  useEffect(() => {
+    if (!allTxs) return
+
+    // check if we have an exhausted limit on the whole tx
+    isExhaustsResources(allTxs)
+      .then(setIsExhaustsResourcesError)
+      .catch(console.error)
+  }, [
+    allTxs,
+    delegationTxs,
+    isExhaustsResources,
+    removeDelegationsTxs,
+    removeVotesTxs,
+  ])
   useEffect(() => {
     // the delegate list may still be loading
     if (isLoadingDelegates || delegate) return
@@ -66,7 +113,12 @@ export const Delegate = () => {
   }, [address, delegate, getDelegateByAddress, isLoadingDelegates])
 
   const { display: convictionTimeDisplay, multiplier: convictionMultiplier } =
-    getConvictionLockTimeDisplay(convictionNo)
+    useMemo(() => {
+      return (
+        getConvictionLockTimeDisplay(convictionNo) ||
+        getConvictionLockTimeDisplay(convictionNo)
+      )
+    }, [convictionNo, getConvictionLockTimeDisplay])
 
   const voteAmount = useMemo(() => {
     if (!convictionMultiplier) return
@@ -101,77 +153,67 @@ export const Delegate = () => {
     setAmountVisible('0')
   }, [api])
 
-  const onChangeAmount = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    decimals: number,
-  ) => {
-    setIsAmountDirty(true)
-    setAmountError('')
-    const [bnResult, errorMessage] = evalUnits(e.target.value, decimals)
-    setAmount(bnResult || 0n)
-    if (errorMessage) setAmountError(errorMessage)
-    setAmountVisible(e.target.value)
-  }
+  useEffect(() => {
+    if (!api) return
 
-  const onChangeSplitTransactionDialog = (isOpen: boolean) => {
+    api.constants.Referenda.Tracks()
+      .then((tracks) => {
+        const trackIds = tracks.map(([track]) => track)
+        setAllTracks(trackIds)
+      })
+      .catch(console.error)
+  }, [api])
+
+  const onChangeAmount = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      console.log('e.target.value', e.target.value)
+      const date1 = new Date()
+      setIsAmountDirty(true)
+      setAmountError('')
+      const [bnResult, errorMessage] = evalUnits(
+        e.target.value,
+        assetInfo.precision,
+      )
+      setAmount(bnResult || 0n)
+      if (errorMessage) setAmountError(errorMessage)
+      setAmountVisible(e.target.value)
+      const date2 = new Date()
+      const diff = date2.getTime() - date1.getTime()
+      console.log('date2 - date1', diff)
+    },
+    [assetInfo.precision],
+  )
+
+  const onOpenChangeSplitTransactionDialog = useCallback((isOpen: boolean) => {
     setIsMultiTxDialogOpen(isOpen)
     setIsTxInitiated(false)
-  }
+  }, [])
 
-  const onProcessFinished = () => {
+  const onProcessFinished = useCallback(() => {
     refreshLocks()
     navigate(`/${search}`)
     setIsTxInitiated(false)
-    onChangeSplitTransactionDialog(false)
-  }
+    onOpenChangeSplitTransactionDialog(false)
+  }, [navigate, onOpenChangeSplitTransactionDialog, refreshLocks, search])
 
-  const onSign = async () => {
+  const onSign = useCallback(async () => {
     if (!delegate || !selectedAccount || !amount || !api) return
 
     setIsTxInitiated(true)
 
-    const allTracks = await api.constants.Referenda.Tracks()
-      .then((tracks) => {
-        return tracks.map(([track]) => track)
-      })
-      .catch((e) => {
-        console.error(e)
-        setIsTxInitiated(false)
-      })
-
-    const {
-      delegationTxs = [],
-      removeDelegationsTxs = [],
-      removeVotesTxs = [],
-    } = getDelegateTx({
-      delegateAddress: delegate.address,
-      conviction: conviction,
-      amount,
-      tracks: allTracks || [],
-    })
-
-    setDelegateTxs({
-      removeVotesTxs,
-      removeDelegationsTxs,
-      delegationTxs,
-    })
-
-    const allTxs = api.tx.Utility.batch_all({
-      calls: [...removeVotesTxs, ...removeDelegationsTxs, ...delegationTxs].map(
-        (tx) => tx.decodedCall,
-      ),
-    })
+    if (
+      !removeDelegationsTxs.length &&
+      !removeVotesTxs.length &&
+      !delegationTxs.length
+    ) {
+      return
+    }
 
     if (!allTxs) {
       setIsTxInitiated(false)
       return
     }
-
-    // check if we have an exhausted limit on the whole tx
-    const isExhaustsRessouces = await isExhaustsResources(allTxs)
-
-    // this is too big of a batch we need to split it up
-    if (isExhaustsRessouces) {
+    if (isExhaustsResourcesError) {
       setIsMultiTxDialogOpen(true)
       return
     }
@@ -184,7 +226,19 @@ export const Delegate = () => {
     await allTxs
       .signSubmitAndWatch(selectedAccount?.polkadotSigner, { at: 'best' })
       .subscribe(subscriptionCallBack)
-  }
+  }, [
+    allTxs,
+    amount,
+    api,
+    delegate,
+    delegationTxs.length,
+    getSubscriptionCallBack,
+    isExhaustsResourcesError,
+    onProcessFinished,
+    removeDelegationsTxs.length,
+    removeVotesTxs.length,
+    selectedAccount,
+  ])
 
   if (noDelegateFound)
     return (
@@ -230,7 +284,7 @@ export const Delegate = () => {
         <div>
           <Label>Amount</Label>
           <Input
-            onChange={(value) => onChangeAmount(value, assetInfo.precision)}
+            onChange={onChangeAmount}
             value={amountVisible}
             error={amountErrorDisplay}
           />
@@ -274,8 +328,12 @@ export const Delegate = () => {
       </div>
       <MultiTransactionDialog
         isOpen={isMultiTxDialogOpen}
-        onOpenChange={onChangeSplitTransactionDialog}
-        delegateTxs={delegateTxs}
+        onOpenChange={onOpenChangeSplitTransactionDialog}
+        delegateTxs={{
+          delegationTxs,
+          removeDelegationsTxs,
+          removeVotesTxs,
+        }}
         onProcessFinished={onProcessFinished}
       />
     </main>
