@@ -16,7 +16,7 @@ export const useTestTx = () => {
       sr25519CreateDerive(entropyToMiniSecret(mnemonicToEntropy(DEV_PHRASE))),
     [],
   )
-  const aliceKeyPair = useMemo(() => derive('//Alice'), [])
+  const aliceKeyPair = useMemo(() => derive('//Alice'), [derive])
   const aliceSigner = useMemo(
     () =>
       getPolkadotSigner(aliceKeyPair.publicKey, 'Sr25519', aliceKeyPair.sign),
