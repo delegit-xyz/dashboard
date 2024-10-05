@@ -96,6 +96,7 @@ export const Delegate = () => {
     removeDelegationsTxs,
     removeVotesTxs,
   ])
+
   useEffect(() => {
     // the delegate list may still be loading
     if (isLoadingDelegates || delegate) return
@@ -326,16 +327,18 @@ export const Delegate = () => {
           Delegate with {voteAmount} {assetInfo.symbol} votes
         </Button>
       </div>
-      <MultiTransactionDialog
-        isOpen={isMultiTxDialogOpen}
-        onOpenChange={onOpenChangeSplitTransactionDialog}
-        delegateTxs={{
-          delegationTxs,
-          removeDelegationsTxs,
-          removeVotesTxs,
-        }}
-        onProcessFinished={onProcessFinished}
-      />
+      {isMultiTxDialogOpen && (
+        <MultiTransactionDialog
+          isOpen={isMultiTxDialogOpen}
+          onOpenChange={onOpenChangeSplitTransactionDialog}
+          delegateTxs={{
+            delegationTxs,
+            removeDelegationsTxs,
+            removeVotesTxs,
+          }}
+          onProcessFinished={onProcessFinished}
+        />
+      )}
     </main>
   )
 }

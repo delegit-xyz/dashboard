@@ -10,7 +10,7 @@ import { useAccounts } from '@/contexts/AccountsContext'
 import { useNetwork } from '@/contexts/NetworkContext'
 import { DelegateTxs } from '@/hooks/useGetDelegateTx'
 import { useTestTx } from '@/hooks/useTestTx'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { TooLargeDialog } from './TooLargeDialog'
 import { useGetSigningCallback } from '@/hooks/useGetSigningCallback'
 
@@ -42,7 +42,7 @@ export const MultiTransactionDialog = ({
     step === 2 && onSignStep2()
   }
 
-  const onSignStep1 = async () => {
+  const onSignStep1 = useCallback(async () => {
     if (!api || !selectedAccount) return
     setIsTxInitiated(true)
 
@@ -76,9 +76,16 @@ export const MultiTransactionDialog = ({
     ;(await step1Txs)
       .signSubmitAndWatch(selectedAccount?.polkadotSigner, { at: 'best' })
       .subscribe(subscriptionCallBack1)
-  }
+  }, [
+    api,
+    delegateTxs.removeDelegationsTxs,
+    delegateTxs.removeVotesTxs,
+    getSubscriptionCallBack,
+    isExhaustsResources,
+    selectedAccount,
+  ])
 
-  const onSignStep2 = async () => {
+  const onSignStep2 = useCallback(async () => {
     if (!api || !selectedAccount) return
     setIsTxInitiated(true)
 
@@ -114,7 +121,14 @@ export const MultiTransactionDialog = ({
     await step2Txs
       .signSubmitAndWatch(selectedAccount?.polkadotSigner, { at: 'best' })
       .subscribe(subscriptionCallBack2)
-  }
+  }, [
+    api,
+    delegateTxs.delegationTxs,
+    getSubscriptionCallBack,
+    isExhaustsResources,
+    onProcessFinished,
+    selectedAccount,
+  ])
 
   if (promptForHelpCallData)
     return (
