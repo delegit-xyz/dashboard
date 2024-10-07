@@ -7,18 +7,20 @@ import {
 } from '@polkadot-labs/hdkd-helpers'
 import { getPolkadotSigner } from 'polkadot-api/signer'
 import { useNetwork } from '@/contexts/NetworkContext'
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 
 export const useTestTx = () => {
   const { api } = useNetwork()
-  const derive = sr25519CreateDerive(
-    entropyToMiniSecret(mnemonicToEntropy(DEV_PHRASE)),
+  const derive = useMemo(
+    () =>
+      sr25519CreateDerive(entropyToMiniSecret(mnemonicToEntropy(DEV_PHRASE))),
+    [],
   )
-  const aliceKeyPair = derive('//Alice')
-  const aliceSigner = getPolkadotSigner(
-    aliceKeyPair.publicKey,
-    'Sr25519',
-    aliceKeyPair.sign,
+  const aliceKeyPair = useMemo(() => derive('//Alice'), [derive])
+  const aliceSigner = useMemo(
+    () =>
+      getPolkadotSigner(aliceKeyPair.publicKey, 'Sr25519', aliceKeyPair.sign),
+    [aliceKeyPair.publicKey, aliceKeyPair.sign],
   )
 
   const isExhaustsResources = useCallback(
