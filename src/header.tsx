@@ -23,7 +23,7 @@ import { ConnectionDialog } from 'dot-connect/react.js'
 //   MenubarTrigger,
 // } from '@/components/ui/menubar'
 import { useAccounts } from './contexts/AccountsContext'
-import React, { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { SupportedNetworkNames, useNetwork } from './contexts/NetworkContext'
 import { useTheme } from './components/theme-provider'
 import { Link, useLocation } from 'react-router-dom'
@@ -189,7 +189,7 @@ export const Header = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="max-h-[calc(100vh-5rem)] overflow-auto">
                   {accounts.map((account, index) => (
-                    <React.Fragment key={account.address}>
+                    <Fragment key={account.address}>
                       <DropdownMenuItem
                         className="cursor-pointer"
                         key={account.address}
@@ -206,7 +206,7 @@ export const Header = () => {
                       {index !== accounts.length - 1 && (
                         <DropdownMenuSeparator />
                       )}
-                    </React.Fragment>
+                    </Fragment>
                   ))}
                   <DropdownMenuItem
                     className="cursor-pointer"

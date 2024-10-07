@@ -114,12 +114,12 @@ export const Delegate = () => {
   }, [address, delegate, getDelegateByAddress, isLoadingDelegates])
 
   const { display: convictionTimeDisplay, multiplier: convictionMultiplier } =
-    useMemo(() => {
-      return (
+    useMemo(
+      () =>
         getConvictionLockTimeDisplay(convictionNo) ||
-        getConvictionLockTimeDisplay(convictionNo)
-      )
-    }, [convictionNo, getConvictionLockTimeDisplay])
+        getConvictionLockTimeDisplay(convictionNo),
+      [convictionNo, getConvictionLockTimeDisplay],
+    )
 
   const voteAmount = useMemo(() => {
     if (!convictionMultiplier) return
@@ -167,8 +167,6 @@ export const Delegate = () => {
 
   const onChangeAmount = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      console.log('e.target.value', e.target.value)
-      const date1 = new Date()
       setIsAmountDirty(true)
       setAmountError('')
       const [bnResult, errorMessage] = evalUnits(
@@ -178,9 +176,6 @@ export const Delegate = () => {
       setAmount(bnResult || 0n)
       if (errorMessage) setAmountError(errorMessage)
       setAmountVisible(e.target.value)
-      const date2 = new Date()
-      const diff = date2.getTime() - date1.getTime()
-      console.log('date2 - date1', diff)
     },
     [assetInfo.precision],
   )
