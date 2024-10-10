@@ -30,7 +30,6 @@ export const LocksCard = () => {
   const [expectedBlockTime, setExpectedBlockTime] = useState(0)
   const { api, assetInfo } = useNetwork()
   const { voteLocks, delegationLocks } = useLocks()
-  const [ongoingVoteLocks, setOngoingVoteLocks] = useState<VoteLock[]>([])
   const [freeLocks, setFreeLocks] = useState<Array<VoteLock | DelegationLock>>(
     [],
   )
@@ -47,14 +46,11 @@ export const LocksCard = () => {
   useEffect(() => {
     if (!currentBlock) return
 
-    const tempOngoingLocks: VoteLock[] = []
     const tempFree: Array<VoteLock | DelegationLock> = []
     const tempCurrent: VoteLock[] = []
 
     voteLocks.forEach((voteLocks) => {
-      if (voteLocks.isOngoing) {
-        tempOngoingLocks.push(voteLocks)
-      } else if (voteLocks.endBlock <= currentBlock) {
+      if (voteLocks.endBlock <= currentBlock) {
         tempFree.push(voteLocks)
       } else {
         tempCurrent.push(voteLocks)
@@ -74,7 +70,6 @@ export const LocksCard = () => {
       }
     })
 
-    setOngoingVoteLocks(tempOngoingLocks)
     setFreeLocks(tempFree)
     setCurrentLocks(tempCurrent)
     setCurrentDelegationLocks(tempDelegationLocks)
@@ -273,7 +268,7 @@ export const LocksCard = () => {
               </>
             </ContentReveal>
           </Card>
-          <Card className="h-max border-2 p-2 px-4">
+          {/* <Card className="h-max border-2 p-2 px-4">
             <div className="flex gap-x-2">
               <Title variant="h4">Votes</Title>
               <Popover>
@@ -315,7 +310,7 @@ export const LocksCard = () => {
                 })}
               </ContentReveal>
             }
-          </Card>
+          </Card> */}
         </>
       )}
     </div>

@@ -147,9 +147,9 @@ export const MultiTransactionDialog = ({
           <DialogDescription>
             <div className="my-4">
               {step === 1 &&
-                'The delegation process is in 2 parts. First, please sign a transaction to remove current votes and delegations.'}
+                'The delegation process is in 2 parts. First, please sign a transaction to remove previous votes or delegations.'}
               {step === 2 &&
-                'Votes and delegation are removed. You are now ready to sign a transaction to delegate.'}
+                'Votes and delegations are removed. You are now ready to sign a transaction to delegate.'}
             </div>
             <div className="text-end">
               <Button
