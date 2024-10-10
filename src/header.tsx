@@ -122,24 +122,7 @@ export const Header = () => {
           </SheetContent>
         </Sheet>
         <div className="flex w-full justify-between">
-          <div>
-            {/* TODO: split submenu based on routes 
-          <Menubar>
-            <MenubarMenu>
-              <MenubarTrigger>File</MenubarTrigger>
-              <MenubarContent>
-                <MenubarItem>
-                  New Tab <MenubarShortcut>⌘T</MenubarShortcut>
-                </MenubarItem>
-                <MenubarItem>New Window</MenubarItem>
-                <MenubarSeparator />
-                <MenubarItem>Share</MenubarItem>
-                <MenubarSeparator />
-                <MenubarItem>Print</MenubarItem>
-              </MenubarContent>
-            </MenubarMenu>
-          </Menubar>*/}
-          </div>
+          <div></div>
           <div className="flex">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

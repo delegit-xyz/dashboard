@@ -10,7 +10,7 @@ import { planckToUnit } from '@polkadot-ui/utils'
 import { Button } from './ui/button'
 import { Title } from './ui/title'
 import { ContentReveal } from './ui/content-reveal'
-import { BadgeCent, Clock2, Info, LockKeyholeOpen, Vote } from 'lucide-react'
+import { BadgeCent, Clock2, Info, LockKeyholeOpen } from 'lucide-react'
 import { Badge } from './ui/badge'
 import { useAccounts } from '@/contexts/AccountsContext'
 import {
@@ -30,7 +30,6 @@ export const LocksCard = () => {
   const [expectedBlockTime, setExpectedBlockTime] = useState(0)
   const { api, assetInfo } = useNetwork()
   const { voteLocks, delegationLocks } = useLocks()
-  const [ongoingVoteLocks, setOngoingVoteLocks] = useState<VoteLock[]>([])
   const [freeLocks, setFreeLocks] = useState<Array<VoteLock | DelegationLock>>(
     [],
   )
@@ -47,14 +46,11 @@ export const LocksCard = () => {
   useEffect(() => {
     if (!currentBlock) return
 
-    const tempOngoingLocks: VoteLock[] = []
     const tempFree: Array<VoteLock | DelegationLock> = []
     const tempCurrent: VoteLock[] = []
 
     voteLocks.forEach((voteLocks) => {
-      if (voteLocks.isOngoing) {
-        tempOngoingLocks.push(voteLocks)
-      } else if (voteLocks.endBlock <= currentBlock) {
+      if (voteLocks.endBlock <= currentBlock) {
         tempFree.push(voteLocks)
       } else {
         tempCurrent.push(voteLocks)
@@ -74,7 +70,6 @@ export const LocksCard = () => {
       }
     })
 
-    setOngoingVoteLocks(tempOngoingLocks)
     setFreeLocks(tempFree)
     setCurrentLocks(tempCurrent)
     setCurrentDelegationLocks(tempDelegationLocks)
@@ -272,49 +267,6 @@ export const LocksCard = () => {
                 })}
               </>
             </ContentReveal>
-          </Card>
-          <Card className="h-max border-2 p-2 px-4">
-            <div className="flex gap-x-2">
-              <Title variant="h4">Votes</Title>
-              <Popover>
-                <PopoverTrigger>
-                  <Info className="h-3 w-3 text-gray-500" />
-                </PopoverTrigger>
-                <PopoverContent>
-                  <p className="max-w-[15rem]">
-                    Votes casted on a referendum that is still in deciding
-                    phase.
-                  </p>
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div className="font-unbounded text-5xl font-bold">
-              {ongoingVoteLocks.length}
-              <Vote className="ml-1 inline-block h-8 w-8 text-gray-200" />
-            </div>
-            {
-              <ContentReveal hidden={!ongoingVoteLocks.length}>
-                {ongoingVoteLocks.map(({ amount, refId, trackId }) => {
-                  return (
-                    <div key={refId}>
-                      <ul>
-                        <li>
-                          <Badge>#{refId}</Badge>{' '}
-                          <span className="ml-2 border-l-2 pl-2 text-xs font-semibold text-slate-400">
-                            {trackId}
-                          </span>
-                          <div>
-                            <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
-                            {planckToUnit(amount, assetInfo.precision)}{' '}
-                            {assetInfo.symbol}
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                  )
-                })}
-              </ContentReveal>
-            }
           </Card>
         </>
       )}

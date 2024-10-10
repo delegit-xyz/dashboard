@@ -47,11 +47,13 @@ export const useGetDelegateTx = () => {
       >[] = []
 
       Object.values(delegations || {}).forEach((delegation) => {
-        delegation.map(({ trackId }) => {
-          removeDelegationsTxs.push(
-            api.tx.ConvictionVoting.undelegate({ class: trackId }),
-          )
-        })
+        delegation
+          .filter(({ trackId }) => tracks.includes(trackId))
+          .map(({ trackId }) => {
+            removeDelegationsTxs.push(
+              api.tx.ConvictionVoting.undelegate({ class: trackId }),
+            )
+          })
       })
 
       const delegationTxs = tracks.map((trackId) =>
