@@ -268,38 +268,6 @@ export const LocksCard = () => {
               </>
             </ContentReveal>
           </Card>
-          {/* <Card className="h-max border-2 p-2 px-4">
-            <div className="flex gap-x-2">
-              <Title variant="h4">Votes</Title>
-            </div>
-            <div className="font-unbounded text-5xl font-bold">
-              {ongoingVoteLocks.length}
-              <Vote className="ml-1 inline-block h-8 w-8 text-gray-200" />
-            </div>
-            {
-              <ContentReveal hidden={!ongoingVoteLocks.length}>
-                {ongoingVoteLocks.map(({ amount, refId, trackId }) => {
-                  return (
-                    <div key={refId}>
-                      <ul>
-                        <li>
-                          <Badge>#{refId}</Badge>{' '}
-                          <span className="ml-2 border-l-2 pl-2 text-xs font-semibold text-slate-400">
-                            {trackId}
-                          </span>
-                          <div>
-                            <BadgeCent className="inline-block h-4 w-4 text-gray-500" />{' '}
-                            {planckToUnit(amount, assetInfo.precision)}{' '}
-                            {assetInfo.symbol}
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                  )
-                })}
-              </ContentReveal>
-            }
-          </Card> */}
         </>
       )}
     </div>
