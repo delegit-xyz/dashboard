@@ -10,7 +10,7 @@ import { planckToUnit } from '@polkadot-ui/utils'
 import { Button } from './ui/button'
 import { Title } from './ui/title'
 import { ContentReveal } from './ui/content-reveal'
-import { BadgeCent, Clock2, Info, LockKeyholeOpen, Vote } from 'lucide-react'
+import { BadgeCent, Clock2, Info, LockKeyholeOpen } from 'lucide-react'
 import { Badge } from './ui/badge'
 import { useAccounts } from '@/contexts/AccountsContext'
 import {
@@ -271,17 +271,6 @@ export const LocksCard = () => {
           {/* <Card className="h-max border-2 p-2 px-4">
             <div className="flex gap-x-2">
               <Title variant="h4">Votes</Title>
-              <Popover>
-                <PopoverTrigger>
-                  <Info className="h-3 w-3 text-gray-500" />
-                </PopoverTrigger>
-                <PopoverContent>
-                  <p className="max-w-[15rem]">
-                    Votes casted on a referendum that is still in deciding
-                    phase.
-                  </p>
-                </PopoverContent>
-              </Popover>
             </div>
             <div className="font-unbounded text-5xl font-bold">
               {ongoingVoteLocks.length}
