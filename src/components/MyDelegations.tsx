@@ -2,27 +2,16 @@ import { Card } from '@polkadot-ui/react'
 import { Title } from './ui/title'
 import { TreePalm } from 'lucide-react'
 import { CurrentDelegation, useLocks } from '@/contexts/LocksContext'
-import { useCallback, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Skeleton } from './ui/skeleton'
-import { useDelegates } from '@/contexts/DelegatesContext'
-import { useNetwork } from '@/contexts/NetworkContext'
-import { AddressDisplay } from './ui/address-display'
-import { Button } from './ui/button'
-import { useAccounts } from '@/contexts/AccountsContext'
-import { Transaction } from 'polkadot-api'
-import { DelegationByAmountConviction } from './DelegationByAmountConviction'
-import { useGetSigningCallback } from '@/hooks/useGetSigningCallback'
+import { DelegationCard } from './DelegationCard'
 
 export const MyDelegations = () => {
-  const { api } = useNetwork()
-  const { delegations, refreshLocks } = useLocks()
-  const [delegateLoading, setDelegatesLoading] = useState<string[]>([])
+  const { delegations } = useLocks()
   const noDelegations = useMemo(
     () => !!delegations && Object.entries(delegations).length === 0,
     [delegations],
   )
-  const { getDelegateByAddress } = useDelegates()
-  const { selectedAccount } = useAccounts()
 
   const delegationsByDelegateConvictionAmount = useMemo(() => {
     if (!delegations) return
@@ -41,44 +30,6 @@ export const MyDelegations = () => {
 
     return result
   }, [delegations])
-
-  const getSubscriptionCallback = useGetSigningCallback()
-  const onUndelegate = useCallback(
-    (delegate: string) => {
-      if (!api || !selectedAccount || !delegations) return
-
-      setDelegatesLoading((prev) => [...prev, delegate])
-
-      const tracks = delegations[delegate].map((d) => d.trackId)
-
-      // @ts-expect-error we can't strongly type this
-      let tx: Transaction<undefined, unknown, unknown, undefined>
-
-      if (tracks.length === 1) {
-        tx = api.tx.ConvictionVoting.undelegate({ class: tracks[0] })
-      } else {
-        const batchTx = tracks.map(
-          (t) => api.tx.ConvictionVoting.undelegate({ class: t }).decodedCall,
-        )
-        tx = api.tx.Utility.batch({ calls: batchTx })
-      }
-
-      const subscriptionCallback = getSubscriptionCallback({
-        onError: () => {
-          setDelegatesLoading((prev) => prev.filter((id) => id !== delegate))
-        },
-        onInBlock: () => {
-          setDelegatesLoading((prev) => prev.filter((id) => id !== delegate))
-          refreshLocks()
-        },
-      })
-
-      tx.signSubmitAndWatch(selectedAccount.polkadotSigner, {
-        at: 'best',
-      }).subscribe(subscriptionCallback)
-    },
-    [api, delegations, getSubscriptionCallback, refreshLocks, selectedAccount],
-  )
 
   return (
     <>
@@ -99,50 +50,13 @@ export const MyDelegations = () => {
           </Card>
         ) : (
           Object.entries(delegationsByDelegateConvictionAmount).map(
-            ([delegateAddress, amountConvictionMap]) => {
-              const knownDelegate = getDelegateByAddress(delegateAddress)
-              const isUndelegating = delegateLoading.includes(delegateAddress)
-
-              return (
-                <Card
-                  className="flex h-max flex-col justify-between border bg-card p-2 px-4"
-                  key={delegateAddress}
-                >
-                  <>
-                    <div className="flex flex-col justify-between">
-                      {knownDelegate?.name ? (
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={knownDelegate.image}
-                            className="mr-2 w-12 rounded-full"
-                          />
-                          <div className="py-2 text-xl font-semibold">
-                            {knownDelegate.name}
-                          </div>
-                        </div>
-                      ) : (
-                        <AddressDisplay
-                          address={delegateAddress}
-                          size={'3rem'}
-                        />
-                      )}
-                      <DelegationByAmountConviction
-                        amountConvictionMap={amountConvictionMap}
-                      />
-                    </div>
-                    <Button
-                      className="w-a bottom-0 mb-2 mt-4"
-                      variant={'outline'}
-                      onClick={() => onUndelegate(delegateAddress)}
-                      disabled={isUndelegating}
-                      loading={isUndelegating}
-                    >
-                      {isUndelegating ? 'Undelegating...' : 'Undelegate'}
-                    </Button>
-                  </>
-                </Card>
-              )
-            },
+            ([delegateAddress, amountConvictionMap]) => (
+              <DelegationCard
+                delegateAddress={delegateAddress}
+                amountConvictionMap={amountConvictionMap}
+                key={delegateAddress}
+              />
+            ),
           )
         )}
       </div>
