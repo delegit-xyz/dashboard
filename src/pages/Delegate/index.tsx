@@ -209,6 +209,7 @@ export const Delegate = () => {
       setIsTxInitiated(false)
       return
     }
+
     if (isExhaustsResourcesError) {
       setIsMultiTxDialogOpen(true)
       return
