@@ -163,7 +163,9 @@ export const Delegate = () => {
         const trackIds = tracks.map(([track]) => track)
         const trackNamesMap = new Map<number, string>()
         tracks.forEach(([trackId, trackDetails]) => {
-          const trackName = trackDetails.name.replace(/_/g, ' ')
+          const trackName = trackDetails.name
+          .replace(/_/g, ' ')
+          .replace(/\b\w/g, (t) => t.toUpperCase())
           trackNamesMap.set(trackId, trackName)
         });
         setAllTracks(trackIds)
