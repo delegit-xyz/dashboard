@@ -54,6 +54,7 @@ export const Delegate = () => {
   const [isMultiTxDialogOpen, setIsMultiTxDialogOpen] = useState(false)
   const [noDelegateFound, setNoDelegateFound] = useState(false)
   const [allTracks, setAllTracks] = useState<number[]>([])
+  const [trackNames, setTrackNames] = useState<Map<number, string>>(new Map());
   const [isExhaustsResourcesError, setIsExhaustsResourcesError] = useState<
     boolean | null
   >(false)
@@ -160,7 +161,13 @@ export const Delegate = () => {
     api.constants.Referenda.Tracks()
       .then((tracks) => {
         const trackIds = tracks.map(([track]) => track)
+        const trackNamesMap = new Map<number, string>()
+        tracks.forEach(([trackId, trackDetails]) => {
+          const trackName = trackDetails.name.replace(/_/g, ' ')
+          trackNamesMap.set(trackId, trackName)
+        });
         setAllTracks(trackIds)
+        setTrackNames(trackNamesMap)
       })
       .catch(console.error)
   }, [api])
