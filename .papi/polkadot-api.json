@@ -11,7 +11,7 @@
       "metadata": ".papi/metadata/ksm.scale"
     },
     "fastWestend": {
-      "wsUrl": "wss://rpc-test-network-1.novasamatech.org",
+      "wsUrl": "wss://rpc-test-network-1.novasama-tech.org",
       "metadata": ".papi/metadata/fastWestend.scale"
     },
     "westend": {
