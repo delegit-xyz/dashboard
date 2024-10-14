@@ -28,6 +28,8 @@ import { MultiTransactionDialog } from './MultiTransactionDialog'
 import { useGetSigningCallback } from '@/hooks/useGetSigningCallback'
 import { Title } from '@/components/ui/title'
 import { DelegateCard } from '@/components/DelegateCard'
+import { ContentReveal } from '@/components/ui/content-reveal'
+import TrackSelection from '@/components/TrackSelection'
 
 export const Delegate = () => {
   const { api, assetInfo } = useNetwork()
@@ -164,8 +166,8 @@ export const Delegate = () => {
         const trackNamesMap = new Map<number, string>()
         tracks.forEach(([trackId, trackDetails]) => {
           const trackName = trackDetails.name
-          .replace(/_/g, ' ')
-          .replace(/\b\w/g, (t) => t.toUpperCase())
+            .replace(/_/g, ' ')
+            .replace(/\b\w/g, (t) => t.toUpperCase())
           trackNamesMap.set(trackId, trackName)
         });
         setAllTracks(trackIds)
@@ -298,7 +300,7 @@ export const Delegate = () => {
 
         <Label className="flex">
           Conviction: {convictionDisplay}
-          <div className="ml-2">{}</div>
+          <div className="ml-2">{ }</div>
         </Label>
         <Slider
           disabled={!api || !selectedAccount}
@@ -319,6 +321,12 @@ export const Delegate = () => {
             )
           }}
         />
+        <ContentReveal
+          title={"Track Selection"}
+        >
+          <TrackSelection
+            trackNamesMap={trackNames}></TrackSelection>
+        </ContentReveal>
         <AlertNote
           title={'Note'}
           message={`The ${convictionTimeDisplay} will start when you undelegate`}
