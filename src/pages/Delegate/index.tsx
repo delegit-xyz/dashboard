@@ -78,8 +78,6 @@ export const Delegate = () => {
   const onTrackSelectionChange = useCallback((tracks: number[]) => {
     setAllTracks(tracks)
   }, [])
-  useEffect(() => {
-  }, [allTracks]);
 
   const allTxs = useMemo(() => {
     if (!api) return
