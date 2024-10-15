@@ -13,12 +13,12 @@ const TrackSelection: React.FC<TrackSelectionProps> = ({ trackNamesMap, onTrackS
     }, [selectedTracks, onTrackSelectionChange]);
 
 
-  useEffect(() => {
-    if (trackNamesMap.size > 0) {
-      const allTrackIds = Array.from(trackNamesMap.keys())
-      setSelectedTracks(allTrackIds)
-    }
-  }, [trackNamesMap]);
+    useEffect(() => {
+        if (trackNamesMap.size > 0) {
+            const allTrackIds = Array.from(trackNamesMap.keys())
+            setSelectedTracks(allTrackIds)
+        }
+    }, [trackNamesMap]);
 
     const handleTrackToggle = (selectedTrackId: number) => {
         setSelectedTracks((prevSelectedTracks) => {
@@ -42,7 +42,7 @@ const TrackSelection: React.FC<TrackSelectionProps> = ({ trackNamesMap, onTrackS
 
     const columnArrays = [firstColumn, secondColumn, thirdColumn, fourthColumn, remainingTracks]
 
-    
+
     return (
         <div className="container mx-auto p-4">
             <div className="flex flex-wrap">
