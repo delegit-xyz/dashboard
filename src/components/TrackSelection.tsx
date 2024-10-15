@@ -57,8 +57,7 @@ const TrackSelection: React.FC<TrackSelectionProps> = ({ trackNamesMap, onTrackS
                                         key={trackId}
                                         className="flex-grow p-2 mb-2 min-h-[3rem] items-start"
                                     >
-                                        <div className="flex">
-                                            <label className="flex items-center space-x-2 text-xs">
+                                        <div className="flex items-center space-x-2 text-xs">
                                                 <input
                                                     type="checkbox"
                                                     className="accent-[hsl(var(--primary))] self-start"
@@ -67,7 +66,6 @@ const TrackSelection: React.FC<TrackSelectionProps> = ({ trackNamesMap, onTrackS
                                                 />
 
                                                 <span> {trackNamesMap.get(trackId)} </span>
-                                            </label>
                                         </div>
                                     </div>
                                 )
