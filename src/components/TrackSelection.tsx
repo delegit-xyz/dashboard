@@ -35,7 +35,7 @@ const TrackSelection: React.FC<TrackSelectionProps> = ({ trackNamesMap, onTrackS
     const thirdColumn = [30, 31, 32, 33, 34]
     const fourthColumn = [1, 13]
 
-    //due to hardcoded ids to achieve a specific order we have to make sure to have a catch all to capture the possibility of remaining tracks
+    //due to hardcoded ids to achieve a specific order we have to make sure to have a catch all to capture the possibility of uncaught ids
     const orderedTracks = [...firstColumn, ...secondColumn, ...thirdColumn, ...fourthColumn];
     const availableTracks = Array.from(trackNamesMap.keys());
     const remainingTracks = availableTracks.filter(trackId => !orderedTracks.includes(trackId));
