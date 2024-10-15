@@ -5,10 +5,17 @@ interface TrackSelectionProps {
 }
 
 const TrackSelection: React.FC<TrackSelectionProps> = ({ trackNamesMap }) => {
-    const [selectedTracks, setSelectedTracks] = useState<number[]>([]);
+    const [selectedTracks, setSelectedTracks] = useState<number[]>(() => 
+        Array.from(trackNamesMap.keys()))
 
     const handleTrackToggle = (selectedTrackId: number) => {
-        return
+        setSelectedTracks((prevSelectedTracks) => {
+            if (prevSelectedTracks.includes(selectedTrackId)) {
+                return prevSelectedTracks.filter((id) => id !== selectedTrackId);
+            } else {
+                return [...prevSelectedTracks, selectedTrackId];
+            }
+        });
     };
 
     const firstColumn = [0, 2, 20, 21]
