@@ -75,6 +75,12 @@ export const Delegate = () => {
     })
   }, [allTracks, amount, conviction, delegate, getDelegateTx])
 
+  const onTrackSelectionChange = useCallback((tracks: number[]) => {
+    setAllTracks(tracks)
+  }, [])
+  useEffect(() => {
+  }, [allTracks]);
+
   const allTxs = useMemo(() => {
     if (!api) return
 
@@ -325,7 +331,8 @@ export const Delegate = () => {
           title={"Track Selection"}
         >
           <TrackSelection
-            trackNamesMap={trackNames}></TrackSelection>
+            trackNamesMap={trackNames}
+            onTrackSelectionChange={onTrackSelectionChange}></TrackSelection>
         </ContentReveal>
         <AlertNote
           title={'Note'}
