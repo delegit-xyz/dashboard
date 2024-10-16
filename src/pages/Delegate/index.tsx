@@ -17,19 +17,25 @@ import { Button } from '@/components/ui/button'
 import { useAccounts } from '@/contexts/AccountsContext'
 import { Slider } from '@/components/ui/slider'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, Loader2 } from 'lucide-react'
+import { ArrowLeft, Info, Loader2 } from 'lucide-react'
 import { msgs } from '@/lib/constants'
 import { evalUnits, planckToUnit } from '@polkadot-ui/utils'
-import { useLocks } from '@/contexts/LocksContext'
+import { useLocks, VoteLock } from '@/contexts/LocksContext'
 import { useGetDelegateTx } from '@/hooks/useGetDelegateTx'
 import { AlertNote } from '@/components/Alert'
-import { useTestTx } from '@/hooks/useTestTx'
 import { MultiTransactionDialog } from './MultiTransactionDialog'
-import { useGetSigningCallback } from '@/hooks/useGetSigningCallback'
 import { Title } from '@/components/ui/title'
 import { DelegateCard } from '@/components/DelegateCard'
 import { ContentReveal } from '@/components/ui/content-reveal'
 import TrackSelection from '@/components/TrackSelection'
+import { AnchorLink } from '@/components/ui/anchorLink'
+import { useGetSubsquareRefUrl } from '@/hooks/useGetSubsquareRefUrl'
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from '@/components/ui/popover'
+import { TrackDisplay } from '@/components/TrackDisplay'
 
 export const Delegate = () => {
   const { api, assetInfo } = useNetwork()
@@ -37,12 +43,11 @@ export const Delegate = () => {
   const { selectedAccount } = useAccounts()
   const getDelegateTx = useGetDelegateTx()
   const { getConvictionLockTimeDisplay, refreshLocks } = useLocks()
-  const getSubscriptionCallBack = useGetSigningCallback()
   const navigate = useNavigate()
   const { search } = useLocation()
   const { getDelegateByAddress, isLoading: isLoadingDelegates } = useDelegates()
   const [delegate, setDelegate] = useState<DelegateType | undefined>()
-
+  const { voteLocks, delegations } = useLocks()
   const [isAmountDirty, setIsAmountDirty] = useState(false)
   const [amount, setAmount] = useState<bigint>(0n)
   const [amountVisible, setAmountVisible] = useState<string>('0')
@@ -52,14 +57,24 @@ export const Delegate = () => {
   )
   const [convictionNo, setConvictionNo] = useState(1)
   const [isTxInitiated, setIsTxInitiated] = useState(false)
-  const { isExhaustsResources } = useTestTx()
   const [isMultiTxDialogOpen, setIsMultiTxDialogOpen] = useState(false)
   const [noDelegateFound, setNoDelegateFound] = useState(false)
-  const [allTracks, setAllTracks] = useState<number[]>([])
   const [trackNames, setTrackNames] = useState<Map<number, string>>(new Map());
-  const [isExhaustsResourcesError, setIsExhaustsResourcesError] = useState<
-    boolean | null
-  >(false)
+  const [tracksToDelegate, setTracksToDelegate] = useState<number[]>([])
+  const [onGoingVoteLocks, setOngoingVoteLocks] = useState<VoteLock[]>([])
+  const getSubsquareUrl = useGetSubsquareRefUrl()
+  const replacedDelegations = useMemo(() => {
+    if (!delegations) return []
+
+    const currentlyDelegatingTrackIds = Object.values(delegations)
+      .flat()
+      .map(({ trackId }) => trackId)
+
+    return currentlyDelegatingTrackIds.filter((trackId) =>
+      tracksToDelegate.includes(trackId),
+    )
+  }, [tracksToDelegate, delegations])
+
   const {
     delegationTxs = [],
     removeDelegationsTxs = [],
@@ -71,12 +86,12 @@ export const Delegate = () => {
       delegateAddress: delegate.address,
       conviction: conviction,
       amount,
-      tracks: allTracks || [],
+      tracks: tracksToDelegate || [],
     })
-  }, [allTracks, amount, conviction, delegate, getDelegateTx])
+  }, [tracksToDelegate, amount, conviction, delegate, getDelegateTx])
 
   const onTrackSelectionChange = useCallback((tracks: number[]) => {
-    setAllTracks(tracks)
+    setTracksToDelegate(tracks)
   }, [])
 
   const allTxs = useMemo(() => {
@@ -90,19 +105,9 @@ export const Delegate = () => {
   }, [api, delegationTxs, removeDelegationsTxs, removeVotesTxs])
 
   useEffect(() => {
-    if (!allTxs) return
-
-    // check if we have an exhausted limit on the whole tx
-    isExhaustsResources(allTxs)
-      .then(setIsExhaustsResourcesError)
-      .catch(console.error)
-  }, [
-    allTxs,
-    delegationTxs,
-    isExhaustsResources,
-    removeDelegationsTxs,
-    removeVotesTxs,
-  ])
+    const ongoing = voteLocks.filter((voteLocks) => voteLocks.isOngoing)
+    setOngoingVoteLocks(ongoing)
+  }, [voteLocks])
 
   useEffect(() => {
     // the delegate list may still be loading
@@ -167,6 +172,7 @@ export const Delegate = () => {
     api.constants.Referenda.Tracks()
       .then((tracks) => {
         const trackIds = tracks.map(([track]) => track)
+        setTracksToDelegate(trackIds)
         const trackNamesMap = new Map<number, string>()
         tracks.forEach(([trackId, trackDetails]) => {
           const trackName = trackDetails.name
@@ -174,7 +180,6 @@ export const Delegate = () => {
             .replace(/\b\w/g, (t) => t.toUpperCase())
           trackNamesMap.set(trackId, trackName)
         });
-        setAllTracks(trackIds)
         setTrackNames(trackNamesMap)
       })
       .catch(console.error)
@@ -210,8 +215,6 @@ export const Delegate = () => {
   const onSign = useCallback(async () => {
     if (!delegate || !selectedAccount || !amount || !api) return
 
-    setIsTxInitiated(true)
-
     if (
       !removeDelegationsTxs.length &&
       !removeVotesTxs.length &&
@@ -225,28 +228,14 @@ export const Delegate = () => {
       return
     }
 
-    if (isExhaustsResourcesError) {
-      setIsMultiTxDialogOpen(true)
-      return
-    }
-
-    const subscriptionCallBack = getSubscriptionCallBack({
-      onError: () => setIsTxInitiated(false),
-      onInBlock: () => onProcessFinished(),
-    })
-
-    await allTxs
-      .signSubmitAndWatch(selectedAccount?.polkadotSigner, { at: 'best' })
-      .subscribe(subscriptionCallBack)
+    setIsTxInitiated(true)
+    setIsMultiTxDialogOpen(true)
   }, [
     allTxs,
     amount,
     api,
     delegate,
     delegationTxs.length,
-    getSubscriptionCallBack,
-    isExhaustsResourcesError,
-    onProcessFinished,
     removeDelegationsTxs.length,
     removeVotesTxs.length,
     selectedAccount,
@@ -333,8 +322,53 @@ export const Delegate = () => {
             onTrackSelectionChange={onTrackSelectionChange}></TrackSelection>
         </ContentReveal>
         <AlertNote
-          title={'Note'}
-          message={`The ${convictionTimeDisplay} will start when you undelegate`}
+          message={
+            <>
+              {replacedDelegations.length > 0 && (
+                <p>
+                  You will replace delegation on {replacedDelegations.length}{' '}
+                  {replacedDelegations.length > 1 ? 'tracks' : 'track'}
+                  <Popover>
+                    <PopoverTrigger>
+                      <Info className="ml-2 h-3 w-3 text-gray-500" />
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto">
+                      <div className="max-w-[15rem]">
+                        {replacedDelegations.map((trackId) => (
+                          <div>
+                            <TrackDisplay trackId={trackId} />
+                          </div>
+                        ))}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </p>
+              )}
+              {onGoingVoteLocks.length > 0 && (
+                <p>
+                  You will remove {onGoingVoteLocks.length} ongoing{' '}
+                  {removeVotesTxs.length > 1 ? 'votes' : 'vote'}
+                  <Popover>
+                    <PopoverTrigger>
+                      <Info className="ml-2 h-3 w-3 text-gray-500" />
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto">
+                      <div className="max-w-[15rem]">
+                        {onGoingVoteLocks.map(({ refId }) => (
+                          <div>
+                            <AnchorLink href={getSubsquareUrl(refId)}>
+                              #{refId}
+                            </AnchorLink>
+                          </div>
+                        ))}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </p>
+              )}
+              <p>The {convictionTimeDisplay} will start when you undelegate</p>
+            </>
+          }
           variant={'default'}
         />
         <Button

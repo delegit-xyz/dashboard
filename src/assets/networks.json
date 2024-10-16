@@ -306,7 +306,7 @@
     "options": ["testnet"],
     "nodes": [
       {
-        "url": "wss://rpc-test-network-1.novasamatech.org",
+        "url": "wss://rpc-test-network-1.novasama-tech.org",
         "name": "Development node"
       }
     ],
