@@ -287,10 +287,7 @@ export const Delegate = () => {
           />
         </div>
 
-        <Label className="flex">
-          Conviction: {convictionDisplay}
-          <div className="ml-2">{}</div>
-        </Label>
+        <Label className="flex">Conviction: {convictionDisplay}</Label>
         <Slider
           disabled={!api || !selectedAccount}
           value={[convictionNo]}
