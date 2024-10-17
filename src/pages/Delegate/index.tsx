@@ -27,7 +27,7 @@ import { MultiTransactionDialog } from './MultiTransactionDialog'
 import { Title } from '@/components/ui/title'
 import { DelegateCard } from '@/components/DelegateCard'
 import { ContentReveal } from '@/components/ui/content-reveal'
-import TrackSelection from '@/components/TrackSelection'
+import { TrackSelection } from '@/components/TrackSelection'
 import { AnchorLink } from '@/components/ui/anchorLink'
 import { useGetSubsquareRefUrl } from '@/hooks/useGetSubsquareRefUrl'
 import {
@@ -89,10 +89,6 @@ export const Delegate = () => {
       tracks: tracksToDelegate || [],
     })
   }, [tracksToDelegate, amount, conviction, delegate, getDelegateTx])
-
-  const onTrackSelectionChange = useCallback((tracks: number[]) => {
-    setTracksToDelegate(tracks)
-  }, [])
 
   const allTxs = useMemo(() => {
     if (!api) return
@@ -291,10 +287,7 @@ export const Delegate = () => {
           />
         </div>
 
-        <Label className="flex">
-          Conviction: {convictionDisplay}
-          <div className="ml-2">{}</div>
-        </Label>
+        <Label className="flex">Conviction: {convictionDisplay}</Label>
         <Slider
           disabled={!api || !selectedAccount}
           value={[convictionNo]}
@@ -317,8 +310,9 @@ export const Delegate = () => {
         <ContentReveal title={'Track Selection'}>
           <TrackSelection
             trackNamesMap={trackNames}
-            onTrackSelectionChange={onTrackSelectionChange}
-          ></TrackSelection>
+            onTrackSelectionChange={setTracksToDelegate}
+            selectedTracks={tracksToDelegate}
+          />
         </ContentReveal>
         <AlertNote
           message={
