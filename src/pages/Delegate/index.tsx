@@ -27,7 +27,7 @@ import { MultiTransactionDialog } from './MultiTransactionDialog'
 import { Title } from '@/components/ui/title'
 import { DelegateCard } from '@/components/DelegateCard'
 import { ContentReveal } from '@/components/ui/content-reveal'
-import TrackSelection from '@/components/TrackSelection'
+import { TrackSelection } from '@/components/TrackSelection'
 import { AnchorLink } from '@/components/ui/anchorLink'
 import { useGetSubsquareRefUrl } from '@/hooks/useGetSubsquareRefUrl'
 import {
@@ -59,7 +59,7 @@ export const Delegate = () => {
   const [isTxInitiated, setIsTxInitiated] = useState(false)
   const [isMultiTxDialogOpen, setIsMultiTxDialogOpen] = useState(false)
   const [noDelegateFound, setNoDelegateFound] = useState(false)
-  const [trackNames, setTrackNames] = useState<Map<number, string>>(new Map());
+  const [trackNames, setTrackNames] = useState<Map<number, string>>(new Map())
   const [tracksToDelegate, setTracksToDelegate] = useState<number[]>([])
   const [onGoingVoteLocks, setOngoingVoteLocks] = useState<VoteLock[]>([])
   const getSubsquareUrl = useGetSubsquareRefUrl()
@@ -89,10 +89,6 @@ export const Delegate = () => {
       tracks: tracksToDelegate || [],
     })
   }, [tracksToDelegate, amount, conviction, delegate, getDelegateTx])
-
-  const onTrackSelectionChange = useCallback((tracks: number[]) => {
-    setTracksToDelegate(tracks)
-  }, [])
 
   const allTxs = useMemo(() => {
     if (!api) return
@@ -179,7 +175,7 @@ export const Delegate = () => {
             .replace(/_/g, ' ')
             .replace(/\b\w/g, (t) => t.toUpperCase())
           trackNamesMap.set(trackId, trackName)
-        });
+        })
         setTrackNames(trackNamesMap)
       })
       .catch(console.error)
@@ -293,7 +289,7 @@ export const Delegate = () => {
 
         <Label className="flex">
           Conviction: {convictionDisplay}
-          <div className="ml-2">{ }</div>
+          <div className="ml-2">{}</div>
         </Label>
         <Slider
           disabled={!api || !selectedAccount}
@@ -314,12 +310,12 @@ export const Delegate = () => {
             )
           }}
         />
-        <ContentReveal
-          title={"Track Selection"}
-        >
+        <ContentReveal title={'Track Selection'}>
           <TrackSelection
             trackNamesMap={trackNames}
-            onTrackSelectionChange={onTrackSelectionChange}></TrackSelection>
+            onTrackSelectionChange={setTracksToDelegate}
+            selectedTracks={tracksToDelegate}
+          />
         </ContentReveal>
         <AlertNote
           message={
