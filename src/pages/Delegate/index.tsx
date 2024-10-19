@@ -36,6 +36,7 @@ import {
   PopoverContent,
 } from '@/components/ui/popover'
 import { TrackDisplay } from '@/components/TrackDisplay'
+import { useGetSigningCallback } from '@/hooks/useGetSigningCallback'
 
 export const Delegate = () => {
   const { api, assetInfo } = useNetwork()
@@ -63,6 +64,8 @@ export const Delegate = () => {
   const [tracksToDelegate, setTracksToDelegate] = useState<number[]>([])
   const [onGoingVoteLocks, setOngoingVoteLocks] = useState<VoteLock[]>([])
   const getSubsquareUrl = useGetSubsquareRefUrl()
+  const getSubscriptionCallBack = useGetSigningCallback()
+
   const replacedDelegations = useMemo(() => {
     if (!delegations) return []
 
@@ -208,6 +211,43 @@ export const Delegate = () => {
     onOpenChangeSplitTransactionDialog(false)
   }, [navigate, onOpenChangeSplitTransactionDialog, refreshLocks, search])
 
+  const onSignDelegations = useCallback(
+    async ({
+      onError,
+      onInBlock,
+    }: {
+      onError: () => void
+      onInBlock: () => void
+    }) => {
+      if (!delegate || !selectedAccount || !amount || !api) return
+
+      const delegateTxs = api.tx.Utility.batch_all({
+        calls: (delegationTxs || []).map((tx) => tx.decodedCall),
+      })
+
+      const subscriptionCallBack = getSubscriptionCallBack({
+        onError,
+        onInBlock: () => {
+          onInBlock()
+          onProcessFinished()
+        },
+      })
+
+      await delegateTxs
+        .signSubmitAndWatch(selectedAccount?.polkadotSigner, { at: 'best' })
+        .subscribe(subscriptionCallBack)
+    },
+    [
+      amount,
+      api,
+      delegate,
+      delegationTxs,
+      getSubscriptionCallBack,
+      onProcessFinished,
+      selectedAccount,
+    ],
+  )
+
   const onSign = useCallback(async () => {
     if (!delegate || !selectedAccount || !amount || !api) return
 
@@ -225,15 +265,36 @@ export const Delegate = () => {
     }
 
     setIsTxInitiated(true)
-    setIsMultiTxDialogOpen(true)
+
+    const removeVotesAndDelegationsTxs = [
+      ...(removeDelegationsTxs || []),
+      ...(removeVotesTxs || []),
+    ]
+
+    // only 1 tx needed. We can do it directly
+    if (removeVotesAndDelegationsTxs.length === 0) {
+      onSignDelegations({
+        onError: () => {
+          setIsTxInitiated(false)
+        },
+        onInBlock: () => {
+          onProcessFinished()
+          setIsTxInitiated(false)
+        },
+      })
+    } else {
+      setIsMultiTxDialogOpen(true)
+    }
   }, [
     allTxs,
     amount,
     api,
     delegate,
     delegationTxs.length,
-    removeDelegationsTxs.length,
-    removeVotesTxs.length,
+    onProcessFinished,
+    onSignDelegations,
+    removeDelegationsTxs,
+    removeVotesTxs,
     selectedAccount,
   ])
 
@@ -374,14 +435,13 @@ export const Delegate = () => {
       </div>
       {isMultiTxDialogOpen && (
         <MultiTransactionDialog
-          isOpen={isMultiTxDialogOpen}
           onOpenChange={onOpenChangeSplitTransactionDialog}
           delegateTxs={{
             delegationTxs,
             removeDelegationsTxs,
             removeVotesTxs,
           }}
-          onProcessFinished={onProcessFinished}
+          onSignDelegations={onSignDelegations}
         />
       )}
     </main>
