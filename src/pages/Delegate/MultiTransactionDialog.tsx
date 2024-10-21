@@ -15,19 +15,23 @@ import { TooLargeDialog } from './TooLargeDialog'
 import { useGetSigningCallback } from '@/hooks/useGetSigningCallback'
 
 interface Props {
-  isOpen: boolean
   onOpenChange: (isOpen: boolean) => void
   delegateTxs: DelegateTxs
-  onProcessFinished: () => void
+  onSignDelegations: ({
+    onError,
+    onInBlock,
+  }: {
+    onError: () => void
+    onInBlock: () => void
+  }) => Promise<void>
 }
 
 type Step = 1 | 2
 
 export const MultiTransactionDialog = ({
-  isOpen,
   onOpenChange,
   delegateTxs,
-  onProcessFinished,
+  onSignDelegations,
 }: Props) => {
   const [step, setStep] = useState<Step>(1)
   const { api } = useNetwork()
@@ -108,39 +112,33 @@ export const MultiTransactionDialog = ({
       return
     }
 
-    const subscriptionCallBack2 = getSubscriptionCallBack({
+    onSignDelegations({
       onError: () => {
         setIsTxInitiated(false)
       },
       onInBlock: () => {
-        onProcessFinished()
         setIsTxInitiated(false)
       },
     })
-
-    await step2Txs
-      .signSubmitAndWatch(selectedAccount?.polkadotSigner, { at: 'best' })
-      .subscribe(subscriptionCallBack2)
   }, [
     api,
     delegateTxs.delegationTxs,
-    getSubscriptionCallBack,
     isExhaustsResources,
-    onProcessFinished,
+    onSignDelegations,
     selectedAccount,
   ])
 
   if (promptForHelpCallData)
     return (
       <TooLargeDialog
-        isOpen={isOpen}
+        isOpen
         onOpenChange={onOpenChange}
         callData={promptForHelpCallData}
       />
     )
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Step {step}</DialogTitle>
