@@ -115,8 +115,8 @@ importers:
         version: 3.1.0(react@18.3.1)
     devDependencies:
       '@types/node':
-        specifier: ^22.7.4
-        version: 22.7.4
+        specifier: ^22.8.6
+        version: 22.8.6
       '@types/react':
         specifier: ^18.3.10
         version: 18.3.10
@@ -134,7 +134,7 @@ importers:
         version: 8.8.0(eslint@8.57.1)(typescript@5.6.2)
       '@vitejs/plugin-react':
         specifier: ^4.3.2
-        version: 4.3.2(vite@5.4.8(@types/node@22.7.4))
+        version: 4.3.2(vite@5.4.8(@types/node@22.8.6))
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.4.47)
@@ -173,10 +173,10 @@ importers:
         version: 5.6.2
       vite:
         specifier: ^5.4.8
-        version: 5.4.8(@types/node@22.7.4)
+        version: 5.4.8(@types/node@22.8.6)
       vite-plugin-svgr:
         specifier: ^4.2.0
-        version: 4.2.0(rollup@4.23.0)(typescript@5.6.2)(vite@5.4.8(@types/node@22.7.4))
+        version: 4.2.0(rollup@4.23.0)(typescript@5.6.2)(vite@5.4.8(@types/node@22.8.6))
 
 packages:
 
@@ -1500,8 +1500,8 @@ packages:
   '@types/ms@0.7.34':
     resolution: {integrity: sha512-nG96G3Wp6acyAgJqGasjODb+acrI7KltPiRxzHPXnP3NgI28bpQDRv53olbqGXbfcgF5aiiHmO3xpwEpS5Ld9g==}
 
-  '@types/node@22.7.4':
-    resolution: {integrity: sha512-y+NPi1rFzDs1NdQHHToqeiX2TIS79SWEAw9GYhkkx8bD0ChpfqC+n2j5OXOCpzfojBEBt6DnEnnG9MY0zk1XLg==}
+  '@types/node@22.8.6':
+    resolution: {integrity: sha512-tosuJYKrIqjQIlVCM4PEGxOmyg3FCPa/fViuJChnGeEIhjA46oy8FMVoF9su1/v8PNs2a8Q0iFNyOx0uOF91nw==}
 
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
@@ -1984,6 +1984,7 @@ packages:
   eslint@8.57.1:
     resolution: {integrity: sha512-ypowyDxpVSYpkXr9WPv2PAZCtNip1Mv5KTW0SCurXv/9iOpcrH9PaqUElksqEB6pChqHGDRCFTyrZlGhnLNGiA==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
 
   espree@9.6.1:
@@ -3877,7 +3878,7 @@ snapshots:
       '@polkadot-api/utils': 0.1.1
       '@polkadot-api/wasm-executor': 0.1.1
       '@polkadot-api/ws-provider': 0.2.2
-      '@types/node': 22.7.4
+      '@types/node': 22.8.6
       commander: 12.1.0
       execa: 9.4.0
       fs.promises.exists: 1.1.4
@@ -3970,7 +3971,7 @@ snapshots:
 
   '@polkadot-api/smoldot@0.3.2':
     dependencies:
-      '@types/node': 22.7.4
+      '@types/node': 22.8.6
       smoldot: 2.0.30
     transitivePeerDependencies:
       - bufferutil
@@ -4741,7 +4742,7 @@ snapshots:
 
   '@types/bn.js@5.1.6':
     dependencies:
-      '@types/node': 22.7.4
+      '@types/node': 22.8.6
 
   '@types/debug@4.1.12':
     dependencies:
@@ -4765,7 +4766,7 @@ snapshots:
 
   '@types/ms@0.7.34': {}
 
-  '@types/node@22.7.4':
+  '@types/node@22.8.6':
     dependencies:
       undici-types: 6.19.8
 
@@ -4882,14 +4883,14 @@ snapshots:
 
   '@ungap/structured-clone@1.2.0': {}
 
-  '@vitejs/plugin-react@4.3.2(vite@5.4.8(@types/node@22.7.4))':
+  '@vitejs/plugin-react@4.3.2(vite@5.4.8(@types/node@22.8.6))':
     dependencies:
       '@babel/core': 7.25.2
       '@babel/plugin-transform-react-jsx-self': 7.24.7(@babel/core@7.25.2)
       '@babel/plugin-transform-react-jsx-source': 7.24.7(@babel/core@7.25.2)
       '@types/babel__core': 7.20.5
       react-refresh: 0.14.2
-      vite: 5.4.8(@types/node@22.7.4)
+      vite: 5.4.8(@types/node@22.8.6)
     transitivePeerDependencies:
       - supports-color
 
@@ -6764,24 +6765,24 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.2
 
-  vite-plugin-svgr@4.2.0(rollup@4.23.0)(typescript@5.6.2)(vite@5.4.8(@types/node@22.7.4)):
+  vite-plugin-svgr@4.2.0(rollup@4.23.0)(typescript@5.6.2)(vite@5.4.8(@types/node@22.8.6)):
     dependencies:
       '@rollup/pluginutils': 5.1.2(rollup@4.23.0)
       '@svgr/core': 8.1.0(typescript@5.6.2)
       '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.6.2))
-      vite: 5.4.8(@types/node@22.7.4)
+      vite: 5.4.8(@types/node@22.8.6)
     transitivePeerDependencies:
       - rollup
       - supports-color
       - typescript
 
-  vite@5.4.8(@types/node@22.7.4):
+  vite@5.4.8(@types/node@22.8.6):
     dependencies:
       esbuild: 0.21.5
       postcss: 8.4.47
       rollup: 4.23.0
     optionalDependencies:
-      '@types/node': 22.7.4
+      '@types/node': 22.8.6
       fsevents: 2.3.3
 
   webidl-conversions@4.0.2: {}
