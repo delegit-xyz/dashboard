@@ -6,7 +6,7 @@ import { registerDotConnect } from 'dot-connect'
 export const config = {
   chains: {},
   wallets: [
-    new InjectedWalletProvider(),
+    new InjectedWalletProvider({ originName: 'Delegit' }),
     new WalletConnect({
       projectId: 'f7a61cf7fe70a61e728f1dd5d53e9cea',
       providerOptions: {
