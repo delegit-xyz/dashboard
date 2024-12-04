@@ -14,7 +14,9 @@ export const config = {
           name: 'Delegit',
           description: 'Polkadot delegation made easy',
           url: 'https://delegit.xyz',
-          icons: [''],
+          icons: [
+            'https://github.com/user-attachments/assets/293eee36-0443-4299-a426-fc56e58af012',
+          ],
         },
       },
       chainIds: [
