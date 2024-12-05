@@ -75,6 +75,7 @@ export interface INetworkContext {
   network?: SupportedNetworkNames
   assetInfo: AssetType
   trackList: TrackList
+  genesisHash: string
 }
 
 export const isSupportedNetwork = (
@@ -101,6 +102,7 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
   const [assetInfo, setAssetInfo] = useState<AssetType>({} as AssetType)
   const [network, setNetwork] = useState<SupportedNetworkNames | undefined>()
   const [searchParams, setSearchParams] = useSearchParams({ network: '' })
+  const [genesisHash, setGenesisHash] = useState('')
 
   const selectNetwork = useCallback(
     (network: string) => {
@@ -144,7 +146,8 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
     if (network === 'polkadot-lc' || network === 'kusama-lc') {
       const relay = network === 'polkadot-lc' ? 'polkadot' : 'kusama'
 
-      const { assetInfo } = getChainInformation(relay)
+      const { assetInfo, genesisHash } = getChainInformation(relay)
+      setGenesisHash(genesisHash)
       setAssetInfo(assetInfo)
       setIsLight(true)
       const smoldot = startFromWorker(new SmWorker())
@@ -177,7 +180,9 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
       client = createClient(getSmProvider(relayChain))
       peopleClient = createClient(getSmProvider(peopleChain))
     } else {
-      const { assetInfo, wsEndpoint } = getChainInformation(network)
+      const { assetInfo, wsEndpoint, genesisHash } =
+        getChainInformation(network)
+      setGenesisHash(genesisHash)
       setAssetInfo(assetInfo)
       setIsLight(false)
 
@@ -241,6 +246,7 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
         peopleApi,
         assetInfo,
         trackList,
+        genesisHash,
       }}
     >
       {children}

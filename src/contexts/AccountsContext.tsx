@@ -10,6 +10,7 @@ import { InjectedPolkadotAccount } from 'polkadot-api/pjs-signer'
 import { useAccounts as useRedotAccounts } from '@reactive-dot/react'
 import { useLocalStorage } from 'usehooks-ts'
 import { SELECTED_ACCOUNT_KEY } from '@/lib/constants'
+import { WalletAccount } from '@reactive-dot/core/wallets.js'
 
 type AccountContextProps = {
   children: React.ReactNode | React.ReactNode[]
@@ -17,17 +18,15 @@ type AccountContextProps = {
 
 export interface IAccountContext {
   selectedAccount?: InjectedPolkadotAccount
-  accounts: InjectedPolkadotAccount[]
-  selectAccount: (account: InjectedPolkadotAccount | undefined) => void
+  accounts: WalletAccount[]
+  selectAccount: (account: WalletAccount | undefined) => void
 }
 
 const AccountContext = createContext<IAccountContext | undefined>(undefined)
 
 const AccountContextProvider = ({ children }: AccountContextProps) => {
   const accounts = useRedotAccounts()
-  const [selectedAccount, setSelected] = useState<
-    InjectedPolkadotAccount | undefined
-  >()
+  const [selectedAccount, setSelected] = useState<WalletAccount | undefined>()
   const [
     localStorageAccount,
     setLocalStorageAccount,
@@ -35,12 +34,12 @@ const AccountContextProvider = ({ children }: AccountContextProps) => {
   ] = useLocalStorage(SELECTED_ACCOUNT_KEY, '')
 
   const selectAccount = useCallback(
-    (account: InjectedPolkadotAccount | undefined) => {
+    (account: WalletAccount | undefined) => {
       if (!account) {
         removeLocalStorageAccount()
       }
 
-      if (account?.address) setLocalStorageAccount(account.address)
+      if (account?.id) setLocalStorageAccount(account.id)
 
       setSelected(account)
     },

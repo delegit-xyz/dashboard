@@ -7,6 +7,7 @@ import type { RouterType, Vote } from './types'
 import { ApiType, NetworksFromConfig } from '@/contexts/NetworkContext'
 import { DEFAULT_TIME, lockPeriod, ONE_DAY, THRESHOLD } from './constants'
 import { bnMin } from './bnMin'
+import { HexString } from 'polkadot-api'
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs))
@@ -22,6 +23,7 @@ export const getChainInformation = (networkName: NetworksFromConfig) => {
     assetInfo: network.assets[0],
     wsEndpoint: network.nodes[0].url,
     peopleEndpoint: network.peopleNodes[0].url,
+    genesisHash: network.chainId,
   }
 }
 
@@ -125,3 +127,9 @@ export type AccountInfoIF = {
 }
 
 export const acceptedJudgement = ['Reasonable', 'FeePaid', 'KnownGood']
+
+export const getShortAddress = (address: string) =>
+  address.slice(0, 6) + '...' + address.slice(-6)
+
+export const getTruncatedGenesisHash = (genesisHash: HexString) =>
+  genesisHash.slice(2, 34)
