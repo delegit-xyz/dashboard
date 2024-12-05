@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
-import { routes } from '@/lib/utils'
+import { getShortAddress, getTruncatedGenesisHash, routes } from '@/lib/utils'
 import { useWalletDisconnector } from '@reactive-dot/react'
 import { ChevronDown, Moon, PanelLeft, Sun } from 'lucide-react'
 import { ConnectionDialog } from 'dot-connect/react.js'
@@ -23,7 +23,7 @@ import { ConnectionDialog } from 'dot-connect/react.js'
 //   MenubarTrigger,
 // } from '@/components/ui/menubar'
 import { useAccounts } from './contexts/AccountsContext'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import { SupportedNetworkNames, useNetwork } from './contexts/NetworkContext'
 import { useTheme } from './components/theme-provider'
 import { Link, useLocation } from 'react-router-dom'
@@ -49,13 +49,30 @@ if (import.meta.env.DEV) {
 }
 
 export const Header = () => {
-  const { network, selectNetwork, lightClientLoaded, isLight } = useNetwork()
-  const { accounts, selectAccount, selectedAccount } = useAccounts()
+  const { network, selectNetwork, lightClientLoaded, isLight, genesisHash } =
+    useNetwork()
+  const {
+    accounts: unfilteredAccounts,
+    selectAccount,
+    selectedAccount,
+  } = useAccounts()
   const [, disconnectAll] = useWalletDisconnector()
   const [isConnectionDialogOpen, setIsConnectionDialogOpen] = useState(false)
   // eslint-disable-next-line
   const { theme, setTheme } = useTheme()
   const { search } = useLocation()
+
+  // this avoids an account duplication with Walletconnect
+  // see https://github.com/tien/dot-connect/issues/230
+  // accounts from Walletconnect are filtered by genesis hash
+  // so that there should be only 1 WC account display at a timeif any
+  const accounts = useMemo(() => {
+    return unfilteredAccounts.filter(
+      (account) =>
+        account.wallet.name.toLowerCase() !== 'walletConnect' ||
+        account.genesisHash === getTruncatedGenesisHash(genesisHash),
+    )
+  }, [genesisHash, unfilteredAccounts])
 
   useEffect(() => {
     if (!selectedAccount?.address && accounts.length > 0) {
@@ -172,10 +189,9 @@ export const Header = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="max-h-[calc(100vh-5rem)] overflow-auto">
                   {accounts.map((account, index) => (
-                    <Fragment key={account.address}>
+                    <Fragment key={`${account.id}-${account.wallet.name}`}>
                       <DropdownMenuItem
                         className="cursor-pointer"
-                        key={account.address}
                         onClick={() => selectAccount(account)}
                       >
                         <Polkicon
@@ -184,7 +200,7 @@ export const Header = () => {
                           className="mr-2"
                           outerColor="transparent"
                         />
-                        {account.name}
+                        {account.name || getShortAddress(account.address)}
                       </DropdownMenuItem>
                       {index !== accounts.length - 1 && (
                         <DropdownMenuSeparator />
