@@ -1,4 +1,3 @@
-import { DispatchError } from '@polkadot-api/descriptors'
 import { TxEvent } from 'polkadot-api'
 import { toast } from 'sonner'
 
@@ -32,7 +31,7 @@ export const useGetSigningCallback =
           onFinalized && onFinalized()
         }
       },
-      error: (error: DispatchError) => {
+      error: (error: Error) => {
         console.error(error)
         toast.error(error.toString())
         onError && onError()

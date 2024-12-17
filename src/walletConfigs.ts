@@ -19,7 +19,7 @@ export const config = {
           ],
         },
       },
-      chainIds: [
+      optionalChainIds: [
         // https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-13.md
         'polkadot:91b171bb158e2d3848fa23a9f1c25182', // Polkadot
         'polkadot:b0a8d493285c2df73290dfb7e61f870f', // Kusama

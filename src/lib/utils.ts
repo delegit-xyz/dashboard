@@ -128,8 +128,8 @@ export type AccountInfoIF = {
 
 export const acceptedJudgement = ['Reasonable', 'FeePaid', 'KnownGood']
 
-export const getShortAddress = (address: string) =>
-  address.slice(0, 6) + '...' + address.slice(-6)
+export const getShortAddress = (address?: string) =>
+  !address ? undefined : address.slice(0, 6) + '...' + address.slice(-6)
 
 export const getTruncatedGenesisHash = (genesisHash: HexString) =>
   genesisHash.slice(2, 34)

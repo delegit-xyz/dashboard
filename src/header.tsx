@@ -183,7 +183,8 @@ export const Header = () => {
                       className="mr-2"
                       outerColor="transparent"
                     />
-                    {selectedAccount?.name}
+                    {selectedAccount?.name ||
+                      getShortAddress(selectedAccount?.address)}
                     <ChevronDown className="ml-2 h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
