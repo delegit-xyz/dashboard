@@ -36,7 +36,7 @@
     "@reactive-dot/core": "^0.27.1",
     "@reactive-dot/react": "^0.28.0",
     "@reactive-dot/wallet-walletconnect": "^0.17.0",
-    "@tanstack/react-table": "^8.20.5",
+    "@tanstack/react-table": "^8.20.6",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "copy-to-clipboard": "^3.3.3",
