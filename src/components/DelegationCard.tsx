@@ -73,7 +73,7 @@ export const DelegationCard = ({
   }, [selectedAccount, subscriptionCallback, tx])
 
   return (
-    <Card className="flex h-max flex-col justify-between border bg-card p-2 px-4">
+    <Card className="bg-card flex h-max flex-col justify-between border p-2 px-4">
       <div className="flex flex-col justify-between">
         {knownDelegate?.name ? (
           <div className="flex items-center gap-2">
@@ -90,7 +90,7 @@ export const DelegationCard = ({
         />
       </div>
       <Button
-        className="w-a bottom-0 mb-2 mt-4"
+        className="w-a bottom-0 mt-4 mb-2"
         variant={'outline'}
         onClick={onUndelegate}
         disabled={isUndelegating}

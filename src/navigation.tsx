@@ -30,7 +30,7 @@ export const Navigation = () => {
   const { theme, setTheme } = useTheme()
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-card sm:flex">
+    <aside className="bg-card fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r sm:flex">
       <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
         <DelegitLogo
           style={{
@@ -65,7 +65,7 @@ export const Navigation = () => {
             <TooltipTrigger asChild>
               <a
                 href="#"
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                className="text-muted-foreground hover:text-foreground flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8"
               >
                 {!lightClientLoaded ? (
                   <TbLoaderQuarter className="h-5 w-5 animate-spin" />
@@ -87,7 +87,7 @@ export const Navigation = () => {
             <a
               href="https://github.com/delegit-xyz/dashboard/"
               target="_blank"
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+              className="text-muted-foreground hover:text-foreground flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8"
             >
               <Github className="h-5 w-5" />
               <span className="sr-only">Github</span>
@@ -102,8 +102,8 @@ export const Navigation = () => {
               size="icon"
               onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
             >
-              <Sun className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-              <Moon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <Sun className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+              <Moon className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
               <span className="sr-only">Toggle theme</span>
             </Button>
           </TooltipTrigger>

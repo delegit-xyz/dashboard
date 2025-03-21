@@ -22,7 +22,7 @@ export default {
     },
     extend: {
       maxHeight: {
-        'tracks': '400px',
+        tracks: '400px',
       },
       colors: {
         border: 'hsl(var(--border))',
@@ -80,5 +80,6 @@ export default {
       },
     },
   },
+  // eslint-disable-next-line @typescript-eslint/no-require-imports, no-undef
   plugins: [require('tailwindcss-animate')],
 }
