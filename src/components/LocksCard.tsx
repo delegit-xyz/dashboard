@@ -134,7 +134,7 @@ export const LocksCard = () => {
           </div>
           {freeLocks.length > 0 && (
             <Button
-              className="mt-4 mb-2 w-full"
+              className="mb-2 mt-4 w-full"
               onClick={onUnlockClick}
               disabled={isUnlockingLoading}
               loading={isUnlockingLoading}

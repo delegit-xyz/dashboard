@@ -325,7 +325,7 @@ export const Delegate = () => {
         />
       )}
 
-      <Link to={`/${search}`} className="text-primary flex items-center gap-2">
+      <Link to={`/${search}`} className="flex items-center gap-2 text-primary">
         <ArrowLeft className="h-4 w-4" />
         To all delegates
       </Link>
@@ -338,7 +338,7 @@ export const Delegate = () => {
           className="p0 border-none bg-transparent shadow-none"
         />
       </div>
-      <div className="bg-card grid gap-8 rounded-xl p-6 shadow-xl">
+      <div className="grid gap-8 rounded-xl bg-card p-6 shadow-xl">
         <div>
           <Label>Amount</Label>
           <Input

@@ -78,7 +78,7 @@ export const DelegateCard = ({
                 <Popover open={isCopyPopoverOpen}>
                   <PopoverTrigger onClick={(event) => event.stopPropagation()}>
                     <Button variant="ghost" onClick={onCopy} size="icon">
-                      <LinkIcon className="text-accent-foreground h-4 w-4" />
+                      <LinkIcon className="h-4 w-4 text-accent-foreground" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto">
@@ -91,7 +91,7 @@ export const DelegateCard = ({
             </div>
           </div>
           <div className="text-accent-foreground">
-            <div className="text-lg break-words">{shortDescription}</div>
+            <div className="break-words text-lg">{shortDescription}</div>
             <ContentReveal hidden={shouldHideLongDescription}>
               <Markdown
                 components={{

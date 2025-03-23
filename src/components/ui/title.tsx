@@ -10,7 +10,7 @@ export const Title = ({ children, variant = 'h1', className }: Props) => {
     'flex-1 shrink-0 whitespace-nowrap font-unbounded font-semibold tracking-tight text-accent-foreground sm:grow-0'
   if (variant === 'h1')
     return (
-      <h1 className={cn(baseClass, 'mt-10 mb-5 text-2xl', className)}>
+      <h1 className={cn(baseClass, 'mb-5 mt-10 text-2xl', className)}>
         {children}
       </h1>
     )
@@ -23,7 +23,7 @@ export const Title = ({ children, variant = 'h1', className }: Props) => {
       <h4
         className={cn(
           baseClass,
-          'text-xs tracking-normal uppercase',
+          'text-xs uppercase tracking-normal',
           className,
         )}
       >
