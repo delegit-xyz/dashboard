@@ -34,7 +34,7 @@
     "@radix-ui/react-toggle-group": "^1.1.2",
     "@radix-ui/react-tooltip": "^1.1.8",
     "@reactive-dot/core": "^0.38.1",
-    "@reactive-dot/react": "^0.38.5",
+    "@reactive-dot/react": "^0.39.1",
     "@reactive-dot/wallet-walletconnect": "^0.17.11",
     "@tanstack/react-table": "^8.21.2",
     "class-variance-authority": "^0.7.1",

@@ -60,8 +60,8 @@ importers:
         specifier: ^0.38.1
         version: 0.38.1(polkadot-api@1.9.7(jiti@2.4.2)(postcss@8.5.3)(rxjs@7.8.2)(yaml@2.6.1))
       '@reactive-dot/react':
-        specifier: ^0.38.5
-        version: 0.38.5(@types/react@19.0.12)(polkadot-api@1.9.7(jiti@2.4.2)(postcss@8.5.3)(rxjs@7.8.2)(yaml@2.6.1))(react@19.0.0)
+        specifier: ^0.39.1
+        version: 0.39.1(@types/react@19.0.12)(polkadot-api@1.9.7(jiti@2.4.2)(postcss@8.5.3)(rxjs@7.8.2)(yaml@2.6.1))(react@19.0.0)
       '@reactive-dot/wallet-walletconnect':
         specifier: ^0.17.11
         version: 0.17.11(@types/react@19.0.12)(polkadot-api@1.9.7(jiti@2.4.2)(postcss@8.5.3)(rxjs@7.8.2)(yaml@2.6.1))(react@19.0.0)(typescript@5.8.2)
@@ -1310,8 +1310,8 @@ packages:
     peerDependencies:
       polkadot-api: '>= 1.9.x'
 
-  '@reactive-dot/react@0.38.5':
-    resolution: {integrity: sha512-wDvXh8wMApydLGaIj0d9oTNj/lsVQYG38EyHulvU/z9YL+DHaFMqmESGhK4ksKtSyVqeYN3vqm0WNvwnDUjYSg==}
+  '@reactive-dot/react@0.39.1':
+    resolution: {integrity: sha512-bcZOxdnH4GGexTNffO4GuTaFJfqnTI0cAyYhLho64jBjxkq/pcpFRrK4Lg1o47EjcYVcc6b3Re7fXu/MFKynXg==}
     peerDependencies:
       react: 19.x
 
@@ -1578,6 +1578,9 @@ packages:
 
   '@types/node@22.13.11':
     resolution: {integrity: sha512-iEUCUJoU0i3VnrCmgoWCXttklWcvoCIx4jzcP22fioIVSdTmjgoEvmAO/QPw6TcS9k5FrNgn4w7q5lGOd1CT5g==}
+
+  '@types/node@22.13.13':
+    resolution: {integrity: sha512-ClsL5nMwKaBRwPcCvH8E7+nU4GxHVx1axNvMZTFHMEfNI7oahimt26P5zjVCRrjiIWj6YFXfE1v3dEp94wLcGQ==}
 
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
@@ -5277,7 +5280,7 @@ snapshots:
       '@substrate/smoldot-discovery': 2.0.2
       polkadot-api: 1.9.7(jiti@2.4.2)(postcss@8.5.3)(rxjs@7.8.2)(yaml@2.6.1)
 
-  '@reactive-dot/react@0.38.5(@types/react@19.0.12)(polkadot-api@1.9.7(jiti@2.4.2)(postcss@8.5.3)(rxjs@7.8.2)(yaml@2.6.1))(react@19.0.0)':
+  '@reactive-dot/react@0.39.1(@types/react@19.0.12)(polkadot-api@1.9.7(jiti@2.4.2)(postcss@8.5.3)(rxjs@7.8.2)(yaml@2.6.1))(react@19.0.0)':
     dependencies:
       '@reactive-dot/core': 0.38.1(polkadot-api@1.9.7(jiti@2.4.2)(postcss@8.5.3)(rxjs@7.8.2)(yaml@2.6.1))
       jotai: 2.12.2(@types/react@19.0.12)(react@19.0.0)
@@ -5513,7 +5516,7 @@ snapshots:
 
   '@types/bn.js@5.1.6':
     dependencies:
-      '@types/node': 22.13.11
+      '@types/node': 22.13.13
 
   '@types/cookie@0.6.0': {}
 
@@ -5542,6 +5545,10 @@ snapshots:
   '@types/ms@0.7.34': {}
 
   '@types/node@22.13.11':
+    dependencies:
+      undici-types: 6.20.0
+
+  '@types/node@22.13.13':
     dependencies:
       undici-types: 6.20.0
 
