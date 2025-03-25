@@ -3,6 +3,7 @@ import { useDelegates } from '@/contexts/DelegatesContext'
 import { DelegateCard } from '@/components/DelegateCard'
 import { Title } from '@/components/ui/title'
 import { MyDelegations } from '@/components/MyDelegations'
+import { DelegateSearch } from '@/components/DelegateSearch'
 
 export const Home = () => {
   const { delegates } = useDelegates()
@@ -11,6 +12,7 @@ export const Home = () => {
     <main className="m-auto w-full max-w-4xl p-4 sm:px-6 sm:py-0 md:gap-8">
       <LocksCard />
       <MyDelegations />
+      <DelegateSearch />
       <Title>Delegates</Title>
       <div className="sm:grid sm:grid-cols-1">
         {delegates?.map((d) => (
