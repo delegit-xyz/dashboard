@@ -1,18 +1,20 @@
-import { useState } from 'react'
 import { Input } from './ui/input'
 
-export const DelegateSearch = () => {
-  const [searchTerm, setSearchTerm] = useState('')
+interface Props {
+  onSearch: (term: string) => void
+  delegateValue: string
+}
 
+export const DelegateSearch = ({ delegateValue, onSearch }: Props) => {
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
-    setSearchTerm(value)
+    onSearch(value)
   }
 
   return (
     <Input
       placeholder={'Type in a Delegate to search...'}
-      value={searchTerm}
+      value={delegateValue}
       onChange={handleSearch}
     />
   )
