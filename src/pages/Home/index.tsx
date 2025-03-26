@@ -10,8 +10,10 @@ export const Home = () => {
   const { delegates } = useDelegates()
   const [searchTerm, setSearchTerm] = useState('')
 
-  const filteredDelegates = delegates?.filter((d) =>
-    d.name.toLowerCase().includes(searchTerm.toLowerCase()),
+  const filteredDelegates = delegates?.filter(
+    (d) =>
+      d.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      d.address.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
   return (
