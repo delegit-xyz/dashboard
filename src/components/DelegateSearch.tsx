@@ -1,4 +1,5 @@
 import { Input } from './ui/input'
+import { Title } from './ui/title'
 
 interface Props {
   onSearch: (term: string) => void
@@ -12,10 +13,14 @@ export const DelegateSearch = ({ delegateValue, onSearch }: Props) => {
   }
 
   return (
-    <Input
-      placeholder={'Type in a Delegate to search...'}
-      value={delegateValue}
-      onChange={handleSearch}
-    />
+    <>
+      <Title>Delegate Search</Title>
+
+      <Input
+        placeholder={'Type in a Delegate to search...'}
+        value={delegateValue}
+        onChange={handleSearch}
+      />
+    </>
   )
 }
