@@ -13,7 +13,7 @@ export const Home = () => {
   const filteredDelegates = delegates?.filter(
     (d) =>
       d.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      d.address.toLowerCase().includes(searchTerm.toLowerCase()),
+      d.address.toLowerCase().startsWith(searchTerm.toLowerCase()),
   )
 
   return (
