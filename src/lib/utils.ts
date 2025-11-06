@@ -4,7 +4,7 @@ import networks from '@/assets/networks.json'
 
 import { twMerge } from 'tailwind-merge'
 import type { RouterType, Vote } from './types'
-import { ApiType, NetworksFromConfig } from '@/contexts/NetworkContext'
+import { NetworksFromConfig, RelayApiType } from '@/contexts/NetworkContext'
 import { DEFAULT_TIME, lockPeriod, ONE_DAY, THRESHOLD } from './constants'
 import { bnMin } from './bnMin'
 import { HexString } from 'polkadot-api'
@@ -41,7 +41,9 @@ export const indexToConviction = (index: number) => {
 
 const convictionList = Object.keys(lockPeriod)
 
-export const getExpectedBlockTimeMs = async (api: ApiType): Promise<bigint> => {
+export const getExpectedBlockTimeMs = async (
+  api: RelayApiType,
+): Promise<bigint> => {
   const expectedBlockTime = await api.constants.Babe.ExpectedBlockTime()
   if (expectedBlockTime) {
     return bnMin(ONE_DAY, expectedBlockTime)
@@ -57,7 +59,7 @@ export const getExpectedBlockTimeMs = async (api: ApiType): Promise<bigint> => {
   return bnMin(ONE_DAY, DEFAULT_TIME)
 }
 
-export const getLockTimes = async (api: ApiType) => {
+export const getLockTimes = async (api: RelayApiType) => {
   const voteLockingPeriodBlocks =
     await api.constants.ConvictionVoting.VoteLockingPeriod()
 

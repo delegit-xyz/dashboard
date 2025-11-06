@@ -28,7 +28,7 @@ import { useGetSigningCallback } from '@/hooks/useGetSigningCallback'
 export const LocksCard = () => {
   const [currentBlock, setCurrentBlock] = useState(0)
   const [expectedBlockTime, setExpectedBlockTime] = useState(0)
-  const { api, assetInfo } = useNetwork()
+  const { api, relayApi, assetInfo } = useNetwork()
   const { voteLocks, delegationLocks } = useLocks()
   const [freeLocks, setFreeLocks] = useState<Array<VoteLock | DelegationLock>>(
     [],
@@ -88,12 +88,12 @@ export const LocksCard = () => {
   }, [api])
 
   useEffect(() => {
-    if (!api) return
+    if (!relayApi) return
 
-    getExpectedBlockTimeMs(api)
+    getExpectedBlockTimeMs(relayApi)
       .then((value) => setExpectedBlockTime(Number(value)))
       .catch(console.error)
-  }, [api])
+  }, [relayApi])
 
   const onUnlockClick = useCallback(() => {
     if (!api || !selectedAccount) return

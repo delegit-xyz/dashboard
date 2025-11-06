@@ -39,7 +39,7 @@ import { TrackDisplay } from '@/components/TrackDisplay'
 import { useGetSigningCallback } from '@/hooks/useGetSigningCallback'
 
 export const Delegate = () => {
-  const { api, assetInfo } = useNetwork()
+  const { relayApi, api, assetInfo } = useNetwork()
   const { address } = useParams()
   const { selectedAccount } = useAccounts()
   const getDelegateTx = useGetDelegateTx()
@@ -166,9 +166,9 @@ export const Delegate = () => {
   }, [api])
 
   useEffect(() => {
-    if (!api) return
+    if (!relayApi) return
 
-    api.constants.Referenda.Tracks()
+    relayApi.constants.Referenda.Tracks()
       .then((tracks) => {
         const trackIds = tracks.map(([track]) => track)
         setTracksToDelegate(trackIds)
@@ -182,7 +182,7 @@ export const Delegate = () => {
         setTrackNames(trackNamesMap)
       })
       .catch(console.error)
-  }, [api])
+  }, [relayApi])
 
   const onChangeAmount = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
