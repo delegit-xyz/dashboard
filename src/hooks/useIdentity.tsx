@@ -15,7 +15,6 @@ const mapRawIdentity = (
 ) => {
   if (!rawIdentity) return
 
-  console.log(rawIdentity)
   let item
   if (Array.isArray(rawIdentity)) {
     item = rawIdentity[0]
