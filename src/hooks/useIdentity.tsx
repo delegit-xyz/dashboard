@@ -14,10 +14,18 @@ const mapRawIdentity = (
   rawIdentity?: DotPeopleQueries['Identity']['IdentityOf']['Value'],
 ) => {
   if (!rawIdentity) return
+
+  let item
+  if (Array.isArray(rawIdentity)) {
+    item = rawIdentity[0]
+  } else {
+    return
+  }
+
   const {
     judgements,
     info: { display, email, legal, matrix, twitter, web },
-  } = rawIdentity[0]
+  } = item
 
   const display_id = dataToString(display.value)
   return {

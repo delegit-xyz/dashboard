@@ -5,26 +5,26 @@ import { MultiAddress } from '@polkadot-api/descriptors'
 import { useCallback } from 'react'
 
 export const useGetUnlockTx = () => {
-  const { api } = useNetwork()
+  const { relayApi } = useNetwork()
   const { selectedAccount } = useAccounts()
 
   const getUnlockTx = useCallback(
     (freeLocks: Array<VoteLock | DelegationLock>) => {
-      if (!api || !selectedAccount) return
+      if (!relayApi || !selectedAccount) return
 
       const tracks = new Set(freeLocks.map((lock) => lock.trackId))
 
       const unVoteTxs = freeLocks
         .filter((lock) => lock.type === LockType.Casting)
         .map((lock) => {
-          return api.tx.ConvictionVoting.remove_vote({
+          return relayApi.tx.ConvictionVoting.remove_vote({
             index: lock.refId,
             class: lock.trackId,
           }).decodedCall
         })
 
       const unlockTxs = Array.from(tracks).map((trackId) => {
-        return api.tx.ConvictionVoting.unlock({
+        return relayApi.tx.ConvictionVoting.unlock({
           class: trackId,
           target: MultiAddress.Id(selectedAccount.address),
         }).decodedCall
@@ -32,7 +32,7 @@ export const useGetUnlockTx = () => {
 
       return { unVoteTxs, unlockTxs }
     },
-    [api, selectedAccount],
+    [relayApi, selectedAccount],
   )
 
   return getUnlockTx
