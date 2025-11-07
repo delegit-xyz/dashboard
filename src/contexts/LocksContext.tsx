@@ -166,13 +166,10 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
 
     const controller = new AbortController()
 
-    api.query.ConvictionVoting.VotingFor.getEntries(
-      selectedAccount.address,
-      {
-        at: 'best',
-        signal: controller.signal,
-      },
-    ).then((res) => {
+    api.query.ConvictionVoting.VotingFor.getEntries(selectedAccount.address, {
+      at: 'best',
+      signal: controller.signal,
+    }).then((res) => {
       const votes = res.map(({ keyArgs: [, trackId], value }) => ({
         trackId,
         vote: value,
@@ -286,7 +283,12 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
       .catch(console.error)
 
     return () => controller.abort()
-  }, [relayApi, relayApi?.query.Referenda.ReferendumInfoFor, castedVotes, selectedAccount])
+  }, [
+    relayApi,
+    relayApi?.query.Referenda.ReferendumInfoFor,
+    castedVotes,
+    selectedAccount,
+  ])
 
   const getLocks = useCallback(async () => {
     if (!relayApi || !Object.entries(stateOfRefs).length) return []
