@@ -75,7 +75,7 @@ export interface INetworkContext {
   isLight: boolean
   selectNetwork: (network: string, shouldResetAccountAddress?: boolean) => void
   relayApi?: TypedApi<typeof dot | typeof ksm>
-  client?: PolkadotClient
+  relayClient?: PolkadotClient
   ahClient?: PolkadotClient
   api?: TypedApi<typeof dot_ah | typeof ksm_ah>
   peopleApi?: PeopleApiType
@@ -101,7 +101,7 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
 
   const [lightClientLoaded, setLightClientLoaded] = useState<boolean>(false)
   const [isLight, setIsLight] = useState<boolean>(false)
-  const [client, setClient] = useState<PolkadotClient>()
+  const [relayClient, setRelayClient] = useState<PolkadotClient>()
   const [peopleClient, setPeopleClient] = useState<PolkadotClient>()
   const [ahClient, setAhClient] = useState<PolkadotClient>()
   const [relayApi, setRelayApi] = useState<RelayApiType>()
@@ -150,7 +150,7 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
   useEffect(() => {
     if (!network) return
 
-    let client: PolkadotClient
+    let relayClient: PolkadotClient
     let peopleClient: PolkadotClient
     let ahClient: PolkadotClient
 
@@ -203,7 +203,7 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
         )
       }
 
-      client = createClient(getSmProvider(relayChain))
+      relayClient = createClient(getSmProvider(relayChain))
       peopleClient = createClient(getSmProvider(peopleChain))
       ahClient = createClient(getSmProvider(ahChain))
     } else {
@@ -213,7 +213,7 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
       setAssetInfo(assetInfo)
       setIsLight(false)
 
-      client = createClient(getWsProvider(wsEndpoint))
+      relayClient = createClient(getWsProvider(wsEndpoint))
       let wss: string = ''
       let wssAh: string = ''
       if (network === 'polkadot') {
@@ -231,11 +231,11 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
     }
 
     const descriptors = descriptorName[network]
-    const typedRelayApi = client.getTypedApi(descriptors.main)
+    const typedRelayApi = relayClient.getTypedApi(descriptors.main)
     const typedApi = ahClient.getTypedApi(descriptors.ah)
     const typedPeopleApi = peopleClient.getTypedApi(descriptors.people)
 
-    setClient(client)
+    setRelayClient(relayClient)
     setPeopleClient(peopleClient)
     setAhClient(ahClient)
     setApi(typedApi)
@@ -245,13 +245,13 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
 
   useEffect(() => {
     if (isLight) {
-      client?.finalizedBlock$.subscribe((finalizedBlock) => {
+      relayClient?.finalizedBlock$.subscribe((finalizedBlock) => {
         if (finalizedBlock.number && !lightClientLoaded) {
           setLightClientLoaded(true)
         }
       })
     }
-  }, [client?.finalizedBlock$, isLight, lightClientLoaded])
+  }, [relayClient?.finalizedBlock$, isLight, lightClientLoaded])
 
   useEffect(() => {
     const res: TrackList = {}
@@ -275,7 +275,7 @@ const NetworkContextProvider = ({ children }: NetworkContextProps) => {
         isLight,
         network,
         selectNetwork,
-        client,
+        relayClient,
         ahClient,
         api,
         relayApi,
