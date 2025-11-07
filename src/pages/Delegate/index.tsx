@@ -233,6 +233,7 @@ export const Delegate = () => {
         },
       })
 
+      // TEST - when many calls are batched together then i get an error
       await delegateTxs
         .signSubmitAndWatch(selectedAccount?.polkadotSigner, { at: 'best' })
         .subscribe(subscriptionCallBack)

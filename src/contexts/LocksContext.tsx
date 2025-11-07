@@ -128,19 +128,19 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
   }, [])
 
   useEffect(() => {
-    if (!relayApi) return
+    if (!api || !relayApi) return
 
     getLockTimes(relayApi).then(setConvictionLocksMap).catch(console.error)
-  }, [relayApi])
+  }, [api, relayApi])
 
   // retrieve the tracks with locks for the selected account
   useEffect(() => {
-    if (!selectedAccount || !relayApi) {
+    if (!selectedAccount || !api) {
       setLockTracks([])
       return
     }
 
-    const sub = relayApi.query.ConvictionVoting.ClassLocksFor.watchValue(
+    const sub = api.query.ConvictionVoting.ClassLocksFor.watchValue(
       selectedAccount.address,
       'best',
     ).subscribe((value) => {
@@ -152,21 +152,21 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
     })
 
     return () => sub.unsubscribe()
-  }, [api, relayApi, selectedAccount])
+  }, [api, selectedAccount])
 
   // retrieve all the votes for the selected account
   // they can be directly casted or delegated
   // there's a forcerefresh in the dependancies array
   // bc the lockTracks doesn't change when the delegation changes
   useEffect(() => {
-    if (!selectedAccount || !relayApi || !lockTracks.length) {
+    if (!selectedAccount || !api || !lockTracks.length) {
       setCurrentVoteLocks([])
       return
     }
 
     const controller = new AbortController()
 
-    relayApi.query.ConvictionVoting.VotingFor.getEntries(
+    api.query.ConvictionVoting.VotingFor.getEntries(
       selectedAccount.address,
       {
         at: 'best',
@@ -181,14 +181,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
     })
 
     return () => controller.abort()
-  }, [
-    api,
-    lockTracks,
-    lockTracks.length,
-    selectedAccount,
-    forcerefresh,
-    relayApi,
-  ])
+  }, [api, lockTracks, lockTracks.length, selectedAccount, forcerefresh])
 
   // get the ref for which we have a vote casted directly
   // or for which we have delegated
@@ -293,12 +286,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
       .catch(console.error)
 
     return () => controller.abort()
-  }, [
-    castedVotes,
-    relayApi,
-    relayApi?.query.Referenda.ReferendumInfoFor,
-    selectedAccount,
-  ])
+  }, [relayApi, relayApi?.query.Referenda.ReferendumInfoFor, castedVotes, selectedAccount])
 
   const getLocks = useCallback(async () => {
     if (!relayApi || !Object.entries(stateOfRefs).length) return []
