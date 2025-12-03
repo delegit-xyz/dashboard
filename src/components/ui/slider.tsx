@@ -8,8 +8,9 @@ import * as SliderPrimitive from '@radix-ui/react-slider'
 import { cn } from '@/lib/utils'
 import clsx from 'clsx'
 
-interface ExtraSliderProps
-  extends ComponentPropsWithoutRef<typeof SliderPrimitive.Root> {
+interface ExtraSliderProps extends ComponentPropsWithoutRef<
+  typeof SliderPrimitive.Root
+> {
   labelPosition?: 'top' | 'bottom'
   label?: (value: number | undefined) => React.ReactNode
   marks?: boolean
