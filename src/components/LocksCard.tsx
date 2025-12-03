@@ -243,7 +243,6 @@ export const LocksCard = () => {
                   )
                 })}
                 {currentDelegationLocks.map(({ amount, endBlock, trackId }) => {
-                  console.log("currentBlock", currentBlock, "endBlock", endBlock, "expectedBlockTime", expectedBlockTime)
                   const remainingTimeMs =
                     (Number(endBlock) - currentBlock) * expectedBlockTime
                   const remainingDisplay = convertMiliseconds(remainingTimeMs)
