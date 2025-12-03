@@ -39,8 +39,7 @@ export const DelegationCard = ({
       tx = api.tx.ConvictionVoting.undelegate({ class: tracks[0] })
     } else {
       const batchTx = tracks.map(
-        (t) =>
-          api.tx.ConvictionVoting.undelegate({ class: t }).decodedCall,
+        (t) => api.tx.ConvictionVoting.undelegate({ class: t }).decodedCall,
       )
       tx = api.tx.Utility.batch({ calls: batchTx })
     }

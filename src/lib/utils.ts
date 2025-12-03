@@ -4,7 +4,11 @@ import networks from '@/assets/networks.json'
 
 import { twMerge } from 'tailwind-merge'
 import type { RouterType, Vote } from './types'
-import { ApiType, NetworksFromConfig, RelayApiType } from '@/contexts/NetworkContext'
+import {
+  ApiType,
+  NetworksFromConfig,
+  RelayApiType,
+} from '@/contexts/NetworkContext'
 import { DEFAULT_TIME, lockPeriod, ONE_DAY, THRESHOLD } from './constants'
 import { bnMin } from './bnMin'
 import { HexString } from 'polkadot-api'
@@ -53,7 +57,10 @@ export const getExpectedBlockTimeMs = async (
     (await relayApi.constants.Timestamp.MinimumPeriod()) > THRESHOLD
 
   if (thresholdCheck) {
-    return bnMin(ONE_DAY, (await relayApi.constants.Timestamp.MinimumPeriod()) * 2n)
+    return bnMin(
+      ONE_DAY,
+      (await relayApi.constants.Timestamp.MinimumPeriod()) * 2n,
+    )
   }
 
   return bnMin(ONE_DAY, DEFAULT_TIME)
