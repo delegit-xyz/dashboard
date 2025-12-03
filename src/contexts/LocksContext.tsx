@@ -130,7 +130,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
   useEffect(() => {
     if (!api || !relayApi) return
 
-    getLockTimes(relayApi).then(setConvictionLocksMap).catch(console.error)
+    getLockTimes(api, relayApi).then(setConvictionLocksMap).catch(console.error)
   }, [api, relayApi])
 
   // retrieve the tracks with locks for the selected account
@@ -291,10 +291,10 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
   ])
 
   const getLocks = useCallback(async () => {
-    if (!relayApi || !Object.entries(stateOfRefs).length) return []
+    if (!relayApi || !api || !Object.entries(stateOfRefs).length) return []
 
     const locks: VoteLock[] = []
-    const lockTimes = await getLockTimes(relayApi)
+    const lockTimes = await getLockTimes(api, relayApi)
     const blockTimeMs = await getExpectedBlockTimeMs(relayApi)
 
     Object.entries(stateOfRefs).forEach(([id, { refInfo, vote, trackId }]) => {
@@ -399,7 +399,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
     })
 
     return locks
-  }, [relayApi, stateOfRefs])
+  }, [api, relayApi, stateOfRefs])
 
   useEffect(() => {
     getLocks().then(setVoteLocks).catch(console.error)
