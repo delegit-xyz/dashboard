@@ -77,15 +77,15 @@ export const LocksCard = () => {
   }, [currentBlock, delegationLocks, voteLocks])
 
   useEffect(() => {
-    if (!api) return
-    const sub = api.query.System.Number.watchValue('best').subscribe(
+    if (!relayApi) return
+    const sub = relayApi.query.System.Number.watchValue('best').subscribe(
       (value) => {
         setCurrentBlock(value)
       },
     )
 
     return () => sub.unsubscribe()
-  }, [api])
+  }, [relayApi])
 
   useEffect(() => {
     if (!relayApi) return

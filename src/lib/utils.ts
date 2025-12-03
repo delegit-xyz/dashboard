@@ -4,7 +4,11 @@ import networks from '@/assets/networks.json'
 
 import { twMerge } from 'tailwind-merge'
 import type { RouterType, Vote } from './types'
-import { NetworksFromConfig, RelayApiType } from '@/contexts/NetworkContext'
+import {
+  ApiType,
+  NetworksFromConfig,
+  RelayApiType,
+} from '@/contexts/NetworkContext'
 import { DEFAULT_TIME, lockPeriod, ONE_DAY, THRESHOLD } from './constants'
 import { bnMin } from './bnMin'
 import { HexString } from 'polkadot-api'
@@ -42,28 +46,31 @@ export const indexToConviction = (index: number) => {
 const convictionList = Object.keys(lockPeriod)
 
 export const getExpectedBlockTimeMs = async (
-  api: RelayApiType,
+  relayApi: RelayApiType,
 ): Promise<bigint> => {
-  const expectedBlockTime = await api.constants.Babe.ExpectedBlockTime()
+  const expectedBlockTime = await relayApi.constants.Babe.ExpectedBlockTime()
   if (expectedBlockTime) {
     return bnMin(ONE_DAY, expectedBlockTime)
   }
 
   const thresholdCheck =
-    (await api.constants.Timestamp.MinimumPeriod()) > THRESHOLD
+    (await relayApi.constants.Timestamp.MinimumPeriod()) > THRESHOLD
 
   if (thresholdCheck) {
-    return bnMin(ONE_DAY, (await api.constants.Timestamp.MinimumPeriod()) * 2n)
+    return bnMin(
+      ONE_DAY,
+      (await relayApi.constants.Timestamp.MinimumPeriod()) * 2n,
+    )
   }
 
   return bnMin(ONE_DAY, DEFAULT_TIME)
 }
 
-export const getLockTimes = async (api: RelayApiType) => {
+export const getLockTimes = async (api: ApiType, relayApi: RelayApiType) => {
   const voteLockingPeriodBlocks =
     await api.constants.ConvictionVoting.VoteLockingPeriod()
 
-  const expectedBlockTimeMs = await getExpectedBlockTimeMs(api)
+  const expectedBlockTimeMs = await getExpectedBlockTimeMs(relayApi)
 
   const requests = convictionList.map((conviction) => {
     const lockTimeMs =
