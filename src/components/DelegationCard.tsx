@@ -22,11 +22,11 @@ export const DelegationCard = ({
   const { getDelegateByAddress } = useDelegates()
   const knownDelegate = getDelegateByAddress(delegateAddress)
   const [isUndelegating, setIsUndelegating] = useState(false)
-  const { api, relayApi } = useNetwork()
+  const { api } = useNetwork()
   const { delegations, refreshLocks } = useLocks()
   const { selectedAccount } = useAccounts()
   const tx = useMemo(() => {
-    if (!api || !relayApi || !delegations) {
+    if (!api || !delegations) {
       return
     }
 
@@ -36,17 +36,16 @@ export const DelegationCard = ({
     let tx: Transaction<any, any, any, any>
 
     if (tracks.length === 1) {
-      tx = relayApi.tx.ConvictionVoting.undelegate({ class: tracks[0] })
+      tx = api.tx.ConvictionVoting.undelegate({ class: tracks[0] })
     } else {
       const batchTx = tracks.map(
-        (t) =>
-          relayApi.tx.ConvictionVoting.undelegate({ class: t }).decodedCall,
+        (t) => api.tx.ConvictionVoting.undelegate({ class: t }).decodedCall,
       )
       tx = api.tx.Utility.batch({ calls: batchTx })
     }
 
     return tx
-  }, [relayApi, api, delegateAddress, delegations])
+  }, [api, delegateAddress, delegations])
 
   const getSubscriptionCallback = useGetSigningCallback()
   const subscriptionCallback = useMemo(
