@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@polkadot-api/descriptors": "file:.papi/descriptors",
-    "@polkadot-labs/hdkd": "^0.0.25",
+    "@polkadot-labs/hdkd": "^0.0.26",
     "@polkadot-labs/hdkd-helpers": "^0.0.26",
     "@polkadot-ui/react": "0.0.1-alpha.35",
     "@polkadot-ui/utils": "0.0.4",
