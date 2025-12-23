@@ -23,7 +23,7 @@ Requirements, [node](https://nodejs.org/en/download/package-manager/current) and
 To run the project
 
 - clone this repo
-  `git clone https://github.com/delegit-xyz/dashboard.git && cd dashboard`
+  `git clone https://github.com/wirednkod/delegit-xyz.git && cd dashboard`
 - install dependencies
   `pnpm install`
 - run in dev mode
