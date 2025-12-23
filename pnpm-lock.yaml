@@ -57,8 +57,8 @@ importers:
         specifier: ^1.2.8
         version: 1.2.8(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       '@reactive-dot/core':
-        specifier: ^0.49.1
-        version: 0.49.1(polkadot-api@1.22.0(jiti@2.6.0)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.7.1))
+        specifier: ^0.67.3
+        version: 0.67.3(polkadot-api@1.22.0(jiti@2.6.0)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.7.1))(typescript@5.9.3)(zod@3.24.4)
       '@reactive-dot/react':
         specifier: ^0.49.1
         version: 0.49.1(@babel/core@7.28.5)(@babel/template@7.27.2)(@types/react@19.2.7)(polkadot-api@1.22.0(jiti@2.6.0)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.7.1))(react@19.2.1)
@@ -79,7 +79,7 @@ importers:
         version: 3.3.3
       dot-connect:
         specifier: ^0.22.2
-        version: 0.22.2(@reactive-dot/core@0.49.1(polkadot-api@1.22.0(jiti@2.6.0)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.7.1)))(@types/react@19.2.7)(react@19.2.1)(signal-polyfill@0.2.2)
+        version: 0.22.2(@reactive-dot/core@0.67.3(polkadot-api@1.22.0(jiti@2.6.0)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.7.1))(typescript@5.9.3)(zod@3.24.4))(@types/react@19.2.7)(react@19.2.1)(signal-polyfill@0.2.2)
       lucide-react:
         specifier: ^0.555.0
         version: 0.555.0(react@19.2.1)
@@ -198,8 +198,8 @@ importers:
 
 packages:
 
-  '@adraffy/ens-normalize@1.11.0':
-    resolution: {integrity: sha512-/3DDPKHqqIqxUULp8yP4zODUY1i+2xvVWsv8A79xGWdCAG+8sb0hRh0Rk2QyOJUnnbyPUAZYcpBuRe3nS2OIUg==}
+  '@adraffy/ens-normalize@1.11.1':
+    resolution: {integrity: sha512-nhCBV3quEgesuf7c7KYfperqSS14T8bYuvJ8PcLJp6znkZpFc0AuW4qBtr8eKVyPPe/8RSr7sglCWPU5eaxwKQ==}
 
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
@@ -686,6 +686,10 @@ packages:
     resolution: {integrity: sha512-j84kjAbzEnQHaSIhRPUmB3/eVXu2k3dKPl2LOrR8fSOIL+89U+7lV117EWHtq/GHM3ReGHM46iRBdZfpc4HRUQ==}
     engines: {node: ^14.21.3 || >=16}
 
+  '@noble/curves@1.9.1':
+    resolution: {integrity: sha512-k11yZxZg+t+gWvBbIswW0yoJlu8cHOC7dhunwOzoWH/mXGBiYyR4YY6hAEK/3EUs4UpB8la1RfdRpeGsFHkWsA==}
+    engines: {node: ^14.21.3 || >=16}
+
   '@noble/curves@1.9.6':
     resolution: {integrity: sha512-GIKz/j99FRthB8icyJQA51E8Uk5hXmdyThjgQXRKiv9h0zeRlzSCLIzFw6K1LotZ3XuB7yzlf76qk7uBmTdFqA==}
     engines: {node: ^14.21.3 || >=16}
@@ -864,41 +868,41 @@ packages:
     resolution: {integrity: sha512-Lveu+8pZLBoAyyv+8X7FI4aTOwLaNXRc9gz1wVaUoGzk5VgmKp/qbPg0a+mfJD8usjf748OVbShhjXvhV3MLiA==}
     engines: {node: '>=18'}
 
-  '@polkadot/wasm-bridge@7.5.1':
-    resolution: {integrity: sha512-E+N3CSnX3YaXpAmfIQ+4bTyiAqJQKvVcMaXjkuL8Tp2zYffClWLG5e+RY15Uh+EWfUl9If4y6cLZi3D5NcpAGQ==}
+  '@polkadot/wasm-bridge@7.5.4':
+    resolution: {integrity: sha512-6xaJVvoZbnbgpQYXNw9OHVNWjXmtcoPcWh7hlwx3NpfiLkkjljj99YS+XGZQlq7ks2fVCg7FbfknkNb8PldDaA==}
     engines: {node: '>=18'}
     peerDependencies:
       '@polkadot/util': '*'
       '@polkadot/x-randomvalues': '*'
 
-  '@polkadot/wasm-crypto-asmjs@7.5.1':
-    resolution: {integrity: sha512-jAg7Uusk+xeHQ+QHEH4c/N3b1kEGBqZb51cWe+yM61kKpQwVGZhNdlWetW6U23t/BMyZArIWMsZqmK/Ij0PHog==}
+  '@polkadot/wasm-crypto-asmjs@7.5.4':
+    resolution: {integrity: sha512-ZYwxQHAJ8pPt6kYk9XFmyuFuSS+yirJLonvP+DYbxOrARRUHfN4nzp4zcZNXUuaFhpbDobDSFn6gYzye6BUotA==}
     engines: {node: '>=18'}
     peerDependencies:
       '@polkadot/util': '*'
 
-  '@polkadot/wasm-crypto-init@7.5.1':
-    resolution: {integrity: sha512-Obu4ZEo5jYO6sN31eqCNOXo88rPVkP9TrUOyynuFCnXnXr8V/HlmY/YkAd9F87chZnkTJRlzak17kIWr+i7w3A==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      '@polkadot/util': '*'
-      '@polkadot/x-randomvalues': '*'
-
-  '@polkadot/wasm-crypto-wasm@7.5.1':
-    resolution: {integrity: sha512-S2yQSGbOGTcaV6UdipFVyEGanJvG6uD6Tg7XubxpiGbNAblsyYKeFcxyH1qCosk/4qf+GIUwlOL4ydhosZflqg==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      '@polkadot/util': '*'
-
-  '@polkadot/wasm-crypto@7.5.1':
-    resolution: {integrity: sha512-acjt4VJ3w19v7b/SIPsV/5k9s6JsragHKPnwoZ0KTfBvAFXwzz80jUzVGxA06SKHacfCUe7vBRlz7M5oRby1Pw==}
+  '@polkadot/wasm-crypto-init@7.5.4':
+    resolution: {integrity: sha512-U6s4Eo2rHs2n1iR01vTz/sOQ7eOnRPjaCsGWhPV+ZC/20hkVzwPAhiizu/IqMEol4tO2yiSheD4D6bn0KxUJhg==}
     engines: {node: '>=18'}
     peerDependencies:
       '@polkadot/util': '*'
       '@polkadot/x-randomvalues': '*'
 
-  '@polkadot/wasm-util@7.5.1':
-    resolution: {integrity: sha512-sbvu71isFhPXpvMVX+EkRnUg/+54Tx7Sf9BEMqxxoPj7cG1I/MKeDEwbQz6MaU4gm7xJqvEWCAemLFcXfHQ/2A==}
+  '@polkadot/wasm-crypto-wasm@7.5.4':
+    resolution: {integrity: sha512-PsHgLsVTu43eprwSvUGnxybtOEuHPES6AbApcs7y5ZbM2PiDMzYbAjNul098xJK/CPtrxZ0ePDFnaQBmIJyTFw==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@polkadot/util': '*'
+
+  '@polkadot/wasm-crypto@7.5.4':
+    resolution: {integrity: sha512-1seyClxa7Jd7kQjfnCzTTTfYhTa/KUTDUaD3DMHBk5Q4ZUN1D1unJgX+v1aUeXSPxmzocdZETPJJRZjhVOqg9g==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@polkadot/util': '*'
+      '@polkadot/x-randomvalues': '*'
+
+  '@polkadot/wasm-util@7.5.4':
+    resolution: {integrity: sha512-hqPpfhCpRAqCIn/CYbBluhh0TXmwkJnDRjxrU9Bnqtw9nMNa97D8JuOjdd2pi0rxm+eeLQ/f1rQMp71RMM9t4w==}
     engines: {node: '>=18'}
     peerDependencies:
       '@polkadot/util': '*'
@@ -1361,13 +1365,18 @@ packages:
     peerDependencies:
       polkadot-api: '>=1.19.x'
 
+  '@reactive-dot/core@0.67.3':
+    resolution: {integrity: sha512-G+EicAGGcm7t8p/sTS3ygbmaszROxFlQ2Mu1kUcVFTYf5DKA/uWNfswlghsBKB5/8UlcD9Sef7kqUCvVk++mRA==}
+    peerDependencies:
+      polkadot-api: '>=1.21.1'
+
   '@reactive-dot/react@0.49.1':
     resolution: {integrity: sha512-ROAxUT8i+ANXM4a3G3Qj4KFuo5119b5GoAFacvceTbq8EXDrwPLd6F7oV4zeg7TliS0bNp4cARMxehANIrpO3A==}
     peerDependencies:
       react: 19.x
 
-  '@reactive-dot/utils@0.10.1':
-    resolution: {integrity: sha512-9otLMhlpYBs8avpHD+Cs2AAGVQoZbO0tXt86Fo6zzqLyEd6V+O/GWGm5jvi5YX2pqpP7AwrOc08hMsby0F70Tw==}
+  '@reactive-dot/utils@0.10.3':
+    resolution: {integrity: sha512-mQxAwSXlkO43MJeHDWwm5/1uCkZvMDpQ3LeXf0U7jdN2qj9djX4bfvxeh97biGMhpcoOAHooNnNMOMkheJ5Fjw==}
 
   '@reactive-dot/wallet-walletconnect@0.17.31':
     resolution: {integrity: sha512-8+h8Xf9TMf+UCT0JzKWHiCYq5xliNBha+cUbj4MIgvkNivorex8C7fljskuC6r6hp3up5DUZDzQbkIc99HSGYg==}
@@ -1743,6 +1752,9 @@ packages:
   '@types/node@24.10.1':
     resolution: {integrity: sha512-GNWcUTRBgIRJD5zj+Tq0fKOJ5XZajIiBroOF0yvj2bSU1WvNdYS/dn9UxwsujGW4JX06dnHyjV2y9rRaybH0iQ==}
 
+  '@types/node@24.10.4':
+    resolution: {integrity: sha512-vnDVpYPMzs4wunl27jHrfmwojOGKya0xyM3sH+UE5iv5uPS6vX7UIoh6m+vQc5LGBq52HBKPIn/zcSZVzeDEZg==}
+
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
 
@@ -1924,6 +1936,17 @@ packages:
     peerDependencies:
       typescript: '>=5.0.4'
       zod: ^3 >=3.22.0
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+      zod:
+        optional: true
+
+  abitype@1.2.3:
+    resolution: {integrity: sha512-Ofer5QUnuUdTFsBRwARMoWKOH1ND5ehwYhJ3OJ/BQO+StkwQjHw0XyVh4vDttzHB7QOFhPHa/o413PJ82gU/Tg==}
+    peerDependencies:
+      typescript: '>=5.0.4'
+      zod: ^3.22.0 || ^4.0.0
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -3151,6 +3174,14 @@ packages:
     resolution: {integrity: sha512-m0pg2zscbYgWbqRR6ABga5c3sZdEon7bSgjnlXC64kxtxLOyjRcbbUkLj7HFyy/FTD+P2xdBWu8snGhYI0jc4A==}
     engines: {node: '>=20'}
 
+  ox@0.11.1:
+    resolution: {integrity: sha512-1l1gOLAqg0S0xiN1dH5nkPna8PucrZgrIJOfS49MLNiMevxu07Iz4ZjuJS9N+xifvT+PsZyIptS7WHM8nC+0+A==}
+    peerDependencies:
+      typescript: '>=5.4.0'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+
   ox@0.9.1:
     resolution: {integrity: sha512-NVI0cajROntJWtFnxZQ1aXDVy+c6DLEXJ3wwON48CgbPhmMJrpRTfVbuppR+47RmXm3lZ/uMaKiFSkLdAO1now==}
     peerDependencies:
@@ -4222,7 +4253,7 @@ packages:
 
 snapshots:
 
-  '@adraffy/ens-normalize@1.11.0': {}
+  '@adraffy/ens-normalize@1.11.1': {}
 
   '@alloc/quick-lru@5.2.0': {}
 
@@ -4728,6 +4759,10 @@ snapshots:
     dependencies:
       '@noble/hashes': 1.7.0
 
+  '@noble/curves@1.9.1':
+    dependencies:
+      '@noble/hashes': 1.8.0
+
   '@noble/curves@1.9.6':
     dependencies:
       '@noble/hashes': 1.8.0
@@ -4986,10 +5021,10 @@ snapshots:
       '@noble/hashes': 1.8.0
       '@polkadot/networks': 13.4.4
       '@polkadot/util': 13.4.4
-      '@polkadot/wasm-crypto': 7.5.1(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.1(@polkadot/util@13.4.4)))
-      '@polkadot/wasm-util': 7.5.1(@polkadot/util@13.4.4)
+      '@polkadot/wasm-crypto': 7.5.4(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.4(@polkadot/util@13.4.4)))
+      '@polkadot/wasm-util': 7.5.4(@polkadot/util@13.4.4)
       '@polkadot/x-bigint': 13.4.4
-      '@polkadot/x-randomvalues': 13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.1(@polkadot/util@13.4.4))
+      '@polkadot/x-randomvalues': 13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.4(@polkadot/util@13.4.4))
       '@scure/base': 1.2.6
       tslib: 2.8.1
 
@@ -5003,46 +5038,46 @@ snapshots:
       bn.js: 5.2.2
       tslib: 2.8.1
 
-  '@polkadot/wasm-bridge@7.5.1(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.1(@polkadot/util@13.4.4)))':
+  '@polkadot/wasm-bridge@7.5.4(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.4(@polkadot/util@13.4.4)))':
     dependencies:
       '@polkadot/util': 13.4.4
-      '@polkadot/wasm-util': 7.5.1(@polkadot/util@13.4.4)
-      '@polkadot/x-randomvalues': 13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.1(@polkadot/util@13.4.4))
+      '@polkadot/wasm-util': 7.5.4(@polkadot/util@13.4.4)
+      '@polkadot/x-randomvalues': 13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.4(@polkadot/util@13.4.4))
       tslib: 2.8.1
 
-  '@polkadot/wasm-crypto-asmjs@7.5.1(@polkadot/util@13.4.4)':
+  '@polkadot/wasm-crypto-asmjs@7.5.4(@polkadot/util@13.4.4)':
     dependencies:
       '@polkadot/util': 13.4.4
       tslib: 2.8.1
 
-  '@polkadot/wasm-crypto-init@7.5.1(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.1(@polkadot/util@13.4.4)))':
+  '@polkadot/wasm-crypto-init@7.5.4(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.4(@polkadot/util@13.4.4)))':
     dependencies:
       '@polkadot/util': 13.4.4
-      '@polkadot/wasm-bridge': 7.5.1(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.1(@polkadot/util@13.4.4)))
-      '@polkadot/wasm-crypto-asmjs': 7.5.1(@polkadot/util@13.4.4)
-      '@polkadot/wasm-crypto-wasm': 7.5.1(@polkadot/util@13.4.4)
-      '@polkadot/wasm-util': 7.5.1(@polkadot/util@13.4.4)
-      '@polkadot/x-randomvalues': 13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.1(@polkadot/util@13.4.4))
+      '@polkadot/wasm-bridge': 7.5.4(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.4(@polkadot/util@13.4.4)))
+      '@polkadot/wasm-crypto-asmjs': 7.5.4(@polkadot/util@13.4.4)
+      '@polkadot/wasm-crypto-wasm': 7.5.4(@polkadot/util@13.4.4)
+      '@polkadot/wasm-util': 7.5.4(@polkadot/util@13.4.4)
+      '@polkadot/x-randomvalues': 13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.4(@polkadot/util@13.4.4))
       tslib: 2.8.1
 
-  '@polkadot/wasm-crypto-wasm@7.5.1(@polkadot/util@13.4.4)':
+  '@polkadot/wasm-crypto-wasm@7.5.4(@polkadot/util@13.4.4)':
     dependencies:
       '@polkadot/util': 13.4.4
-      '@polkadot/wasm-util': 7.5.1(@polkadot/util@13.4.4)
+      '@polkadot/wasm-util': 7.5.4(@polkadot/util@13.4.4)
       tslib: 2.8.1
 
-  '@polkadot/wasm-crypto@7.5.1(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.1(@polkadot/util@13.4.4)))':
+  '@polkadot/wasm-crypto@7.5.4(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.4(@polkadot/util@13.4.4)))':
     dependencies:
       '@polkadot/util': 13.4.4
-      '@polkadot/wasm-bridge': 7.5.1(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.1(@polkadot/util@13.4.4)))
-      '@polkadot/wasm-crypto-asmjs': 7.5.1(@polkadot/util@13.4.4)
-      '@polkadot/wasm-crypto-init': 7.5.1(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.1(@polkadot/util@13.4.4)))
-      '@polkadot/wasm-crypto-wasm': 7.5.1(@polkadot/util@13.4.4)
-      '@polkadot/wasm-util': 7.5.1(@polkadot/util@13.4.4)
-      '@polkadot/x-randomvalues': 13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.1(@polkadot/util@13.4.4))
+      '@polkadot/wasm-bridge': 7.5.4(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.4(@polkadot/util@13.4.4)))
+      '@polkadot/wasm-crypto-asmjs': 7.5.4(@polkadot/util@13.4.4)
+      '@polkadot/wasm-crypto-init': 7.5.4(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.4(@polkadot/util@13.4.4)))
+      '@polkadot/wasm-crypto-wasm': 7.5.4(@polkadot/util@13.4.4)
+      '@polkadot/wasm-util': 7.5.4(@polkadot/util@13.4.4)
+      '@polkadot/x-randomvalues': 13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.4(@polkadot/util@13.4.4))
       tslib: 2.8.1
 
-  '@polkadot/wasm-util@7.5.1(@polkadot/util@13.4.4)':
+  '@polkadot/wasm-util@7.5.4(@polkadot/util@13.4.4)':
     dependencies:
       '@polkadot/util': 13.4.4
       tslib: 2.8.1
@@ -5056,10 +5091,10 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.1(@polkadot/util@13.4.4))':
+  '@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.4(@polkadot/util@13.4.4))':
     dependencies:
       '@polkadot/util': 13.4.4
-      '@polkadot/wasm-util': 7.5.1(@polkadot/util@13.4.4)
+      '@polkadot/wasm-util': 7.5.4(@polkadot/util@13.4.4)
       '@polkadot/x-global': 13.4.4
       tslib: 2.8.1
 
@@ -5515,9 +5550,20 @@ snapshots:
   '@reactive-dot/core@0.49.1(polkadot-api@1.22.0(jiti@2.6.0)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.7.1))':
     dependencies:
       '@noble/hashes': 2.0.1
-      '@reactive-dot/utils': 0.10.1
+      '@reactive-dot/utils': 0.10.3
       '@substrate/smoldot-discovery': 2.0.2
       polkadot-api: 1.22.0(jiti@2.6.0)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.7.1)
+
+  '@reactive-dot/core@0.67.3(polkadot-api@1.22.0(jiti@2.6.0)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.7.1))(typescript@5.9.3)(zod@3.24.4)':
+    dependencies:
+      '@noble/hashes': 2.0.1
+      '@reactive-dot/utils': 0.10.3
+      '@substrate/smoldot-discovery': 2.0.2
+      ox: 0.11.1(typescript@5.9.3)(zod@3.24.4)
+      polkadot-api: 1.22.0(jiti@2.6.0)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.7.1)
+    transitivePeerDependencies:
+      - typescript
+      - zod
 
   '@reactive-dot/react@0.49.1(@babel/core@7.28.5)(@babel/template@7.27.2)(@types/react@19.2.7)(polkadot-api@1.22.0(jiti@2.6.0)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.7.1))(react@19.2.1)':
     dependencies:
@@ -5532,7 +5578,7 @@ snapshots:
       - '@types/react'
       - polkadot-api
 
-  '@reactive-dot/utils@0.10.1': {}
+  '@reactive-dot/utils@0.10.3': {}
 
   '@reactive-dot/wallet-walletconnect@0.17.31(@types/react@19.2.7)(polkadot-api@1.22.0(jiti@2.6.0)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.7.1))(react@19.2.1)(typescript@5.9.3)(zod@3.24.4)':
     dependencies:
@@ -5852,7 +5898,7 @@ snapshots:
 
   '@types/bn.js@5.2.0':
     dependencies:
-      '@types/node': 24.10.1
+      '@types/node': 24.10.4
 
   '@types/debug@4.1.12':
     dependencies:
@@ -5881,6 +5927,10 @@ snapshots:
   '@types/ms@2.1.0': {}
 
   '@types/node@24.10.1':
+    dependencies:
+      undici-types: 7.16.0
+
+  '@types/node@24.10.4':
     dependencies:
       undici-types: 7.16.0
 
@@ -6351,6 +6401,11 @@ snapshots:
       typescript: 5.9.3
       zod: 3.24.4
 
+  abitype@1.2.3(typescript@5.9.3)(zod@3.24.4):
+    optionalDependencies:
+      typescript: 5.9.3
+      zod: 3.24.4
+
   acorn-jsx@5.3.2(acorn@8.15.0):
     dependencies:
       acorn: 8.15.0
@@ -6629,12 +6684,12 @@ snapshots:
       no-case: 3.0.4
       tslib: 2.8.1
 
-  dot-connect@0.22.2(@reactive-dot/core@0.49.1(polkadot-api@1.22.0(jiti@2.6.0)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.7.1)))(@types/react@19.2.7)(react@19.2.1)(signal-polyfill@0.2.2):
+  dot-connect@0.22.2(@reactive-dot/core@0.67.3(polkadot-api@1.22.0(jiti@2.6.0)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.7.1))(typescript@5.9.3)(zod@3.24.4))(@types/react@19.2.7)(react@19.2.1)(signal-polyfill@0.2.2):
     dependencies:
       '@lit-labs/signals': 0.1.3
       '@lit/react': 1.0.8(@types/react@19.2.7)
       '@lit/task': 1.0.3
-      '@reactive-dot/core': 0.49.1(polkadot-api@1.22.0(jiti@2.6.0)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.7.1))
+      '@reactive-dot/core': 0.67.3(polkadot-api@1.22.0(jiti@2.6.0)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.7.1))(typescript@5.9.3)(zod@3.24.4)
       dot-identicon: 0.1.5(@types/react@19.2.7)(react@19.2.1)
       lit: 3.3.1
       qrcode: 1.5.4
@@ -7662,15 +7717,30 @@ snapshots:
       string-width: 8.1.0
       strip-ansi: 7.1.2
 
+  ox@0.11.1(typescript@5.9.3)(zod@3.24.4):
+    dependencies:
+      '@adraffy/ens-normalize': 1.11.1
+      '@noble/ciphers': 1.3.0
+      '@noble/curves': 1.9.1
+      '@noble/hashes': 1.8.0
+      '@scure/bip32': 1.7.0
+      '@scure/bip39': 1.6.0
+      abitype: 1.2.3(typescript@5.9.3)(zod@3.24.4)
+      eventemitter3: 5.0.1
+    optionalDependencies:
+      typescript: 5.9.3
+    transitivePeerDependencies:
+      - zod
+
   ox@0.9.1(typescript@5.9.3)(zod@3.24.4):
     dependencies:
-      '@adraffy/ens-normalize': 1.11.0
+      '@adraffy/ens-normalize': 1.11.1
       '@noble/ciphers': 1.3.0
       '@noble/curves': 1.9.7
       '@noble/hashes': 1.8.0
       '@scure/bip32': 1.7.0
       '@scure/bip39': 1.6.0
-      abitype: 1.0.8(typescript@5.9.3)(zod@3.24.4)
+      abitype: 1.2.3(typescript@5.9.3)(zod@3.24.4)
       eventemitter3: 5.0.1
     optionalDependencies:
       typescript: 5.9.3
