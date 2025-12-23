@@ -78,7 +78,7 @@ export const MultiTransactionDialog = ({
     })
 
     ;(await step1Txs)
-      .signSubmitAndWatch(selectedAccount?.polkadotSigner, { at: 'best' })
+      .signSubmitAndWatch(selectedAccount.polkadotSigner!, { at: 'best' })
       .subscribe(subscriptionCallBack1)
   }, [
     api,

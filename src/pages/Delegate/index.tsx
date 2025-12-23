@@ -235,7 +235,7 @@ export const Delegate = () => {
 
       // TEST - when many calls are batched together then i get an error
       await delegateTxs
-        .signSubmitAndWatch(selectedAccount?.polkadotSigner, { at: 'best' })
+        .signSubmitAndWatch(selectedAccount.polkadotSigner!, { at: 'best' })
         .subscribe(subscriptionCallBack)
     },
     [
@@ -326,7 +326,7 @@ export const Delegate = () => {
         />
       )}
 
-      <Link to={`/${search}`} className="flex items-center gap-2 text-primary">
+      <Link to={`/${search}`} className="text-primary flex items-center gap-2">
         <ArrowLeft className="h-4 w-4" />
         To all delegates
       </Link>
@@ -339,7 +339,7 @@ export const Delegate = () => {
           className="p0 border-none bg-transparent shadow-none"
         />
       </div>
-      <div className="grid gap-8 rounded-xl bg-card p-6 shadow-xl">
+      <div className="bg-card grid gap-8 rounded-xl p-6 shadow-xl">
         <div>
           <Label>Amount</Label>
           <Input
