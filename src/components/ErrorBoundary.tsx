@@ -31,7 +31,7 @@ class ErrorBoundary extends Component<Props, State> {
             An error occurred, please report it{' '}
             <a
               className="cursor-pointer font-bold text-pink-500 underline hover:text-pink-700"
-              href="https://github.com/delegit-xyz/dashboard/issues/new"
+              href="https://github.com/wirednkod/delegit-xyz/issues/new"
               target="_blank"
             >
               on Delegit Github repo

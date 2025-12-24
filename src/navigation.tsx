@@ -85,7 +85,7 @@ export const Navigation = () => {
         <Tooltip>
           <TooltipTrigger asChild>
             <a
-              href="https://github.com/delegit-xyz/dashboard/"
+              href="https://github.com/wirednkod/delegit-xyz/"
               target="_blank"
               className="text-muted-foreground hover:text-foreground flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8"
             >

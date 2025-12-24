@@ -24,7 +24,7 @@ export const TooLargeDialog = ({ isOpen, onOpenChange, callData }: Props) => {
               for the blockchain to accept it. Please get in touch with the
               Delegit team to get help{' '}
               <a
-                href="https://github.com/delegit-xyz/dashboard/issues/new"
+                href="https://github.com/wirednkod/delegit-xyz/issues/new"
                 target="_blank"
                 rel="noreferrer"
                 className="text-pink-500"
