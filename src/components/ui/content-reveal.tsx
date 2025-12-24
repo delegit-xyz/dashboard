@@ -46,7 +46,7 @@ export const ContentReveal = ({
       >
         {title && <span className="mr-2">{title}</span>}
         <ChevronDown
-          className={`transition-transform duration-300 ${
+          className={`cursor-pointer transition-transform duration-300 ${
             isOpen ? 'rotate-180' : ''
           }`}
         />
