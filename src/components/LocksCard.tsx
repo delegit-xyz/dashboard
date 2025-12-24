@@ -77,15 +77,15 @@ export const LocksCard = () => {
   }, [currentBlock, delegationLocks, voteLocks])
 
   useEffect(() => {
-    if (!api) return
-    const sub = api.query.System.Number.watchValue('best').subscribe(
+    if (!relayApi) return
+    const sub = relayApi.query.System.Number.watchValue('best').subscribe(
       (value) => {
         setCurrentBlock(value)
       },
     )
 
     return () => sub.unsubscribe()
-  }, [api])
+  }, [relayApi])
 
   useEffect(() => {
     if (!relayApi) return
@@ -109,7 +109,7 @@ export const LocksCard = () => {
     })
 
     api.tx.Utility.batch({ calls: [...unVoteTxs, ...unlockTxs] })
-      .signSubmitAndWatch(selectedAccount.polkadotSigner, { at: 'best' })
+      .signSubmitAndWatch(selectedAccount.polkadotSigner!, { at: 'best' })
       .subscribe(subscriptionCallback)
   }, [api, freeLocks, getSubscriptionCallBack, getUnlockTx, selectedAccount])
 
@@ -134,7 +134,7 @@ export const LocksCard = () => {
           </div>
           {freeLocks.length > 0 && (
             <Button
-              className="mb-2 mt-4 w-full"
+              className="mt-4 mb-2 w-full"
               onClick={onUnlockClick}
               disabled={isUnlockingLoading}
               loading={isUnlockingLoading}
@@ -193,7 +193,7 @@ export const LocksCard = () => {
       ) : (
         <>
           <Card className="h-max border-2 p-2 px-4">
-            <div className="flex gap-x-2">
+            <div className="flex w-full gap-x-2">
               <Title variant="h4">Unlocking</Title>
               <Popover>
                 <PopoverTrigger>

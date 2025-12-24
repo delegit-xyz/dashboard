@@ -17,7 +17,7 @@ type AccountContextProps = {
 }
 
 export interface IAccountContext {
-  selectedAccount?: InjectedPolkadotAccount
+  selectedAccount?: InjectedPolkadotAccount | WalletAccount
   accounts: WalletAccount[]
   selectAccount: (account: WalletAccount | undefined) => void
 }

@@ -22,11 +22,11 @@ export const DelegationCard = ({
   const { getDelegateByAddress } = useDelegates()
   const knownDelegate = getDelegateByAddress(delegateAddress)
   const [isUndelegating, setIsUndelegating] = useState(false)
-  const { api, relayApi } = useNetwork()
+  const { api } = useNetwork()
   const { delegations, refreshLocks } = useLocks()
   const { selectedAccount } = useAccounts()
   const tx = useMemo(() => {
-    if (!api || !relayApi || !delegations) {
+    if (!api || !delegations) {
       return
     }
 
@@ -36,17 +36,16 @@ export const DelegationCard = ({
     let tx: Transaction<any, any, any, any>
 
     if (tracks.length === 1) {
-      tx = relayApi.tx.ConvictionVoting.undelegate({ class: tracks[0] })
+      tx = api.tx.ConvictionVoting.undelegate({ class: tracks[0] })
     } else {
       const batchTx = tracks.map(
-        (t) =>
-          relayApi.tx.ConvictionVoting.undelegate({ class: t }).decodedCall,
+        (t) => api.tx.ConvictionVoting.undelegate({ class: t }).decodedCall,
       )
       tx = api.tx.Utility.batch({ calls: batchTx })
     }
 
     return tx
-  }, [relayApi, api, delegateAddress, delegations])
+  }, [api, delegateAddress, delegations])
 
   const getSubscriptionCallback = useGetSigningCallback()
   const subscriptionCallback = useMemo(
@@ -68,13 +67,13 @@ export const DelegationCard = ({
 
     setIsUndelegating(true)
 
-    tx.signSubmitAndWatch(selectedAccount.polkadotSigner, {
+    tx.signSubmitAndWatch(selectedAccount.polkadotSigner!, {
       at: 'best',
     }).subscribe(subscriptionCallback)
   }, [selectedAccount, subscriptionCallback, tx])
 
   return (
-    <Card className="flex h-max flex-col justify-between border bg-card p-2 px-4">
+    <Card className="bg-card flex h-max flex-col justify-between border p-2 px-4">
       <div className="flex flex-col justify-between">
         {knownDelegate?.name ? (
           <div className="flex items-center gap-2">
@@ -91,7 +90,7 @@ export const DelegationCard = ({
         />
       </div>
       <Button
-        className="w-a bottom-0 mb-2 mt-4"
+        className="w-a bottom-0 mt-4 mb-2"
         variant={'outline'}
         onClick={onUndelegate}
         disabled={isUndelegating}
