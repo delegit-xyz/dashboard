@@ -100,7 +100,7 @@ const LocksContext = createContext<ILocksContext | undefined>(undefined)
 
 const LocksContextProvider = ({ children }: LocksContextProps) => {
   const { selectedAccount } = useAccounts()
-  const { api } = useNetwork()
+  const { api, relayApi } = useNetwork()
 
   const [forcerefresh, setForceRefresh] = useState(0)
   const [lockTracks, setLockTracks] = useState<TrackLock[]>([])
@@ -128,10 +128,10 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
   }, [])
 
   useEffect(() => {
-    if (!api) return
+    if (!api || !relayApi) return
 
-    getLockTimes(api).then(setConvictionLocksMap).catch(console.error)
-  }, [api])
+    getLockTimes(api, relayApi).then(setConvictionLocksMap).catch(console.error)
+  }, [api, relayApi])
 
   // retrieve the tracks with locks for the selected account
   useEffect(() => {
@@ -250,7 +250,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
   useEffect(() => {
     if (
       !selectedAccount ||
-      !api ||
+      !relayApi ||
       !castedVotes ||
       !Object.entries(castedVotes).length
     ) {
@@ -264,7 +264,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
     const tempRefs: StateOfRefs = castedVotes
     const controller = new AbortController()
 
-    api.query.Referenda.ReferendumInfoFor.getValues(refParams, {
+    relayApi.query.Referenda.ReferendumInfoFor.getValues(refParams, {
       at: 'best',
       signal: controller.signal,
     })
@@ -283,14 +283,19 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
       .catch(console.error)
 
     return () => controller.abort()
-  }, [api, castedVotes, selectedAccount])
+  }, [
+    relayApi,
+    relayApi?.query.Referenda.ReferendumInfoFor,
+    castedVotes,
+    selectedAccount,
+  ])
 
   const getLocks = useCallback(async () => {
-    if (!api || !Object.entries(stateOfRefs).length) return []
+    if (!relayApi || !api || !Object.entries(stateOfRefs).length) return []
 
     const locks: VoteLock[] = []
-    const lockTimes = await getLockTimes(api)
-    const blockTimeMs = await getExpectedBlockTimeMs(api)
+    const lockTimes = await getLockTimes(api, relayApi)
+    const blockTimeMs = await getExpectedBlockTimeMs(relayApi)
 
     Object.entries(stateOfRefs).forEach(([id, { refInfo, vote, trackId }]) => {
       if (vote.type === 'Standard') {
@@ -394,7 +399,7 @@ const LocksContextProvider = ({ children }: LocksContextProps) => {
     })
 
     return locks
-  }, [api, stateOfRefs])
+  }, [api, relayApi, stateOfRefs])
 
   useEffect(() => {
     getLocks().then(setVoteLocks).catch(console.error)

@@ -39,7 +39,7 @@ import { TrackDisplay } from '@/components/TrackDisplay'
 import { useGetSigningCallback } from '@/hooks/useGetSigningCallback'
 
 export const Delegate = () => {
-  const { api, assetInfo } = useNetwork()
+  const { relayApi, api, assetInfo } = useNetwork()
   const { address } = useParams()
   const { selectedAccount } = useAccounts()
   const getDelegateTx = useGetDelegateTx()
@@ -166,9 +166,9 @@ export const Delegate = () => {
   }, [api])
 
   useEffect(() => {
-    if (!api) return
+    if (!relayApi) return
 
-    api.constants.Referenda.Tracks()
+    relayApi.constants.Referenda.Tracks()
       .then((tracks) => {
         const trackIds = tracks.map(([track]) => track)
         setTracksToDelegate(trackIds)
@@ -182,7 +182,7 @@ export const Delegate = () => {
         setTrackNames(trackNamesMap)
       })
       .catch(console.error)
-  }, [api])
+  }, [relayApi])
 
   const onChangeAmount = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -233,8 +233,9 @@ export const Delegate = () => {
         },
       })
 
+      // TEST - when many calls are batched together then i get an error
       await delegateTxs
-        .signSubmitAndWatch(selectedAccount?.polkadotSigner, { at: 'best' })
+        .signSubmitAndWatch(selectedAccount.polkadotSigner!, { at: 'best' })
         .subscribe(subscriptionCallBack)
     },
     [
@@ -325,7 +326,7 @@ export const Delegate = () => {
         />
       )}
 
-      <Link to={`/${search}`} className="flex items-center gap-2 text-primary">
+      <Link to={`/${search}`} className="text-primary flex items-center gap-2">
         <ArrowLeft className="h-4 w-4" />
         To all delegates
       </Link>
@@ -338,7 +339,7 @@ export const Delegate = () => {
           className="p0 border-none bg-transparent shadow-none"
         />
       </div>
-      <div className="grid gap-8 rounded-xl bg-card p-6 shadow-xl">
+      <div className="bg-card grid gap-8 rounded-xl p-6 shadow-xl">
         <div>
           <Label>Amount</Label>
           <Input

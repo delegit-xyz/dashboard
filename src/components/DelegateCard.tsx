@@ -68,7 +68,7 @@ export const DelegateCard = ({
   }
 
   return (
-    <Card className={cn('flex flex-col p-4', className)}>
+    <Card className={cn('relative flex flex-col p-4', className)}>
       <div className="flex columns-3">
         <DelegateAvatar />
         <div className="w-full p-2">
@@ -78,7 +78,7 @@ export const DelegateCard = ({
                 <Popover open={isCopyPopoverOpen}>
                   <PopoverTrigger onClick={(event) => event.stopPropagation()}>
                     <Button variant="ghost" onClick={onCopy} size="icon">
-                      <LinkIcon className="h-4 w-4 text-accent-foreground" />
+                      <LinkIcon className="text-accent-foreground h-4 w-4" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto">
@@ -91,7 +91,7 @@ export const DelegateCard = ({
             </div>
           </div>
           <div className="text-accent-foreground">
-            <div className="break-words text-lg">{shortDescription}</div>
+            <div className="text-lg break-words">{shortDescription}</div>
             <ContentReveal hidden={shouldHideLongDescription}>
               <Markdown
                 components={{
@@ -108,7 +108,7 @@ export const DelegateCard = ({
             </ContentReveal>
           </div>
         </div>
-        <div className="flex gap-1">
+        <div className="absolute right-3.5 flex gap-1">
           {hasDelegateButton && (
             <Button variant="default" onClick={onDelegate} className="w-full">
               Delegate

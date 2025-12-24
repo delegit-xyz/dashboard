@@ -22,13 +22,13 @@ export interface DelegateTxs {
 }
 
 export const useGetDelegateTx = () => {
-  const { api } = useNetwork()
+  const { relayApi } = useNetwork()
   const { selectedAccount } = useAccounts()
   const { delegations, voteLocks } = useLocks()
 
   const getDelegationTxs = useCallback(
     ({ delegateAddress, amount, tracks, conviction }: Params): DelegateTxs => {
-      if (!api || !selectedAccount)
+      if (!relayApi || !selectedAccount)
         return {
           removeVotesTxs: [],
           removeDelegationsTxs: [],
@@ -36,14 +36,14 @@ export const useGetDelegateTx = () => {
         }
 
       const removeVotesTxs = voteLocks.map(({ refId, trackId }) =>
-        api.tx.ConvictionVoting.remove_vote({
+        relayApi.tx.ConvictionVoting.remove_vote({
           index: refId,
           class: trackId,
         }),
       )
 
       const removeDelegationsTxs: ReturnType<
-        typeof api.tx.ConvictionVoting.undelegate
+        typeof relayApi.tx.ConvictionVoting.undelegate
       >[] = []
 
       Object.values(delegations || {}).forEach((delegation) => {
@@ -51,13 +51,13 @@ export const useGetDelegateTx = () => {
           .filter(({ trackId }) => tracks.includes(trackId))
           .map(({ trackId }) => {
             removeDelegationsTxs.push(
-              api.tx.ConvictionVoting.undelegate({ class: trackId }),
+              relayApi.tx.ConvictionVoting.undelegate({ class: trackId }),
             )
           })
       })
 
       const delegationTxs = tracks.map((trackId) =>
-        api.tx.ConvictionVoting.delegate({
+        relayApi.tx.ConvictionVoting.delegate({
           class: trackId,
           conviction,
           to: MultiAddress.Id(delegateAddress),
@@ -67,7 +67,7 @@ export const useGetDelegateTx = () => {
 
       return { removeVotesTxs, removeDelegationsTxs, delegationTxs }
     },
-    [api, delegations, voteLocks, selectedAccount],
+    [relayApi, delegations, voteLocks, selectedAccount],
   )
 
   return getDelegationTxs

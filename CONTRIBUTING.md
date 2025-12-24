@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This section aims to familiarise developers to the Delegit Dashboard [[GitHub](https://github.com/delegit-xyz/dashboard), [Demo](https://delegit-xyz.github.io/dashboard)] for the purpose of contributing to the project.
+This section aims to familiarise developers to the Delegit Dashboard [[GitHub](https://github.com/wirednkod/delegit-xyz), [Demo](https://wirednkod.github.io/delegit-xyz)] for the purpose of contributing to the project.
 
 ## Major Packages Used
 
@@ -18,5 +18,5 @@ Optionally apply the following environment variables in an environment file such
 VITE_ORGANISATION="© Polkadot Delegit"
 
 # provide a privacy policy url in the network bar
-VITE_PRIVACY_URL=https://github.com/delegit-xyz/
+VITE_PRIVACY_URL=https://github.com/wirednkod/delegit-xyz/
 ```

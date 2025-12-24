@@ -83,7 +83,7 @@ export const Header = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:sticky sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+      <header className="bg-background sticky top-0 z-30 flex h-14 items-center gap-4 border-b px-4 sm:sticky sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
         <Sheet>
           <SheetTrigger asChild>
             <Button size="icon" variant="outline" className="sm:hidden">
@@ -97,7 +97,7 @@ export const Header = () => {
                 <Link
                   key={r.name}
                   to={`/${r.link || ''}${search}`}
-                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                  className="text-muted-foreground hover:text-foreground flex items-center gap-4 px-2.5"
                 >
                   <r.icon className="h-5 w-5" />
                   {r.name}
@@ -108,7 +108,7 @@ export const Header = () => {
               {isLight && (
                 <a
                   href="#"
-                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                  className="text-muted-foreground hover:text-foreground flex items-center gap-4 px-2.5"
                 >
                   {!lightClientLoaded ? (
                     <TbLoaderQuarter className="h-5 w-5 animate-spin" />
@@ -121,18 +121,18 @@ export const Header = () => {
               <a
                 href="https://github.com/delegit-xyz/dashboard"
                 target="_blank"
-                className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground flex items-center gap-4 px-2.5"
               >
                 <FaGithub className="h-5 w-5" />
                 Github
               </a>
               <a
                 href="#"
-                className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground flex items-center gap-4 px-2.5"
                 onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
               >
-                <Sun className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                <Moon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Sun className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+                <Moon className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
                 Toggle theme
               </a>
             </nav>
