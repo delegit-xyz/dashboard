@@ -119,7 +119,7 @@ export const Header = () => {
                 </a>
               )}
               <a
-                href="https://github.com/delegit-xyz/dashboard"
+                href="https://github.com/wirednkod/delegit-xyz"
                 target="_blank"
                 className="text-muted-foreground hover:text-foreground flex items-center gap-4 px-2.5"
               >
