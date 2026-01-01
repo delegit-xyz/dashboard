@@ -181,8 +181,8 @@ importers:
         specifier: 3.7.4
         version: 3.7.4
       prettier-plugin-tailwindcss:
-        specifier: ^0.6.14
-        version: 0.6.14(prettier@3.7.4)
+        specifier: ^0.7.2
+        version: 0.7.2(prettier@3.7.4)
       tailwindcss:
         specifier: ^4.1.18
         version: 4.1.18
@@ -1006,41 +1006,41 @@ packages:
     resolution: {integrity: sha512-Lveu+8pZLBoAyyv+8X7FI4aTOwLaNXRc9gz1wVaUoGzk5VgmKp/qbPg0a+mfJD8usjf748OVbShhjXvhV3MLiA==}
     engines: {node: '>=18'}
 
-  '@polkadot/wasm-bridge@7.5.1':
-    resolution: {integrity: sha512-E+N3CSnX3YaXpAmfIQ+4bTyiAqJQKvVcMaXjkuL8Tp2zYffClWLG5e+RY15Uh+EWfUl9If4y6cLZi3D5NcpAGQ==}
+  '@polkadot/wasm-bridge@7.5.4':
+    resolution: {integrity: sha512-6xaJVvoZbnbgpQYXNw9OHVNWjXmtcoPcWh7hlwx3NpfiLkkjljj99YS+XGZQlq7ks2fVCg7FbfknkNb8PldDaA==}
     engines: {node: '>=18'}
     peerDependencies:
       '@polkadot/util': '*'
       '@polkadot/x-randomvalues': '*'
 
-  '@polkadot/wasm-crypto-asmjs@7.5.1':
-    resolution: {integrity: sha512-jAg7Uusk+xeHQ+QHEH4c/N3b1kEGBqZb51cWe+yM61kKpQwVGZhNdlWetW6U23t/BMyZArIWMsZqmK/Ij0PHog==}
+  '@polkadot/wasm-crypto-asmjs@7.5.4':
+    resolution: {integrity: sha512-ZYwxQHAJ8pPt6kYk9XFmyuFuSS+yirJLonvP+DYbxOrARRUHfN4nzp4zcZNXUuaFhpbDobDSFn6gYzye6BUotA==}
     engines: {node: '>=18'}
     peerDependencies:
       '@polkadot/util': '*'
 
-  '@polkadot/wasm-crypto-init@7.5.1':
-    resolution: {integrity: sha512-Obu4ZEo5jYO6sN31eqCNOXo88rPVkP9TrUOyynuFCnXnXr8V/HlmY/YkAd9F87chZnkTJRlzak17kIWr+i7w3A==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      '@polkadot/util': '*'
-      '@polkadot/x-randomvalues': '*'
-
-  '@polkadot/wasm-crypto-wasm@7.5.1':
-    resolution: {integrity: sha512-S2yQSGbOGTcaV6UdipFVyEGanJvG6uD6Tg7XubxpiGbNAblsyYKeFcxyH1qCosk/4qf+GIUwlOL4ydhosZflqg==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      '@polkadot/util': '*'
-
-  '@polkadot/wasm-crypto@7.5.1':
-    resolution: {integrity: sha512-acjt4VJ3w19v7b/SIPsV/5k9s6JsragHKPnwoZ0KTfBvAFXwzz80jUzVGxA06SKHacfCUe7vBRlz7M5oRby1Pw==}
+  '@polkadot/wasm-crypto-init@7.5.4':
+    resolution: {integrity: sha512-U6s4Eo2rHs2n1iR01vTz/sOQ7eOnRPjaCsGWhPV+ZC/20hkVzwPAhiizu/IqMEol4tO2yiSheD4D6bn0KxUJhg==}
     engines: {node: '>=18'}
     peerDependencies:
       '@polkadot/util': '*'
       '@polkadot/x-randomvalues': '*'
 
-  '@polkadot/wasm-util@7.5.1':
-    resolution: {integrity: sha512-sbvu71isFhPXpvMVX+EkRnUg/+54Tx7Sf9BEMqxxoPj7cG1I/MKeDEwbQz6MaU4gm7xJqvEWCAemLFcXfHQ/2A==}
+  '@polkadot/wasm-crypto-wasm@7.5.4':
+    resolution: {integrity: sha512-PsHgLsVTu43eprwSvUGnxybtOEuHPES6AbApcs7y5ZbM2PiDMzYbAjNul098xJK/CPtrxZ0ePDFnaQBmIJyTFw==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@polkadot/util': '*'
+
+  '@polkadot/wasm-crypto@7.5.4':
+    resolution: {integrity: sha512-1seyClxa7Jd7kQjfnCzTTTfYhTa/KUTDUaD3DMHBk5Q4ZUN1D1unJgX+v1aUeXSPxmzocdZETPJJRZjhVOqg9g==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@polkadot/util': '*'
+      '@polkadot/x-randomvalues': '*'
+
+  '@polkadot/wasm-util@7.5.4':
+    resolution: {integrity: sha512-hqPpfhCpRAqCIn/CYbBluhh0TXmwkJnDRjxrU9Bnqtw9nMNa97D8JuOjdd2pi0rxm+eeLQ/f1rQMp71RMM9t4w==}
     engines: {node: '>=18'}
     peerDependencies:
       '@polkadot/util': '*'
@@ -3401,9 +3401,9 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
-  prettier-plugin-tailwindcss@0.6.14:
-    resolution: {integrity: sha512-pi2e/+ZygeIqntN+vC573BcW5Cve8zUB0SSAGxqpB4f96boZF4M3phPVoOFCeypwkpRYdi7+jQ5YJJUwrkGUAg==}
-    engines: {node: '>=14.21.3'}
+  prettier-plugin-tailwindcss@0.7.2:
+    resolution: {integrity: sha512-LkphyK3Fw+q2HdMOoiEHWf93fNtYJwfamoKPl7UwtjFQdei/iIBoX11G6j706FzN3ymX9mPVi97qIY8328vdnA==}
+    engines: {node: '>=20.19'}
     peerDependencies:
       '@ianvs/prettier-plugin-sort-imports': '*'
       '@prettier/plugin-hermes': '*'
@@ -3415,14 +3415,12 @@ packages:
       prettier: ^3.0
       prettier-plugin-astro: '*'
       prettier-plugin-css-order: '*'
-      prettier-plugin-import-sort: '*'
       prettier-plugin-jsdoc: '*'
       prettier-plugin-marko: '*'
       prettier-plugin-multiline-arrays: '*'
       prettier-plugin-organize-attributes: '*'
       prettier-plugin-organize-imports: '*'
       prettier-plugin-sort-imports: '*'
-      prettier-plugin-style-order: '*'
       prettier-plugin-svelte: '*'
     peerDependenciesMeta:
       '@ianvs/prettier-plugin-sort-imports':
@@ -3443,8 +3441,6 @@ packages:
         optional: true
       prettier-plugin-css-order:
         optional: true
-      prettier-plugin-import-sort:
-        optional: true
       prettier-plugin-jsdoc:
         optional: true
       prettier-plugin-marko:
@@ -3456,8 +3452,6 @@ packages:
       prettier-plugin-organize-imports:
         optional: true
       prettier-plugin-sort-imports:
-        optional: true
-      prettier-plugin-style-order:
         optional: true
       prettier-plugin-svelte:
         optional: true
@@ -5057,10 +5051,10 @@ snapshots:
       '@noble/hashes': 1.8.0
       '@polkadot/networks': 13.4.4
       '@polkadot/util': 13.4.4
-      '@polkadot/wasm-crypto': 7.5.1(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.1(@polkadot/util@13.4.4)))
-      '@polkadot/wasm-util': 7.5.1(@polkadot/util@13.4.4)
+      '@polkadot/wasm-crypto': 7.5.4(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.4(@polkadot/util@13.4.4)))
+      '@polkadot/wasm-util': 7.5.4(@polkadot/util@13.4.4)
       '@polkadot/x-bigint': 13.4.4
-      '@polkadot/x-randomvalues': 13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.1(@polkadot/util@13.4.4))
+      '@polkadot/x-randomvalues': 13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.4(@polkadot/util@13.4.4))
       '@scure/base': 1.2.6
       tslib: 2.8.1
 
@@ -5074,46 +5068,46 @@ snapshots:
       bn.js: 5.2.2
       tslib: 2.8.1
 
-  '@polkadot/wasm-bridge@7.5.1(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.1(@polkadot/util@13.4.4)))':
+  '@polkadot/wasm-bridge@7.5.4(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.4(@polkadot/util@13.4.4)))':
     dependencies:
       '@polkadot/util': 13.4.4
-      '@polkadot/wasm-util': 7.5.1(@polkadot/util@13.4.4)
-      '@polkadot/x-randomvalues': 13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.1(@polkadot/util@13.4.4))
+      '@polkadot/wasm-util': 7.5.4(@polkadot/util@13.4.4)
+      '@polkadot/x-randomvalues': 13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.4(@polkadot/util@13.4.4))
       tslib: 2.8.1
 
-  '@polkadot/wasm-crypto-asmjs@7.5.1(@polkadot/util@13.4.4)':
+  '@polkadot/wasm-crypto-asmjs@7.5.4(@polkadot/util@13.4.4)':
     dependencies:
       '@polkadot/util': 13.4.4
       tslib: 2.8.1
 
-  '@polkadot/wasm-crypto-init@7.5.1(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.1(@polkadot/util@13.4.4)))':
+  '@polkadot/wasm-crypto-init@7.5.4(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.4(@polkadot/util@13.4.4)))':
     dependencies:
       '@polkadot/util': 13.4.4
-      '@polkadot/wasm-bridge': 7.5.1(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.1(@polkadot/util@13.4.4)))
-      '@polkadot/wasm-crypto-asmjs': 7.5.1(@polkadot/util@13.4.4)
-      '@polkadot/wasm-crypto-wasm': 7.5.1(@polkadot/util@13.4.4)
-      '@polkadot/wasm-util': 7.5.1(@polkadot/util@13.4.4)
-      '@polkadot/x-randomvalues': 13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.1(@polkadot/util@13.4.4))
+      '@polkadot/wasm-bridge': 7.5.4(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.4(@polkadot/util@13.4.4)))
+      '@polkadot/wasm-crypto-asmjs': 7.5.4(@polkadot/util@13.4.4)
+      '@polkadot/wasm-crypto-wasm': 7.5.4(@polkadot/util@13.4.4)
+      '@polkadot/wasm-util': 7.5.4(@polkadot/util@13.4.4)
+      '@polkadot/x-randomvalues': 13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.4(@polkadot/util@13.4.4))
       tslib: 2.8.1
 
-  '@polkadot/wasm-crypto-wasm@7.5.1(@polkadot/util@13.4.4)':
+  '@polkadot/wasm-crypto-wasm@7.5.4(@polkadot/util@13.4.4)':
     dependencies:
       '@polkadot/util': 13.4.4
-      '@polkadot/wasm-util': 7.5.1(@polkadot/util@13.4.4)
+      '@polkadot/wasm-util': 7.5.4(@polkadot/util@13.4.4)
       tslib: 2.8.1
 
-  '@polkadot/wasm-crypto@7.5.1(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.1(@polkadot/util@13.4.4)))':
+  '@polkadot/wasm-crypto@7.5.4(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.4(@polkadot/util@13.4.4)))':
     dependencies:
       '@polkadot/util': 13.4.4
-      '@polkadot/wasm-bridge': 7.5.1(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.1(@polkadot/util@13.4.4)))
-      '@polkadot/wasm-crypto-asmjs': 7.5.1(@polkadot/util@13.4.4)
-      '@polkadot/wasm-crypto-init': 7.5.1(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.1(@polkadot/util@13.4.4)))
-      '@polkadot/wasm-crypto-wasm': 7.5.1(@polkadot/util@13.4.4)
-      '@polkadot/wasm-util': 7.5.1(@polkadot/util@13.4.4)
-      '@polkadot/x-randomvalues': 13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.1(@polkadot/util@13.4.4))
+      '@polkadot/wasm-bridge': 7.5.4(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.4(@polkadot/util@13.4.4)))
+      '@polkadot/wasm-crypto-asmjs': 7.5.4(@polkadot/util@13.4.4)
+      '@polkadot/wasm-crypto-init': 7.5.4(@polkadot/util@13.4.4)(@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.4(@polkadot/util@13.4.4)))
+      '@polkadot/wasm-crypto-wasm': 7.5.4(@polkadot/util@13.4.4)
+      '@polkadot/wasm-util': 7.5.4(@polkadot/util@13.4.4)
+      '@polkadot/x-randomvalues': 13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.4(@polkadot/util@13.4.4))
       tslib: 2.8.1
 
-  '@polkadot/wasm-util@7.5.1(@polkadot/util@13.4.4)':
+  '@polkadot/wasm-util@7.5.4(@polkadot/util@13.4.4)':
     dependencies:
       '@polkadot/util': 13.4.4
       tslib: 2.8.1
@@ -5127,10 +5121,10 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.1(@polkadot/util@13.4.4))':
+  '@polkadot/x-randomvalues@13.4.4(@polkadot/util@13.4.4)(@polkadot/wasm-util@7.5.4(@polkadot/util@13.4.4))':
     dependencies:
       '@polkadot/util': 13.4.4
-      '@polkadot/wasm-util': 7.5.1(@polkadot/util@13.4.4)
+      '@polkadot/wasm-util': 7.5.4(@polkadot/util@13.4.4)
       '@polkadot/x-global': 13.4.4
       tslib: 2.8.1
 
@@ -7900,7 +7894,7 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-plugin-tailwindcss@0.6.14(prettier@3.7.4):
+  prettier-plugin-tailwindcss@0.7.2(prettier@3.7.4):
     dependencies:
       prettier: 3.7.4
 
